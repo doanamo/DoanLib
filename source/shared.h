@@ -11,6 +11,10 @@
 
 #define UNUSED(x) (void)(x)
 
+#define KiB(n) ((size_t)(n) << 10)
+#define MiB(n) ((size_t)(n) << 20)
+#define GiB(n) ((size_t)(n) << 30)
+
 #define LOG_INFO(format, ...) \
   fprintf(stdout, format "\n" __VA_OPT__(,) __VA_ARGS__); \
   fflush(stdout)

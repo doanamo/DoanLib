@@ -15,6 +15,20 @@
 #define MiB(n) ((size_t)(n) << 20)
 #define GiB(n) ((size_t)(n) << 30)
 
+#define MAX(a, b) \
+  ({ \
+    auto _a = (a); \
+    auto _b = (b); \
+    _a > _b ? _a : _b; \
+  })
+
+#define MIN(a, b) \
+  ({ \
+    auto _a = (a); \
+    auto _b = (b); \
+    _a < _b ? _a : _b; \
+  })
+
 #define LOG_INFO(format, ...) \
   fprintf(stdout, format "\n" __VA_OPT__(,) __VA_ARGS__); \
   fflush(stdout)

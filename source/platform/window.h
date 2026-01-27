@@ -1,8 +1,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "shared.h"
-
 extern void (*g_platform_window_close_callback)();
 extern HWND g_platform_window_handle;
 extern int g_platform_window_width;

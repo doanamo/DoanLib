@@ -1,3 +1,4 @@
+#include "shared.h"
 #include "window.h"
 
 void (*g_platform_window_close_callback)() = nullptr;

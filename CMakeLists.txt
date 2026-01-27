@@ -5,6 +5,7 @@ set(CMAKE_C_STANDARD 23)
 
 set(SOURCE_FILES
   "source/main.c"
+  "source/application.c"
   "source/platform/window.c"
 )
 

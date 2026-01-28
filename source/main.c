@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
   LOG_INFO("Starting main loop");
   platform_window_show();
 
-  while(!g_exit) {
+  while (!g_exit) {
     platform_window_process_messages();
     application_update(0.0f);
     application_render(1.0f);

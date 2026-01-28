@@ -7,26 +7,26 @@ int g_platform_window_width = 0;
 int g_platform_window_height = 0;
 
 LRESULT CALLBACK platform_window_procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  switch(uMsg) {
-    case WM_CLOSE:
-      if (g_platform_window_close_callback) {
-        g_platform_window_close_callback();
-        return 0;
-      }
-      break;
+  switch (uMsg) {
+  case WM_CLOSE:
+    if (g_platform_window_close_callback) {
+      g_platform_window_close_callback();
+      return 0;
+    }
+    break;
 
-    case WM_EXITSIZEMOVE:
-      RECT client_size;
-      GetClientRect(g_platform_window_handle, &client_size);
-      int new_window_width = (int)client_size.right;
-      int new_window_height = (int)client_size.bottom;
+  case WM_EXITSIZEMOVE:
+    RECT client_size;
+    GetClientRect(g_platform_window_handle, &client_size);
+    int new_window_width = (int)client_size.right;
+    int new_window_height = (int)client_size.bottom;
 
-      if (new_window_width != g_platform_window_width || new_window_height != g_platform_window_height) {
-        LOG_INFO("Window resized from %ix%i to %ix%i", g_platform_window_width, g_platform_window_height, new_window_width, new_window_height);
-        g_platform_window_width = new_window_width;
-        g_platform_window_height = new_window_height;
-      }
-      break;
+    if (new_window_width != g_platform_window_width || new_window_height != g_platform_window_height) {
+      LOG_INFO("Window resized from %ix%i to %ix%i", g_platform_window_width, g_platform_window_height, new_window_width, new_window_height);
+      g_platform_window_width = new_window_width;
+      g_platform_window_height = new_window_height;
+    }
+    break;
   }
 
   return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -60,7 +60,7 @@ bool platform_window_init(const char* name, const int width, const int height) {
   unsigned window_style = WS_OVERLAPPEDWINDOW;
   unsigned window_style_ex = WS_EX_OVERLAPPEDWINDOW;
 
-  RECT window_size = { 0, 0, width, height };
+  RECT window_size = {0, 0, width, height};
   AdjustWindowRectEx(&window_size, window_style, false, window_style_ex);
 
   g_platform_window_handle = CreateWindowEx(window_style_ex, window_class.lpszClassName, name, window_style, CW_USEDEFAULT, CW_USEDEFAULT, window_size.right - window_size.left, window_size.bottom - window_size.top, nullptr, nullptr, instance, nullptr);

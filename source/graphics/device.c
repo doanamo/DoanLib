@@ -11,11 +11,11 @@ bool graphics_device_init() {
 
   UINT device_flags = 0;
   D3D_FEATURE_LEVEL feature_levels[] = {
-    D3D_FEATURE_LEVEL_10_1,
+    D3D_FEATURE_LEVEL_11_1,
   };
 
-  ID3D11Device* base_device;
-  ID3D11DeviceContext* base_context;
+  ID3D11Device* base_device = nullptr;
+  ID3D11DeviceContext* base_context = nullptr;
   if (FAILED(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, device_flags, feature_levels, ARRAY_LENGTH(feature_levels), D3D11_SDK_VERSION, &base_device, nullptr, &base_context))) {
     LOG_ERROR("Failed to crate graphics device");
     goto error;

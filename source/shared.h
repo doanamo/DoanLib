@@ -5,11 +5,17 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
+#define COBJMACROS
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <dxgi1_6.h>
+#include <dxgidebug.h>
+#include <d3d11_4.h>
+#include <d3dcompiler.h>
 
 #define UNUSED(x) (void)(x)
+#define ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
 
 #define KiB(n) ((size_t)(n) << 10)
 #define MiB(n) ((size_t)(n) << 20)

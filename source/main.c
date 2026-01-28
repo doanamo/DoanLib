@@ -1,5 +1,6 @@
 #include "shared.h"
 #include "platform/window.h"
+#include "graphics/device.h"
 #include "application.h"
 
 bool g_exit = false;
@@ -15,6 +16,10 @@ int main(int argc, char* argv[]) {
 
   g_platform_window_close_callback = &close_callback;
   if (!platform_window_init("Game", 1024, 576)) {
+    goto error;
+  }
+
+  if (!graphics_device_init()) {
     goto error;
   }
 
@@ -36,6 +41,7 @@ int main(int argc, char* argv[]) {
 error:
   LOG_INFO("Exiting application");
   application_deinit();
+  graphics_device_deinit();
   platform_window_deinit();
   return g_exit_code;
 }

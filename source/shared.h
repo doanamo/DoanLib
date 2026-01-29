@@ -1,5 +1,4 @@
-#ifndef SHARED_H
-#define SHARED_H
+#pragma once
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -42,5 +41,3 @@
 #define LOG_ERROR(format, ...) \
   fprintf(stderr, format "\n" __VA_OPT__(,) __VA_ARGS__); \
   fflush(stdout)
-
-#endif

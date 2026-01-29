@@ -1,5 +1,4 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#pragma once
 
 extern void (*g_platform_window_close_callback)();
 extern HWND g_platform_window_handle;
@@ -12,5 +11,3 @@ void platform_window_deinit();
 
 void platform_window_show();
 void platform_window_hide();
-
-#endif

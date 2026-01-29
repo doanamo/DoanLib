@@ -8,6 +8,7 @@ set(SOURCE_FILES
   "source/application.c"
   "source/platform/window.c"
   "source/graphics/device.c"
+  "source/graphics/swapchain.c"
 )
 
 add_executable(Game ${SOURCE_FILES})

@@ -1,6 +1,8 @@
 #pragma once
 
-extern void (*g_platform_window_close_callback)();
+typedef void (*platform_window_close_function_t)();
+
+extern platform_window_close_function_t g_platform_window_close_callback;
 extern HWND g_platform_window_handle;
 extern int g_platform_window_width;
 extern int g_platform_window_height;

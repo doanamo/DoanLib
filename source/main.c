@@ -1,6 +1,7 @@
 #include "shared.h"
 #include "platform/window.h"
 #include "graphics/device.h"
+#include "graphics/swapchain.h"
 #include "application.h"
 
 bool g_exit = false;
@@ -23,6 +24,10 @@ int main(int argc, char* argv[]) {
     goto error;
   }
 
+  if (!graphics_swapchain_init()) {
+    goto error;
+  }
+
   if (!application_init()) {
     goto error;
   }
@@ -34,6 +39,7 @@ int main(int argc, char* argv[]) {
     platform_window_process_messages();
     application_update(0.0f);
     application_render(1.0f);
+    graphics_swapchain_present();
   }
 
   g_exit_code = 0;
@@ -41,6 +47,7 @@ int main(int argc, char* argv[]) {
 error:
   LOG_INFO("Exiting application");
   application_deinit();
+  graphics_swapchain_deinit();
   graphics_device_deinit();
   platform_window_deinit();
   return g_exit_code;

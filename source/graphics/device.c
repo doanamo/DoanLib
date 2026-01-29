@@ -1,21 +1,20 @@
 #include "shared.h"
 #include "device.h"
 
-ID3D11Device5* g_d3d11_device = nullptr;
-ID3D11DeviceContext4* g_d3d11_context = nullptr;
+ID3D11Device5* g_graphics_d3d11_device = nullptr;
+ID3D11DeviceContext4* g_graphics_d3d11_context = nullptr;
 
-IDXGIDevice4* g_dxgi_device = nullptr;
-IDXGIAdapter4* g_dxgi_adapter = nullptr;
-IDXGIFactory7* g_dxgi_factory = nullptr;
+IDXGIDevice4* g_graphics_dxgi_device = nullptr;
+IDXGIAdapter4* g_graphics_dxgi_adapter = nullptr;
+IDXGIFactory7* g_graphics_dxgi_factory = nullptr;
 
 bool graphics_device_init() {
+  LOG_INFO("Initializing graphics device");
   bool result = false;
 
   ID3D11Device* base_d3d11_device = nullptr;
   ID3D11DeviceContext* base_d3d11_context = nullptr;
   IDXGIAdapter* base_dxgi_adapter = nullptr;
-
-  LOG_INFO("Initializing graphics device");
 
   UINT device_flags = 0;
   D3D_FEATURE_LEVEL feature_levels[] = {
@@ -27,33 +26,33 @@ bool graphics_device_init() {
     goto error;
   }
 
-  if (FAILED(ID3D11Device_QueryInterface(base_d3d11_device, &IID_ID3D11Device5, (void**)&g_d3d11_device))) {
+  if (FAILED(ID3D11Device_QueryInterface(base_d3d11_device, &IID_ID3D11Device5, (void**)&g_graphics_d3d11_device))) {
     LOG_ERROR("Failed to query D3D111 device interface");
     goto error;
   }
 
-  if (FAILED(ID3D11DeviceContext_QueryInterface(base_d3d11_context, &IID_ID3D11DeviceContext4, (void**)&g_d3d11_context))) {
+  if (FAILED(ID3D11DeviceContext_QueryInterface(base_d3d11_context, &IID_ID3D11DeviceContext4, (void**)&g_graphics_d3d11_context))) {
     LOG_ERROR("Failed to query D3D11 device context interface");
     goto error;
   }
 
-  if (FAILED(ID3D11Device_QueryInterface(base_d3d11_device, &IID_IDXGIDevice4, (void**)&g_dxgi_device))) {
+  if (FAILED(ID3D11Device_QueryInterface(base_d3d11_device, &IID_IDXGIDevice4, (void**)&g_graphics_dxgi_device))) {
     LOG_ERROR("Failed to query DXGI device interface");
     goto error;
   }
 
-  if (FAILED(IDXGIDevice4_GetAdapter(g_dxgi_device, &base_dxgi_adapter))) {
+  if (FAILED(IDXGIDevice4_GetAdapter(g_graphics_dxgi_device, &base_dxgi_adapter))) {
     LOG_ERROR("Failed to retrieve DXGI adapter");
     goto error;
   }
 
-  if (FAILED(IDXGIAdapter_QueryInterface(base_dxgi_adapter, &IID_IDXGIAdapter4, (void**)&g_dxgi_adapter))) {
+  if (FAILED(IDXGIAdapter_QueryInterface(base_dxgi_adapter, &IID_IDXGIAdapter4, (void**)&g_graphics_dxgi_adapter))) {
     LOG_ERROR("Failed to query DXGI adapter interface");
     goto error;
   }
 
-  if (FAILED(IDXGIAdapter4_GetParent(g_dxgi_adapter, &IID_IDXGIFactory7, (void**)&g_dxgi_factory))) {
-    LOG_ERROR("Failed to retrieve parent DXGI factory");
+  if (FAILED(IDXGIAdapter4_GetParent(g_graphics_dxgi_adapter, &IID_IDXGIFactory7, (void**)&g_graphics_dxgi_factory))) {
+    LOG_ERROR("Failed to retrieve DXGI factory");
     goto error;
   }
 
@@ -78,28 +77,28 @@ error:
 void graphics_device_deinit() {
   LOG_INFO("Deinitializing graphics device");
 
-  if (g_dxgi_factory) {
-    IDXGIFactory7_Release(g_dxgi_factory);
-    g_dxgi_factory = nullptr;
+  if (g_graphics_dxgi_factory) {
+    IDXGIFactory7_Release(g_graphics_dxgi_factory);
+    g_graphics_dxgi_factory = nullptr;
   }
 
-  if (g_dxgi_adapter) {
-    IDXGIAdapter4_Release(g_dxgi_adapter);
-    g_dxgi_adapter = nullptr;
+  if (g_graphics_dxgi_adapter) {
+    IDXGIAdapter4_Release(g_graphics_dxgi_adapter);
+    g_graphics_dxgi_adapter = nullptr;
   }
 
-  if (g_dxgi_device) {
-    IDXGIDevice4_Release(g_dxgi_device);
-    g_dxgi_device = nullptr;
+  if (g_graphics_dxgi_device) {
+    IDXGIDevice4_Release(g_graphics_dxgi_device);
+    g_graphics_dxgi_device = nullptr;
   }
 
-  if (g_d3d11_context) {
-    ID3D11DeviceContext4_Release(g_d3d11_context);
-    g_d3d11_context = nullptr;
+  if (g_graphics_d3d11_context) {
+    ID3D11DeviceContext4_Release(g_graphics_d3d11_context);
+    g_graphics_d3d11_context = nullptr;
   }
 
-  if (g_d3d11_context) {
-    ID3D11Device5_Release(g_d3d11_device);
-    g_d3d11_device = nullptr;
+  if (g_graphics_d3d11_context) {
+    ID3D11Device5_Release(g_graphics_d3d11_device);
+    g_graphics_d3d11_device = nullptr;
   }
 }

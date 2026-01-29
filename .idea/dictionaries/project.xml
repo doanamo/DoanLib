@@ -6,6 +6,7 @@
       <w>deinit</w>
       <w>dxguid</w>
       <w>nominmax</w>
+      <w>swapchain</w>
     </words>
   </dictionary>
 </component>

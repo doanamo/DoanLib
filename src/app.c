@@ -51,7 +51,7 @@ int DnAppRun() {
     goto error;
   }
 
-  LOG_INFO("Starting main loop");
+  LOG_INFO("Running application");
   DnSysWindowShow();
 
   while (!g_exit) {

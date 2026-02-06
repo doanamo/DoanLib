@@ -35,9 +35,9 @@
   })
 
 #define LOG_INFO(format, ...) \
-  fprintf(stdout, format "\n" __VA_OPT__(,) __VA_ARGS__); \
-  fflush(stdout)
+  fprintf(stdout, format "\n" __VA_OPT__(,) __VA_ARGS__);
 
 #define LOG_ERROR(format, ...) \
   fprintf(stderr, format "\n" __VA_OPT__(,) __VA_ARGS__); \
-  fflush(stdout)
+  fflush(stdout); \
+  fflush(stderr)

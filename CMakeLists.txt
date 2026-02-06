@@ -10,7 +10,7 @@ add_compile_options(
 )
 
 set(SOURCE_FILES
-  "src/application.c"
+  "src/app.c"
   "src/sys/window.c"
   "src/gpu/device.c"
   "src/gpu/swapchain.c"

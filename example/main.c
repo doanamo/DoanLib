@@ -1,5 +1,5 @@
 #include "dn/shared.h"
-#include "dn/application.h"
+#include "dn/app.h"
 
 int main(int argc, char* argv[]) {
   UNUSED(argc);

@@ -1,5 +1,5 @@
 #include "dn/shared.h"
-#include "dn/application.h"
+#include "dn/app.h"
 #include "dn/sys/window.h"
 #include "dn/gpu/device.h"
 #include "dn/gpu/swapchain.h"

@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
   UNUSED(argv);
 
   g_dnSysWindowCloseCallback = &CloseCallback;
-  if (!DnSysWindowInit("Game", 1024, 576)) {
+  if (!DnSysWindowInit("Example", 1024, 576)) {
     goto error;
   }
 

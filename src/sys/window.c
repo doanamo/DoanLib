@@ -1,5 +1,5 @@
-#include "shared.h"
-#include "window.h"
+#include "dn/shared.h"
+#include "dn/sys/window.h"
 
 DnSysWindowCloseCallback g_dnSysWindowCloseCallback = nullptr;
 HWND g_dnSysWindowHandle = nullptr;

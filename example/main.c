@@ -1,8 +1,8 @@
-#include "shared.h"
-#include "sys/window.h"
-#include "gpu/device.h"
-#include "gpu/swapchain.h"
-#include "application.h"
+#include "dn/shared.h"
+#include "dn/sys/window.h"
+#include "dn/gpu/device.h"
+#include "dn/gpu/swapchain.h"
+#include "dn/application.h"
 
 bool g_exit = false;
 int g_exitCode = 1;

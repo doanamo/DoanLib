@@ -1,7 +1,7 @@
-#include "shared.h"
-#include "swapchain.h"
-#include "device.h"
-#include "sys/window.h"
+#include "dn/shared.h"
+#include "dn/gpu/swapchain.h"
+#include "dn/gpu/device.h"
+#include "dn/sys/window.h"
 
 IDXGISwapChain4* g_dnGpuSwapchainDXGI = nullptr;
 

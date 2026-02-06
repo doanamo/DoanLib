@@ -1,5 +1,5 @@
-#include "shared.h"
-#include "application.h"
+#include "../include/dn/shared.h"
+#include "../include/dn/application.h"
 
 bool DnAppInit() {
   LOG_INFO("Initializing application");

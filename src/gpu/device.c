@@ -1,5 +1,5 @@
-#include "shared.h"
-#include "device.h"
+#include "dn/shared.h"
+#include "dn/gpu/device.h"
 
 ID3D11Device5* g_dnGpuDeviceD3D11 = nullptr;
 ID3D11DeviceContext4* g_dnGpuContextD3D11 = nullptr;

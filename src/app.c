@@ -40,6 +40,9 @@ void DnAppRender(float alphaTime) {
 
 void DnAppDeinit() {
   DN_LOG_INFO("Deinitializing application");
+  DnGpuSwapchainDeinit();
+  DnGpuDeviceDeinit();
+  DnSysWindowDeinit();
 }
 
 int DnAppRun() {

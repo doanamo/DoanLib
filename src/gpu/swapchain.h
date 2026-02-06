@@ -1,7 +1,7 @@
 #pragma once
 
-extern IDXGISwapChain4* g_gpuSwapchainDXGI;
+extern IDXGISwapChain4* g_dnGpuSwapchainDXGI;
 
-bool GpuSwapchainInit();
-void GpuSwapchainPresent();
-void GpuSwapchainDeinit();
+bool DnGpuSwapchainInit();
+void DnGpuSwapchainPresent();
+void DnGpuSwapchainDeinit();

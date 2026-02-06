@@ -15,40 +15,40 @@ int main(int argc, char* argv[]) {
   UNUSED(argc);
   UNUSED(argv);
 
-  g_sysWindowCloseCallback = &CloseCallback;
-  if (!SysWindowInit("Game", 1024, 576)) {
+  g_dnSysWindowCloseCallback = &CloseCallback;
+  if (!DnSysWindowInit("Game", 1024, 576)) {
     goto error;
   }
 
-  if (!GpuDeviceInit()) {
+  if (!DnGpuDeviceInit()) {
     goto error;
   }
 
-  if (!GpuSwapchainInit()) {
+  if (!DnGpuSwapchainInit()) {
     goto error;
   }
 
-  if (!AppInit()) {
+  if (!DnAppInit()) {
     goto error;
   }
 
   LOG_INFO("Starting main loop");
-  SysWindowShow();
+  DnSysWindowShow();
 
   while (!g_exit) {
-    SysWindowProcessMessages();
-    AppUpdate(0.0f);
-    AppRender(1.0f);
-    GpuSwapchainPresent();
+    DnSysWindowProcessMessages();
+    DnAppUpdate(0.0f);
+    DnAppRender(1.0f);
+    DnGpuSwapchainPresent();
   }
 
   g_exitCode = 0;
 
 error:
   LOG_INFO("Exiting application");
-  AppDeinit();
-  GpuSwapchainDeinit();
-  GpuDeviceDeinit();
-  SysWindowDeinit();
+  DnAppDeinit();
+  DnGpuSwapchainDeinit();
+  DnGpuDeviceDeinit();
+  DnSysWindowDeinit();
   return g_exitCode;
 }

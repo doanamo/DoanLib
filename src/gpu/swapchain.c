@@ -3,9 +3,9 @@
 #include "device.h"
 #include "sys/window.h"
 
-IDXGISwapChain4* g_gpuSwapchainDXGI = nullptr;
+IDXGISwapChain4* g_dnGpuSwapchainDXGI = nullptr;
 
-bool GpuSwapchainInit() {
+bool DnGpuSwapchainInit() {
   LOG_INFO("Initializing gpu swapchain");
   bool result = false;
 
@@ -25,12 +25,12 @@ bool GpuSwapchainInit() {
     .Flags = 0,
   };
 
-  if (FAILED(IDXGIFactory7_CreateSwapChainForHwnd(g_gpuFactoryDXGI, (IUnknown*)g_gpuDeviceD3D11, g_sysWindowHandle, &swapchainDesc,nullptr, nullptr, &baseSwapchainDXGI))) {
+  if (FAILED(IDXGIFactory7_CreateSwapChainForHwnd(g_dnGpuFactoryDXGI, (IUnknown*)g_dnGpuDeviceD3D11, g_dnSysWindowHandle, &swapchainDesc,nullptr, nullptr, &baseSwapchainDXGI))) {
     LOG_ERROR("Failed to create DXGI swapchain");
     goto error;
   }
 
-  if (FAILED(IDXGISwapChain1_QueryInterface(baseSwapchainDXGI, &IID_IDXGISwapChain4, (void**)&g_gpuSwapchainDXGI))) {
+  if (FAILED(IDXGISwapChain1_QueryInterface(baseSwapchainDXGI, &IID_IDXGISwapChain4, (void**)&g_dnGpuSwapchainDXGI))) {
     LOG_ERROR("Failed to query DXGI swapchain interface");
     goto error;
   }
@@ -45,15 +45,15 @@ error:
   return result;
 }
 
-void GpuSwapchainPresent() {
-  IDXGISwapChain4_Present(g_gpuSwapchainDXGI, 1, 0);
+void DnGpuSwapchainPresent() {
+  IDXGISwapChain4_Present(g_dnGpuSwapchainDXGI, 1, 0);
 }
 
-void GpuSwapchainDeinit() {
+void DnGpuSwapchainDeinit() {
   LOG_INFO("Deinitializing gpu swapchain");
 
-  if (g_gpuSwapchainDXGI) {
-    IDXGISwapChain4_Release(g_gpuSwapchainDXGI);
-    g_gpuSwapchainDXGI = nullptr;
+  if (g_dnGpuSwapchainDXGI) {
+    IDXGISwapChain4_Release(g_dnGpuSwapchainDXGI);
+    g_dnGpuSwapchainDXGI = nullptr;
   }
 }

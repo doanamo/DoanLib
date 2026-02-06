@@ -1,19 +1,19 @@
 #include "shared.h"
 #include "application.h"
 
-bool AppInit() {
+bool DnAppInit() {
   LOG_INFO("Initializing application");
   return true;
 }
 
-void AppUpdate(float deltaTime) {
+void DnAppUpdate(float deltaTime) {
   UNUSED(deltaTime);
 }
 
-void AppRender(float alphaTime) {
+void DnAppRender(float alphaTime) {
   UNUSED(alphaTime);
 }
 
-void AppDeinit() {
+void DnAppDeinit() {
   LOG_INFO("Deinitializing application");
 }

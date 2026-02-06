@@ -1,15 +1,15 @@
 #pragma once
 
-typedef void (*SysWindowCloseCallback)();
+typedef void (*DnSysWindowCloseCallback)();
 
-extern SysWindowCloseCallback g_sysWindowCloseCallback;
-extern HWND g_sysWindowHandle;
-extern int g_sysWindowWidth;
-extern int g_sysWindowHeight;
+extern DnSysWindowCloseCallback g_dnSysWindowCloseCallback;
+extern HWND g_dnSysWindowHandle;
+extern int g_dnSysWindowWidth;
+extern int g_dnSysWindowHeight;
 
-bool SysWindowInit(const char* name, int width, int height);
-void SysWindowProcessMessages();
-void SysWindowDeinit();
+bool DnSysWindowInit(const char* name, int width, int height);
+void DnSysWindowProcessMessages();
+void DnSysWindowDeinit();
 
-void SysWindowShow();
-void SysWindowHide();
+void DnSysWindowShow();
+void DnSysWindowHide();

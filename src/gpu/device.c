@@ -1,14 +1,14 @@
 #include "shared.h"
 #include "device.h"
 
-ID3D11Device5* g_gpuDeviceD3D11 = nullptr;
-ID3D11DeviceContext4* g_gpuContextD3D11 = nullptr;
+ID3D11Device5* g_dnGpuDeviceD3D11 = nullptr;
+ID3D11DeviceContext4* g_dnGpuContextD3D11 = nullptr;
 
-IDXGIDevice4* g_gpuDeviceDXGI = nullptr;
+IDXGIDevice4* g_dnGpuDeviceDXGI = nullptr;
 IDXGIAdapter4* g_gpuAdapterDXGI = nullptr;
-IDXGIFactory7* g_gpuFactoryDXGI = nullptr;
+IDXGIFactory7* g_dnGpuFactoryDXGI = nullptr;
 
-bool GpuDeviceInit() {
+bool DnGpuDeviceInit() {
   LOG_INFO("Initializing gpu device");
   bool result = false;
 
@@ -26,22 +26,22 @@ bool GpuDeviceInit() {
     goto error;
   }
 
-  if (FAILED(ID3D11Device_QueryInterface(baseDeviceD3D11, &IID_ID3D11Device5, (void**)&g_gpuDeviceD3D11))) {
+  if (FAILED(ID3D11Device_QueryInterface(baseDeviceD3D11, &IID_ID3D11Device5, (void**)&g_dnGpuDeviceD3D11))) {
     LOG_ERROR("Failed to query D3D111 device interface");
     goto error;
   }
 
-  if (FAILED(ID3D11DeviceContext_QueryInterface(baseContextD3D11, &IID_ID3D11DeviceContext4, (void**)&g_gpuContextD3D11))) {
+  if (FAILED(ID3D11DeviceContext_QueryInterface(baseContextD3D11, &IID_ID3D11DeviceContext4, (void**)&g_dnGpuContextD3D11))) {
     LOG_ERROR("Failed to query D3D11 device context interface");
     goto error;
   }
 
-  if (FAILED(ID3D11Device_QueryInterface(baseDeviceD3D11, &IID_IDXGIDevice4, (void**)&g_gpuDeviceDXGI))) {
+  if (FAILED(ID3D11Device_QueryInterface(baseDeviceD3D11, &IID_IDXGIDevice4, (void**)&g_dnGpuDeviceDXGI))) {
     LOG_ERROR("Failed to query DXGI device interface");
     goto error;
   }
 
-  if (FAILED(IDXGIDevice4_GetAdapter(g_gpuDeviceDXGI, &baseAdapterDXGI))) {
+  if (FAILED(IDXGIDevice4_GetAdapter(g_dnGpuDeviceDXGI, &baseAdapterDXGI))) {
     LOG_ERROR("Failed to retrieve DXGI adapter");
     goto error;
   }
@@ -51,7 +51,7 @@ bool GpuDeviceInit() {
     goto error;
   }
 
-  if (FAILED(IDXGIAdapter4_GetParent(g_gpuAdapterDXGI, &IID_IDXGIFactory7, (void**)&g_gpuFactoryDXGI))) {
+  if (FAILED(IDXGIAdapter4_GetParent(g_gpuAdapterDXGI, &IID_IDXGIFactory7, (void**)&g_dnGpuFactoryDXGI))) {
     LOG_ERROR("Failed to retrieve DXGI factory");
     goto error;
   }
@@ -74,12 +74,12 @@ error:
   return result;
 }
 
-void GpuDeviceDeinit() {
+void DnGpuDeviceDeinit() {
   LOG_INFO("Deinitializing gpu device");
 
-  if (g_gpuFactoryDXGI) {
-    IDXGIFactory7_Release(g_gpuFactoryDXGI);
-    g_gpuFactoryDXGI = nullptr;
+  if (g_dnGpuFactoryDXGI) {
+    IDXGIFactory7_Release(g_dnGpuFactoryDXGI);
+    g_dnGpuFactoryDXGI = nullptr;
   }
 
   if (g_gpuAdapterDXGI) {
@@ -87,18 +87,18 @@ void GpuDeviceDeinit() {
     g_gpuAdapterDXGI = nullptr;
   }
 
-  if (g_gpuDeviceDXGI) {
-    IDXGIDevice4_Release(g_gpuDeviceDXGI);
-    g_gpuDeviceDXGI = nullptr;
+  if (g_dnGpuDeviceDXGI) {
+    IDXGIDevice4_Release(g_dnGpuDeviceDXGI);
+    g_dnGpuDeviceDXGI = nullptr;
   }
 
-  if (g_gpuContextD3D11) {
-    ID3D11DeviceContext4_Release(g_gpuContextD3D11);
-    g_gpuContextD3D11 = nullptr;
+  if (g_dnGpuContextD3D11) {
+    ID3D11DeviceContext4_Release(g_dnGpuContextD3D11);
+    g_dnGpuContextD3D11 = nullptr;
   }
 
-  if (g_gpuContextD3D11) {
-    ID3D11Device5_Release(g_gpuDeviceD3D11);
-    g_gpuDeviceD3D11 = nullptr;
+  if (g_dnGpuContextD3D11) {
+    ID3D11Device5_Release(g_dnGpuDeviceD3D11);
+    g_dnGpuDeviceD3D11 = nullptr;
   }
 }

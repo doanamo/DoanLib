@@ -1,7 +1,7 @@
 #include "shared.h"
-#include "platform/window.h"
-#include "graphics/device.h"
-#include "graphics/swapchain.h"
+#include "sys/window.h"
+#include "gpu/device.h"
+#include "gpu/swapchain.h"
 #include "application.h"
 
 bool g_exit = false;

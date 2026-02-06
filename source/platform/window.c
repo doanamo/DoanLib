@@ -1,30 +1,30 @@
 #include "shared.h"
 #include "window.h"
 
-void (*g_platform_window_close_callback)() = nullptr;
-HWND g_platform_window_handle = nullptr;
-int g_platform_window_width = 0;
-int g_platform_window_height = 0;
+void (*g_sysWindowCloseCallback)() = nullptr;
+HWND g_sysWindowHandle = nullptr;
+int g_sysWindowWidth = 0;
+int g_sysWindowHeight = 0;
 
-LRESULT CALLBACK platform_window_procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK SysWindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   switch (uMsg) {
   case WM_CLOSE:
-    if (g_platform_window_close_callback) {
-      g_platform_window_close_callback();
+    if (g_sysWindowCloseCallback) {
+      g_sysWindowCloseCallback();
       return 0;
     }
     break;
 
   case WM_EXITSIZEMOVE:
-    RECT client_size;
-    GetClientRect(g_platform_window_handle, &client_size);
-    int new_window_width = (int)client_size.right;
-    int new_window_height = (int)client_size.bottom;
+    RECT clientSize;
+    GetClientRect(g_sysWindowHandle, &clientSize);
+    int newWindowWidth = (int)clientSize.right;
+    int newWindowHeight = (int)clientSize.bottom;
 
-    if (new_window_width != g_platform_window_width || new_window_height != g_platform_window_height) {
-      LOG_INFO("Window resized from %ix%i to %ix%i", g_platform_window_width, g_platform_window_height, new_window_width, new_window_height);
-      g_platform_window_width = new_window_width;
-      g_platform_window_height = new_window_height;
+    if (newWindowWidth != g_sysWindowWidth || newWindowHeight != g_sysWindowHeight) {
+      LOG_INFO("Window resized from %ix%i to %ix%i", g_sysWindowWidth, g_sysWindowHeight, newWindowWidth, newWindowHeight);
+      g_sysWindowWidth = newWindowWidth;
+      g_sysWindowHeight = newWindowHeight;
     }
     break;
   }
@@ -32,8 +32,8 @@ LRESULT CALLBACK platform_window_procedure(HWND hWnd, UINT uMsg, WPARAM wParam, 
   return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-bool platform_window_init(const char* name, const int width, const int height) {
-  LOG_INFO("Initializing platform window");
+bool SysWindowInit(const char* name, const int width, const int height) {
+  LOG_INFO("Initializing system window");
 
   HINSTANCE instance = GetModuleHandle(nullptr);
   if (!instance) {
@@ -41,10 +41,10 @@ bool platform_window_init(const char* name, const int width, const int height) {
     goto error;
   }
 
-  WNDCLASSEX window_class = {
+  WNDCLASSEX windowClass = {
     .cbSize = sizeof(WNDCLASSEX),
     .hInstance = instance,
-    .lpfnWndProc = platform_window_procedure,
+    .lpfnWndProc = SysWindowProcedure,
     .lpszClassName = "DefaultWindowClass",
     .style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS,
     .hCursor = LoadCursor(nullptr, IDC_ARROW),
@@ -52,29 +52,29 @@ bool platform_window_init(const char* name, const int width, const int height) {
     .hIconSm = LoadIcon(nullptr, IDI_APPLICATION),
   };
 
-  if (RegisterClassEx(&window_class) == 0) {
+  if (RegisterClassEx(&windowClass) == 0) {
     LOG_ERROR("Failed to register Win32 window class");
     goto error;
   }
 
-  unsigned window_style = WS_OVERLAPPEDWINDOW;
-  unsigned window_style_ex = WS_EX_OVERLAPPEDWINDOW;
+  unsigned windowStyle = WS_OVERLAPPEDWINDOW;
+  unsigned windowStyleEx = WS_EX_OVERLAPPEDWINDOW;
 
-  RECT window_size = {0, 0, width, height};
-  AdjustWindowRectEx(&window_size, window_style, false, window_style_ex);
+  RECT windowSize = {0, 0, width, height};
+  AdjustWindowRectEx(&windowSize, windowStyle, false, windowStyleEx);
 
-  g_platform_window_handle = CreateWindowEx(window_style_ex, window_class.lpszClassName, name, window_style, CW_USEDEFAULT, CW_USEDEFAULT, window_size.right - window_size.left, window_size.bottom - window_size.top, nullptr, nullptr, instance, nullptr);
+  g_sysWindowHandle = CreateWindowEx(windowStyleEx, windowClass.lpszClassName, name, windowStyle, CW_USEDEFAULT, CW_USEDEFAULT, windowSize.right - windowSize.left, windowSize.bottom - windowSize.top, nullptr, nullptr, instance, nullptr);
 
-  if (!g_platform_window_handle) {
+  if (!g_sysWindowHandle) {
     LOG_ERROR("Failed to create Win32 window");
     goto error;
   }
 
-  RECT client_size;
-  GetClientRect(g_platform_window_handle, &client_size);
-  g_platform_window_width = (int)client_size.right;
-  g_platform_window_height = (int)client_size.bottom;
-  LOG_INFO("Created %ix%i window", g_platform_window_width, g_platform_window_height);
+  RECT clientSize;
+  GetClientRect(g_sysWindowHandle, &clientSize);
+  g_sysWindowWidth = (int)clientSize.right;
+  g_sysWindowHeight = (int)clientSize.bottom;
+  LOG_INFO("Created %ix%i window", g_sysWindowWidth, g_sysWindowHeight);
 
   return true;
 
@@ -82,29 +82,29 @@ error:
   return false;
 }
 
-void platform_window_process_messages() {
+void SysWindowProcessMessages() {
   MSG message;
-  while (PeekMessage(&message, g_platform_window_handle, 0, 0, PM_REMOVE)) {
+  while (PeekMessage(&message, g_sysWindowHandle, 0, 0, PM_REMOVE)) {
     TranslateMessage(&message);
     DispatchMessage(&message);
   }
 }
 
-void platform_window_deinit() {
-  LOG_INFO("Deinitializing platform window");
+void SysWindowDeinit() {
+  LOG_INFO("Deinitializing system window");
 
-  if (g_platform_window_handle) {
-    DestroyWindow(g_platform_window_handle);
-    g_platform_window_handle = nullptr;
-    g_platform_window_width = 0;
-    g_platform_window_height = 0;
+  if (g_sysWindowHandle) {
+    DestroyWindow(g_sysWindowHandle);
+    g_sysWindowHandle = nullptr;
+    g_sysWindowWidth = 0;
+    g_sysWindowHeight = 0;
   }
 }
 
-void platform_window_show() {
-  ShowWindow(g_platform_window_handle, SW_SHOW);
+void SysWindowShow() {
+  ShowWindow(g_sysWindowHandle, SW_SHOW);
 }
 
-void platform_window_hide() {
-  ShowWindow(g_platform_window_handle, SW_HIDE);
+void SysWindowHide() {
+  ShowWindow(g_sysWindowHandle, SW_HIDE);
 }

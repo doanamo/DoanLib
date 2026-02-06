@@ -5,9 +5,9 @@
 #include "application.h"
 
 bool g_exit = false;
-int g_exit_code = 1;
+int g_exitCode = 1;
 
-void close_callback() {
+void CloseCallback() {
   g_exit = true;
 }
 
@@ -15,40 +15,40 @@ int main(int argc, char* argv[]) {
   UNUSED(argc);
   UNUSED(argv);
 
-  g_platform_window_close_callback = &close_callback;
-  if (!platform_window_init("Game", 1024, 576)) {
+  g_sysWindowCloseCallback = &CloseCallback;
+  if (!SysWindowInit("Game", 1024, 576)) {
     goto error;
   }
 
-  if (!graphics_device_init()) {
+  if (!GpuDeviceInit()) {
     goto error;
   }
 
-  if (!graphics_swapchain_init()) {
+  if (!GpuSwapchainInit()) {
     goto error;
   }
 
-  if (!application_init()) {
+  if (!AppInit()) {
     goto error;
   }
 
   LOG_INFO("Starting main loop");
-  platform_window_show();
+  SysWindowShow();
 
   while (!g_exit) {
-    platform_window_process_messages();
-    application_update(0.0f);
-    application_render(1.0f);
-    graphics_swapchain_present();
+    SysWindowProcessMessages();
+    AppUpdate(0.0f);
+    AppRender(1.0f);
+    GpuSwapchainPresent();
   }
 
-  g_exit_code = 0;
+  g_exitCode = 0;
 
 error:
   LOG_INFO("Exiting application");
-  application_deinit();
-  graphics_swapchain_deinit();
-  graphics_device_deinit();
-  platform_window_deinit();
-  return g_exit_code;
+  AppDeinit();
+  GpuSwapchainDeinit();
+  GpuDeviceDeinit();
+  SysWindowDeinit();
+  return g_exitCode;
 }

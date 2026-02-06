@@ -3,15 +3,15 @@
 #include "device.h"
 #include "platform/window.h"
 
-IDXGISwapChain4* g_swapchain = nullptr;
+IDXGISwapChain4* g_gpuSwapchainDXGI = nullptr;
 
-bool graphics_swapchain_init() {
-  LOG_INFO("Initializing graphics swapchain");
+bool GpuSwapchainInit() {
+  LOG_INFO("Initializing gpu swapchain");
   bool result = false;
 
-  IDXGISwapChain1* base_swapchain = nullptr;
+  IDXGISwapChain1* baseSwapchainDXGI = nullptr;
 
-  DXGI_SWAP_CHAIN_DESC1 swapchain_desc = {
+  DXGI_SWAP_CHAIN_DESC1 swapchainDesc = {
     .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
     .SampleDesc = {
       .Count = 1,
@@ -25,12 +25,12 @@ bool graphics_swapchain_init() {
     .Flags = 0,
   };
 
-  if (FAILED(IDXGIFactory7_CreateSwapChainForHwnd(g_graphics_dxgi_factory, (IUnknown*)g_graphics_d3d11_device, g_platform_window_handle, &swapchain_desc,nullptr, nullptr, &base_swapchain))) {
+  if (FAILED(IDXGIFactory7_CreateSwapChainForHwnd(g_gpuFactoryDXGI, (IUnknown*)g_gpuDeviceD3D11, g_sysWindowHandle, &swapchainDesc,nullptr, nullptr, &baseSwapchainDXGI))) {
     LOG_ERROR("Failed to create DXGI swapchain");
     goto error;
   }
 
-  if (FAILED(IDXGISwapChain1_QueryInterface(base_swapchain, &IID_IDXGISwapChain4, (void**)&g_swapchain))) {
+  if (FAILED(IDXGISwapChain1_QueryInterface(baseSwapchainDXGI, &IID_IDXGISwapChain4, (void**)&g_gpuSwapchainDXGI))) {
     LOG_ERROR("Failed to query DXGI swapchain interface");
     goto error;
   }
@@ -38,22 +38,22 @@ bool graphics_swapchain_init() {
   result = true;
 
 error:
-  if (base_swapchain) {
-    IDXGISwapChain1_Release(base_swapchain);
+  if (baseSwapchainDXGI) {
+    IDXGISwapChain1_Release(baseSwapchainDXGI);
   }
 
   return result;
 }
 
-void graphics_swapchain_present() {
-  IDXGISwapChain4_Present(g_swapchain, 1, 0);
+void GpuSwapchainPresent() {
+  IDXGISwapChain4_Present(g_gpuSwapchainDXGI, 1, 0);
 }
 
-void graphics_swapchain_deinit() {
-  LOG_INFO("Deinitializing graphics swapchain");
+void GpuSwapchainDeinit() {
+  LOG_INFO("Deinitializing gpu swapchain");
 
-  if (g_swapchain) {
-    IDXGISwapChain4_Release(g_swapchain);
-    g_swapchain = nullptr;
+  if (g_gpuSwapchainDXGI) {
+    IDXGISwapChain4_Release(g_gpuSwapchainDXGI);
+    g_gpuSwapchainDXGI = nullptr;
   }
 }

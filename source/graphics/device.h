@@ -1,11 +1,11 @@
 #pragma once
 
-extern ID3D11Device5* g_graphics_d3d11_device;
-extern ID3D11DeviceContext4* g_graphics_d3d11_context;
+extern ID3D11Device5* g_gpuDeviceD3D11;
+extern ID3D11DeviceContext4* g_gpuContextD3D11;
 
-extern IDXGIDevice4* g_graphics_dxgi_device;
-extern IDXGIAdapter4* g_graphics_dxgi_adapter;
-extern IDXGIFactory7* g_graphics_dxgi_factory;
+extern IDXGIDevice4* g_gpuDeviceDXGI;
+extern IDXGIAdapter4* _gpuAdapterDXGI;
+extern IDXGIFactory7* g_gpuFactoryDXGI;
 
-bool graphics_device_init();
-void graphics_device_deinit();
+bool GpuDeviceInit();
+void GpuDeviceDeinit();

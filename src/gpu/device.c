@@ -1,8 +1,8 @@
 #include "dn/shared.h"
 #include "dn/gpu/device.h"
 
-ID3D11Device5* g_dnGpuDeviceD3D11 = nullptr;
-ID3D11DeviceContext4* g_dnGpuContextD3D11 = nullptr;
+ID3D11Device5* g_dnGpuDevice = nullptr;
+ID3D11DeviceContext4* g_dnGpuContext = nullptr;
 
 IDXGIDevice4* g_dnGpuDeviceDXGI = nullptr;
 IDXGIAdapter4* g_gpuAdapterDXGI = nullptr;
@@ -26,12 +26,12 @@ bool DnGpuDeviceInit() {
     goto error;
   }
 
-  if (FAILED(ID3D11Device_QueryInterface(baseDeviceD3D11, &IID_ID3D11Device5, (void**)&g_dnGpuDeviceD3D11))) {
+  if (FAILED(ID3D11Device_QueryInterface(baseDeviceD3D11, &IID_ID3D11Device5, (void**)&g_dnGpuDevice))) {
     DN_LOG_ERROR("Failed to query D3D111 device interface");
     goto error;
   }
 
-  if (FAILED(ID3D11DeviceContext_QueryInterface(baseContextD3D11, &IID_ID3D11DeviceContext4, (void**)&g_dnGpuContextD3D11))) {
+  if (FAILED(ID3D11DeviceContext_QueryInterface(baseContextD3D11, &IID_ID3D11DeviceContext4, (void**)&g_dnGpuContext))) {
     DN_LOG_ERROR("Failed to query D3D11 device context interface");
     goto error;
   }
@@ -92,13 +92,13 @@ void DnGpuDeviceDeinit() {
     g_dnGpuDeviceDXGI = nullptr;
   }
 
-  if (g_dnGpuContextD3D11) {
-    ID3D11DeviceContext4_Release(g_dnGpuContextD3D11);
-    g_dnGpuContextD3D11 = nullptr;
+  if (g_dnGpuContext) {
+    ID3D11DeviceContext4_Release(g_dnGpuContext);
+    g_dnGpuContext = nullptr;
   }
 
-  if (g_dnGpuContextD3D11) {
-    ID3D11Device5_Release(g_dnGpuDeviceD3D11);
-    g_dnGpuDeviceD3D11 = nullptr;
+  if (g_dnGpuContext) {
+    ID3D11Device5_Release(g_dnGpuDevice);
+    g_dnGpuDevice = nullptr;
   }
 }

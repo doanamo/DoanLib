@@ -1,8 +1,11 @@
 #pragma once
 
-extern IDXGISwapChain4* g_dnGpuSwapchain;
-extern ID3D11Texture2D1* g_dnGpuFramebuffer;
+extern IDXGISwapChain4* g_dnGpuSwapChain;
+extern ID3D11Texture2D1* g_dnGpuFrameBuffer;
+extern ID3D11Texture2D1* g_dnGpuDepthBuffer;
+extern ID3D11RenderTargetView1* g_dnGpuFrameBufferView;
+extern ID3D11DepthStencilView* g_dnGpuDepthBufferView;
 
-bool DnGpuSwapchainInit();
-void DnGpuSwapchainPresent();
-void DnGpuSwapchainDeinit();
+bool DnGpuSwapChainInit();
+void DnGpuSwapChainPresent();
+void DnGpuSwapChainDeinit();

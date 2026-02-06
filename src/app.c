@@ -23,7 +23,7 @@ bool DnAppInit() {
     return false;
   }
 
-  if (!DnGpuSwapchainInit()) {
+  if (!DnGpuSwapChainInit()) {
     return false;
   }
 
@@ -40,7 +40,7 @@ void DnAppRender(float alphaTime) {
 
 void DnAppDeinit() {
   DN_LOG_INFO("Deinitializing application");
-  DnGpuSwapchainDeinit();
+  DnGpuSwapChainDeinit();
   DnGpuDeviceDeinit();
   DnSysWindowDeinit();
 }
@@ -57,7 +57,7 @@ int DnAppRun() {
     DnSysWindowProcessMessages();
     DnAppUpdate(0.0f);
     DnAppRender(1.0f);
-    DnGpuSwapchainPresent();
+    DnGpuSwapChainPresent();
   }
 
   g_exitCode = 0;

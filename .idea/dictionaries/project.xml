@@ -4,6 +4,7 @@
       <w>cobjmacros</w>
       <w>dcompiler</w>
       <w>deinit</w>
+      <w>depthbuffer</w>
       <w>dxguid</w>
       <w>flto</w>
       <w>nominmax</w>

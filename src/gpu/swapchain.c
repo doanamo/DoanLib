@@ -13,7 +13,7 @@ bool DnGpuSwapChainInit() {
   DN_LOG_INFO("Initializing gpu swapchain");
   bool result = false;
 
-  IDXGISwapChain1* baseSwapChainDXGI = nullptr;
+  IDXGISwapChain1* baseSwapChain = nullptr;
 
   DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {
     .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -29,12 +29,12 @@ bool DnGpuSwapChainInit() {
     .Flags = 0,
   };
 
-  if (FAILED(IDXGIFactory7_CreateSwapChainForHwnd(g_dnGpuFactoryDXGI, (IUnknown*)g_dnGpuDevice, g_dnSysWindowHandle, &swapChainDesc,nullptr, nullptr, &baseSwapChainDXGI))) {
+  if (FAILED(IDXGIFactory7_CreateSwapChainForHwnd(g_dnGpuFactory, (IUnknown*)g_dnGpuDevice, g_dnSysWindowHandle, &swapChainDesc,nullptr, nullptr, &baseSwapChain))) {
     DN_LOG_ERROR("Failed to create DXGI swapchain");
     goto error;
   }
 
-  if (FAILED(IDXGISwapChain1_QueryInterface(baseSwapChainDXGI, &IID_IDXGISwapChain4, (void**)&g_dnGpuSwapChain))) {
+  if (FAILED(IDXGISwapChain1_QueryInterface(baseSwapChain, &IID_IDXGISwapChain4, (void**)&g_dnGpuSwapChain))) {
     DN_LOG_ERROR("Failed to query DXGI swapchain interface");
     goto error;
   }
@@ -77,8 +77,8 @@ bool DnGpuSwapChainInit() {
   result = true;
 
 error:
-  if (baseSwapChainDXGI) {
-    IDXGISwapChain1_Release(baseSwapChainDXGI);
+  if (baseSwapChain) {
+    IDXGISwapChain1_Release(baseSwapChain);
   }
 
   return result;

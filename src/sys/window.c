@@ -22,7 +22,7 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
     int newWindowHeight = (int)clientSize.bottom;
 
     if (newWindowWidth != g_dnSysWindowWidth || newWindowHeight != g_dnSysWindowHeight) {
-      LOG_INFO("Window resized from %ix%i to %ix%i", g_dnSysWindowWidth, g_dnSysWindowHeight, newWindowWidth, newWindowHeight);
+      DN_LOG_INFO("Window resized from %ix%i to %ix%i", g_dnSysWindowWidth, g_dnSysWindowHeight, newWindowWidth, newWindowHeight);
       g_dnSysWindowWidth = newWindowWidth;
       g_dnSysWindowHeight = newWindowHeight;
     }
@@ -33,11 +33,11 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 }
 
 bool DnSysWindowInit(const char* name, const int width, const int height) {
-  LOG_INFO("Initializing system window");
+  DN_LOG_INFO("Initializing system window");
 
   HINSTANCE instance = GetModuleHandle(nullptr);
   if (!instance) {
-    LOG_ERROR("Failed to retrieve Win32 instance");
+    DN_LOG_ERROR("Failed to retrieve Win32 instance");
     goto error;
   }
 
@@ -53,7 +53,7 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
   };
 
   if (RegisterClassEx(&windowClass) == 0) {
-    LOG_ERROR("Failed to register Win32 window class");
+    DN_LOG_ERROR("Failed to register Win32 window class");
     goto error;
   }
 
@@ -66,7 +66,7 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
   g_dnSysWindowHandle = CreateWindowEx(windowStyleEx, windowClass.lpszClassName, name, windowStyle, CW_USEDEFAULT, CW_USEDEFAULT, windowSize.right - windowSize.left, windowSize.bottom - windowSize.top, nullptr, nullptr, instance, nullptr);
 
   if (!g_dnSysWindowHandle) {
-    LOG_ERROR("Failed to create Win32 window");
+    DN_LOG_ERROR("Failed to create Win32 window");
     goto error;
   }
 
@@ -74,7 +74,7 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
   GetClientRect(g_dnSysWindowHandle, &clientSize);
   g_dnSysWindowWidth = (int)clientSize.right;
   g_dnSysWindowHeight = (int)clientSize.bottom;
-  LOG_INFO("Created %ix%i window", g_dnSysWindowWidth, g_dnSysWindowHeight);
+  DN_LOG_INFO("Created %ix%i window", g_dnSysWindowWidth, g_dnSysWindowHeight);
 
   return true;
 
@@ -91,7 +91,7 @@ void DnSysWindowProcessMessages() {
 }
 
 void DnSysWindowDeinit() {
-  LOG_INFO("Deinitializing system window");
+  DN_LOG_INFO("Deinitializing system window");
 
   if (g_dnSysWindowHandle) {
     DestroyWindow(g_dnSysWindowHandle);

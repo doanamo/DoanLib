@@ -12,7 +12,7 @@ void CloseCallback() {
 }
 
 bool DnAppInit() {
-  LOG_INFO("Initializing application");
+  DN_LOG_INFO("Initializing application");
 
   g_dnSysWindowCloseCallback = &CloseCallback;
   if (!DnSysWindowInit("Example", 1024, 576)) {
@@ -31,15 +31,15 @@ bool DnAppInit() {
 }
 
 void DnAppUpdate(float deltaTime) {
-  UNUSED(deltaTime);
+  DN_UNUSED(deltaTime);
 }
 
 void DnAppRender(float alphaTime) {
-  UNUSED(alphaTime);
+  DN_UNUSED(alphaTime);
 }
 
 void DnAppDeinit() {
-  LOG_INFO("Deinitializing application");
+  DN_LOG_INFO("Deinitializing application");
 }
 
 int DnAppRun() {
@@ -47,7 +47,7 @@ int DnAppRun() {
     goto error;
   }
 
-  LOG_INFO("Running application");
+  DN_LOG_INFO("Running application");
   DnSysWindowShow();
 
   while (!g_exit) {

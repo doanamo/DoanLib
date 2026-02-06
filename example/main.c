@@ -2,8 +2,8 @@
 #include "dn/app.h"
 
 int main(int argc, char* argv[]) {
-  UNUSED(argc);
-  UNUSED(argv);
+  DN_UNUSED(argc);
+  DN_UNUSED(argv);
 
   return DnAppRun();
 }

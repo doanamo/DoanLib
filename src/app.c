@@ -27,10 +27,6 @@ bool DnAppInit() {
     return false;
   }
 
-  if (!DnAppInit()) {
-    return false;
-  }
-
   return true;
 }
 

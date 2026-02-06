@@ -5,6 +5,7 @@
       <w>dcompiler</w>
       <w>deinit</w>
       <w>dxguid</w>
+      <w>flto</w>
       <w>nominmax</w>
       <w>swapchain</w>
     </words>

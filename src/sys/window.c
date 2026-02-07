@@ -38,7 +38,7 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
   HINSTANCE instance = GetModuleHandle(nullptr);
   if (!instance) {
     DN_LOG_ERROR("Failed to retrieve Win32 instance");
-    goto error;
+    return false;
   }
 
   WNDCLASSEX windowClass = {
@@ -54,7 +54,7 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
 
   if (RegisterClassEx(&windowClass) == 0) {
     DN_LOG_ERROR("Failed to register Win32 window class");
-    goto error;
+    return false;
   }
 
   unsigned windowStyle = WS_OVERLAPPEDWINDOW;
@@ -67,7 +67,7 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
 
   if (!g_dnSysWindowHandle) {
     DN_LOG_ERROR("Failed to create Win32 window");
-    goto error;
+    return false;
   }
 
   RECT clientSize;
@@ -77,9 +77,6 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
   DN_LOG_INFO("Created %ix%i window", g_dnSysWindowWidth, g_dnSysWindowHeight);
 
   return true;
-
-error:
-  return false;
 }
 
 void DnSysWindowProcessMessages() {

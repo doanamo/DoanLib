@@ -14,7 +14,8 @@
 
 #ifndef DN_CONFIG_RELEASE
   #define DN_LOG_INFO(format, ...) \
-    fprintf(stdout, format "\n" __VA_OPT__(,) __VA_ARGS__);
+    fprintf(stdout, format "\n" __VA_OPT__(,) __VA_ARGS__); \
+    fflush(stdout)
 
   #define DN_LOG_ERROR(format, ...) \
     fprintf(stderr, format "\n" __VA_OPT__(,) __VA_ARGS__); \

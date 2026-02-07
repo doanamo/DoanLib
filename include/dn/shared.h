@@ -12,7 +12,16 @@
 #include <d3dcompiler.h>
 #include <dxgidebug.h>
 
+#define DN_UNUSED(x) (void)(x)
+#define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
+
 #ifndef DN_CONFIG_RELEASE
+  #define DN_ASSERT(expression) \
+    if (!(expression)) { \
+      DN_LOG_ERROR("Assertion failed: %s", #expression); \
+      __builtin_trap(); \
+    }
+
   #define DN_LOG_INFO(format, ...) \
     fprintf(stdout, format "\n" __VA_OPT__(,) __VA_ARGS__); \
     fflush(stdout)
@@ -22,12 +31,10 @@
     fflush(stdout); \
     fflush(stderr)
 #else
+  #define DN_ASSERT(expression)
   #define DN_LOG_INFO(format, ...)
   #define DN_LOG_ERROR(format, ...)
 #endif
-
-#define DN_UNUSED(x) (void)(x)
-#define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
 
 #define DN_KiB(n) ((size_t)(n) << 10)
 #define DN_MiB(n) ((size_t)(n) << 20)

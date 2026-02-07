@@ -26,6 +26,7 @@ function(dn_target_setup TARGET)
     $<$<CONFIG:Debug>:DN_CONFIG_DEBUG>
     $<$<CONFIG:Develop>:DN_CONFIG_DEVELOP>
     $<$<CONFIG:Release>:DN_CONFIG_RELEASE>
+    _CRT_SECURE_NO_WARNINGS
   )
 
   target_compile_options(${TARGET} PRIVATE
@@ -57,6 +58,7 @@ endfunction()
 
 set(SOURCE_FILES
   "src/app.c"
+  "src/util/file.c"
   "src/sys/window.c"
   "src/gpu/device.c"
   "src/gpu/swapchain.c"

@@ -23,9 +23,9 @@ set(CMAKE_RC_FLAGS_DEVELOP "${CMAKE_RC_FLAGS_RELWITHDEBINFO_INIT}" CACHE INTERNA
 
 function(dn_target_setup TARGET)
   target_compile_definitions(${TARGET} PRIVATE
-    DN_CONFIG_DEBUG=$<CONFIG:Debug>
-    DN_CONFIG_DEVELOP=$<CONFIG:Develop>
-    DN_CONFIG_RELEASE=$<CONFIG:Release>
+    $<$<CONFIG:Debug>:DN_CONFIG_DEBUG>
+    $<$<CONFIG:Develop>:DN_CONFIG_DEVELOP>
+    $<$<CONFIG:Release>:DN_CONFIG_RELEASE>
   )
 
   target_compile_options(${TARGET} PRIVATE

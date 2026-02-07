@@ -60,7 +60,7 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
   unsigned windowStyle = WS_OVERLAPPEDWINDOW;
   unsigned windowStyleEx = WS_EX_OVERLAPPEDWINDOW;
 
-  RECT windowSize = {0, 0, width, height};
+  RECT windowSize = { 0, 0, width, height };
   AdjustWindowRectEx(&windowSize, windowStyle, false, windowStyleEx);
 
   g_dnSysWindowHandle = CreateWindowEx(windowStyleEx, windowClass.lpszClassName, name, windowStyle, CW_USEDEFAULT, CW_USEDEFAULT, windowSize.right - windowSize.left, windowSize.bottom - windowSize.top, nullptr, nullptr, instance, nullptr);

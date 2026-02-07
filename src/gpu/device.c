@@ -25,16 +25,19 @@ bool DnGpuDeviceInit() {
     goto error;
   }
 
+  DN_ASSERT(g_dnGpuDevice == nullptr);
   if (FAILED(ID3D11Device_QueryInterface(baseDevice, &IID_ID3D11Device5, (void**)&g_dnGpuDevice))) {
     DN_LOG_ERROR("Failed to query D3D111 device interface");
     goto error;
   }
 
+  DN_ASSERT(g_dnGpuContext == nullptr);
   if (FAILED(ID3D11DeviceContext_QueryInterface(baseContext, &IID_ID3D11DeviceContext4, (void**)&g_dnGpuContext))) {
     DN_LOG_ERROR("Failed to query D3D11 device context interface");
     goto error;
   }
 
+  DN_ASSERT(g_dnGpuDriver == nullptr);
   if (FAILED(ID3D11Device_QueryInterface(baseDevice, &IID_IDXGIDevice4, (void**)&g_dnGpuDriver))) {
     DN_LOG_ERROR("Failed to query DXGI device interface");
     goto error;
@@ -45,11 +48,13 @@ bool DnGpuDeviceInit() {
     goto error;
   }
 
+  DN_ASSERT(g_dnGpuAdapter == nullptr);
   if (FAILED(IDXGIAdapter_QueryInterface(baseAdapter, &IID_IDXGIAdapter4, (void**)&g_dnGpuAdapter))) {
     DN_LOG_ERROR("Failed to query DXGI adapter interface");
     goto error;
   }
 
+  DN_ASSERT(g_dnGpuFactory == nullptr);
   if (FAILED(IDXGIAdapter4_GetParent(g_dnGpuAdapter, &IID_IDXGIFactory7, (void**)&g_dnGpuFactory))) {
     DN_LOG_ERROR("Failed to retrieve DXGI factory");
     goto error;

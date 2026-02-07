@@ -63,6 +63,7 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
   RECT windowSize = { 0, 0, width, height };
   AdjustWindowRectEx(&windowSize, windowStyle, false, windowStyleEx);
 
+  DN_ASSERT(g_dnSysWindowHandle == nullptr);
   g_dnSysWindowHandle = CreateWindowEx(windowStyleEx, windowClass.lpszClassName, name, windowStyle, CW_USEDEFAULT, CW_USEDEFAULT, windowSize.right - windowSize.left, windowSize.bottom - windowSize.top, nullptr, nullptr, instance, nullptr);
 
   if (!g_dnSysWindowHandle) {
@@ -93,15 +94,18 @@ void DnSysWindowDeinit() {
   if (g_dnSysWindowHandle) {
     DestroyWindow(g_dnSysWindowHandle);
     g_dnSysWindowHandle = nullptr;
-    g_dnSysWindowWidth = 0;
-    g_dnSysWindowHeight = 0;
   }
+
+  g_dnSysWindowWidth = 0;
+  g_dnSysWindowHeight = 0;
 }
 
 void DnSysWindowShow() {
+  DN_ASSERT(g_dnSysWindowHandle != nullptr);
   ShowWindow(g_dnSysWindowHandle, SW_SHOW);
 }
 
 void DnSysWindowHide() {
+  DN_ASSERT(g_dnSysWindowHandle != nullptr);
   ShowWindow(g_dnSysWindowHandle, SW_HIDE);
 }

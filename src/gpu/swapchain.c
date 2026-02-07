@@ -29,16 +29,21 @@ bool DnGpuSwapChainInit() {
     .Flags = 0,
   };
 
+  DN_ASSERT(g_dnGpuFactory != nullptr);
+  DN_ASSERT(g_dnGpuDevice != nullptr);
+  DN_ASSERT(g_dnSysWindowHandle != nullptr);
   if (FAILED(IDXGIFactory7_CreateSwapChainForHwnd(g_dnGpuFactory, (IUnknown*)g_dnGpuDevice, g_dnSysWindowHandle, &swapChainDesc,nullptr, nullptr, &baseSwapChain))) {
     DN_LOG_ERROR("Failed to create DXGI swapchain");
     goto error;
   }
 
+  DN_ASSERT(g_dnGpuSwapChain == nullptr);
   if (FAILED(IDXGISwapChain1_QueryInterface(baseSwapChain, &IID_IDXGISwapChain4, (void**)&g_dnGpuSwapChain))) {
     DN_LOG_ERROR("Failed to query DXGI swapchain interface");
     goto error;
   }
 
+  DN_ASSERT(g_dnGpuFrameBuffer == nullptr);
   if (FAILED(IDXGISwapChain4_GetBuffer(g_dnGpuSwapChain, 0, &IID_ID3D11Texture2D1, (void**)&g_dnGpuFrameBuffer))) {
     DN_LOG_ERROR("Failed to get DXGI swapchain frame buffer");
     goto error;
@@ -49,6 +54,7 @@ bool DnGpuSwapChainInit() {
   depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
   depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
+  DN_ASSERT(g_dnGpuDepthBuffer == nullptr);
   if (FAILED(ID3D11Device5_CreateTexture2D1(g_dnGpuDevice, &depthBufferDesc, nullptr, &g_dnGpuDepthBuffer))) {
     DN_LOG_ERROR("Failed to create D3D11 swapchain depth buffer");
     goto error;
@@ -59,6 +65,7 @@ bool DnGpuSwapChainInit() {
     .ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D,
   };
 
+  DN_ASSERT(g_dnGpuFrameBufferView == nullptr);
   if (FAILED(ID3D11Device5_CreateRenderTargetView1(g_dnGpuDevice, (ID3D11Resource*)g_dnGpuFrameBuffer, &frameBufferViewDesc, &g_dnGpuFrameBufferView))) {
     DN_LOG_ERROR("Failed to create D3D11 swapchain frame buffer view");
     goto error;
@@ -69,6 +76,7 @@ bool DnGpuSwapChainInit() {
     .ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D,
   };
 
+  DN_ASSERT(g_dnGpuDepthBufferView == nullptr);
   if (FAILED(ID3D11Device5_CreateDepthStencilView(g_dnGpuDevice, (ID3D11Resource*)g_dnGpuDepthBuffer, &depthBufferViewDesc, &g_dnGpuDepthBufferView))) {
     DN_LOG_ERROR("Failed to create D3D11 swapchain depth buffer view");
     goto error;
@@ -85,6 +93,7 @@ error:
 }
 
 void DnGpuSwapChainPresent() {
+  DN_ASSERT(g_dnGpuSwapChain != nullptr);
   IDXGISwapChain4_Present(g_dnGpuSwapChain, 1, 0);
 }
 

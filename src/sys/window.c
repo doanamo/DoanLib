@@ -60,7 +60,7 @@ bool DnSysWindowInit(const char* name, u32 width, u32 height) {
   DWORD windowStyle = WS_OVERLAPPEDWINDOW;
   DWORD windowStyleEx = WS_EX_OVERLAPPEDWINDOW;
 
-  RECT windowSize = { 0, 0, width, height };
+  RECT windowSize = { 0, 0, (LONG)width, (LONG)height };
   AdjustWindowRectEx(&windowSize, windowStyle, false, windowStyleEx);
 
   DN_ASSERT(g_dnSysWindowHandle == nullptr);

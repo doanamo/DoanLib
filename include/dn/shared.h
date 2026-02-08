@@ -26,6 +26,7 @@ typedef double f64;
 
 #define DN_UNUSED(x) (void)(x)
 #define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
+#define DN_ALIGN_POW2(size, alignment) (((u64)(size) + ((u64)(alignment) - 1)) & ~((u64)(alignment) - 1))
 
 #define DN_BREAK() __builtin_debugtrap()
 #define DN_ABORT() __builtin_trap()

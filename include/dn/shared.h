@@ -13,6 +13,9 @@
 #include <d3dcompiler.h>
 #include <dxgidebug.h>
 
+#include "mem/allocator.h"
+#include "mem/malloc.h"
+
 #define DN_UNUSED(x) (void)(x)
 #define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
 

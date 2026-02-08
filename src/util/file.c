@@ -1,7 +1,8 @@
 #include "dn/shared.h"
 #include "dn/util/file.h"
 
-bool DnFileRead(const char* path, uint8_t** outData, size_t* outSize) {
+bool DnFileRead(DnMemAllocator* allocator, const char* path, uint8_t** outData, size_t* outSize) {
+  DN_UNUSED(allocator != nullptr);
   DN_ASSERT(path != nullptr);
   DN_ASSERT(outData != nullptr);
   DN_ASSERT(outSize != nullptr);
@@ -23,7 +24,7 @@ bool DnFileRead(const char* path, uint8_t** outData, size_t* outSize) {
     goto error;
   }
 
-  data = (uint8_t*)malloc((size_t)size);
+  data = (uint8_t*)allocator->alloc(allocator, (size_t)size);
   size_t read = fread(data, 1, (size_t)size, file);
 
   if (read != (size_t)size) {
@@ -40,7 +41,7 @@ error:
   }
 
   if (!result && data) {
-    free(data);
+    allocator->free(allocator, data);
   }
 
   return result;

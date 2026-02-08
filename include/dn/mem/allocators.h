@@ -2,8 +2,8 @@
 
 typedef struct DnMemAllocator DnMemAllocator;
 
-typedef void* (DnMemAlloc)(DnMemAllocator* allocator, size_t size);
-typedef void* (DnMemRealloc)(DnMemAllocator* context, void* ptr, size_t size);
+typedef void* (DnMemAlloc)(DnMemAllocator* allocator, u64 size);
+typedef void* (DnMemRealloc)(DnMemAllocator* context, void* ptr, u64 size);
 typedef void (DnMemFree)(DnMemAllocator* context, void* ptr);
 
 typedef struct DnMemAllocator {

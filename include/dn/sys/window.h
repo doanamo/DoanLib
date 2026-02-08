@@ -4,10 +4,10 @@ typedef void (*DnSysWindowCloseCallback)();
 
 extern DnSysWindowCloseCallback g_dnSysWindowCloseCallback;
 extern HWND g_dnSysWindowHandle;
-extern int g_dnSysWindowWidth;
-extern int g_dnSysWindowHeight;
+extern u32 g_dnSysWindowWidth;
+extern u32 g_dnSysWindowHeight;
 
-bool DnSysWindowInit(const char* name, int width, int height);
+bool DnSysWindowInit(const char* name, u32 width, u32 height);
 void DnSysWindowProcessMessages();
 void DnSysWindowDeinit();
 

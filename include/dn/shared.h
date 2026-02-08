@@ -13,7 +13,16 @@
 #include <d3dcompiler.h>
 #include <dxgidebug.h>
 
-#include "mem/allocators.h"
+typedef int8_t i8;
+typedef int16_t i16;
+typedef int32_t i32;
+typedef int64_t i64;
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+typedef float f32;
+typedef double f64;
 
 #define DN_UNUSED(x) (void)(x)
 #define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
@@ -42,9 +51,9 @@
   #define DN_LOG_ERROR(format, ...)
 #endif
 
-#define DN_KiB(n) ((size_t)(n) << 10)
-#define DN_MiB(n) ((size_t)(n) << 20)
-#define DN_GiB(n) ((size_t)(n) << 30)
+#define DN_KiB(n) ((u64)(n) << 10)
+#define DN_MiB(n) ((u64)(n) << 20)
+#define DN_GiB(n) ((u64)(n) << 30)
 
 #define DN_MAX(a, b) \
   ({ \
@@ -59,3 +68,5 @@
     auto _b = (b); \
     _a < _b ? _a : _b; \
   })
+
+#include "mem/allocators.h"

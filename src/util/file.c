@@ -1,7 +1,7 @@
 #include "dn/shared.h"
 #include "dn/util/file.h"
 
-bool DnFileRead(DnMemAllocator* allocator, const char* path, uint8_t** outData, size_t* outSize) {
+bool DnFileRead(DnMemAllocator* allocator, const char* path, u8** outData, u64* outSize) {
   DN_UNUSED(allocator != nullptr);
   DN_ASSERT(path != nullptr);
   DN_ASSERT(outData != nullptr);
@@ -9,7 +9,7 @@ bool DnFileRead(DnMemAllocator* allocator, const char* path, uint8_t** outData, 
 
   bool result = false;
   FILE* file = nullptr;
-  uint8_t* data = nullptr;
+  u8* data = nullptr;
 
   file = fopen(path, "rb");
   if (!file) {
@@ -17,23 +17,23 @@ bool DnFileRead(DnMemAllocator* allocator, const char* path, uint8_t** outData, 
   }
 
   fseek(file, 0, SEEK_END);
-  long size = ftell(file);
+  i64 size = ftell(file);
   fseek(file, 0, SEEK_SET);
 
   if (size < 0) {
     goto error;
   }
 
-  data = (uint8_t*)allocator->alloc(allocator, (size_t)size);
-  size_t read = fread(data, 1, (size_t)size, file);
+  data = (u8*)allocator->alloc(allocator, (u64)size);
+  u64 read = fread(data, 1, (u64)size, file);
 
-  if (read != (size_t)size) {
+  if (read != (u64)size) {
     goto error;
   }
 
   result = true;
   *outData = data;
-  *outSize = (size_t)size;
+  *outSize = (u64)size;
 
 error:
   if (file) {

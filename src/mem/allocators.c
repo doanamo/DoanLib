@@ -3,12 +3,12 @@
 
 DnMemAllocator g_dnMemAllocatorMalloc = {};
 
-void* DnMalloc(DnMemAllocator* allocator, size_t size) {
+void* DnMalloc(DnMemAllocator* allocator, u64 size) {
   DN_UNUSED(allocator);
   return malloc(size);
 }
 
-void* DnRealloc(DnMemAllocator* allocator, void* ptr, size_t size) {
+void* DnRealloc(DnMemAllocator* allocator, void* ptr, u64 size) {
   DN_UNUSED(allocator);
   return realloc(ptr, size);
 }

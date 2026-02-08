@@ -1,21 +1,21 @@
 #include "dn/shared.h"
 #include "dn/mem/virtual.h"
 
-uint32_t DnMemVirtualPageSize() {
+u32 DnMemVirtualPageSize() {
   SYSTEM_INFO systemInfo = {};
   GetSystemInfo(&systemInfo);
   return systemInfo.dwPageSize;
 }
 
-void* DnMemVirtualReserve(size_t size) {
+void* DnMemVirtualReserve(u64 size) {
   return VirtualAlloc(nullptr, size, MEM_RESERVE, PAGE_READWRITE);
 }
 
-bool DnMemVirtualCommit(void* ptr, size_t size) {
+bool DnMemVirtualCommit(void* ptr, u64 size) {
   return VirtualAlloc(ptr, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
 }
 
-bool DnMemVirtualDecommit(void* ptr, size_t size) {
+bool DnMemVirtualDecommit(void* ptr, u64 size) {
   return VirtualFree(ptr, size, MEM_RELEASE) != 0;
 }
 

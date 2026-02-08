@@ -3,8 +3,8 @@
 
 DnSysWindowCloseCallback g_dnSysWindowCloseCallback = nullptr;
 HWND g_dnSysWindowHandle = nullptr;
-int g_dnSysWindowWidth = 0;
-int g_dnSysWindowHeight = 0;
+u32 g_dnSysWindowWidth = 0;
+u32 g_dnSysWindowHeight = 0;
 
 LRESULT CALLBACK DnWindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   switch (uMsg) {
@@ -18,8 +18,8 @@ LRESULT CALLBACK DnWindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
   case WM_EXITSIZEMOVE:
     RECT clientSize;
     GetClientRect(g_dnSysWindowHandle, &clientSize);
-    int newWindowWidth = (int)clientSize.right;
-    int newWindowHeight = (int)clientSize.bottom;
+    u32 newWindowWidth = (u32)clientSize.right;
+    u32 newWindowHeight = (u32)clientSize.bottom;
 
     if (newWindowWidth != g_dnSysWindowWidth || newWindowHeight != g_dnSysWindowHeight) {
       DN_LOG_INFO("Window resized from %ix%i to %ix%i", g_dnSysWindowWidth, g_dnSysWindowHeight, newWindowWidth, newWindowHeight);
@@ -32,7 +32,7 @@ LRESULT CALLBACK DnWindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
   return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-bool DnSysWindowInit(const char* name, const int width, const int height) {
+bool DnSysWindowInit(const char* name, u32 width, u32 height) {
   DN_LOG_INFO("Initializing system window");
 
   HINSTANCE instance = GetModuleHandle(nullptr);
@@ -57,8 +57,8 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
     return false;
   }
 
-  unsigned windowStyle = WS_OVERLAPPEDWINDOW;
-  unsigned windowStyleEx = WS_EX_OVERLAPPEDWINDOW;
+  DWORD windowStyle = WS_OVERLAPPEDWINDOW;
+  DWORD windowStyleEx = WS_EX_OVERLAPPEDWINDOW;
 
   RECT windowSize = { 0, 0, width, height };
   AdjustWindowRectEx(&windowSize, windowStyle, false, windowStyleEx);
@@ -73,8 +73,8 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
 
   RECT clientSize;
   GetClientRect(g_dnSysWindowHandle, &clientSize);
-  g_dnSysWindowWidth = (int)clientSize.right;
-  g_dnSysWindowHeight = (int)clientSize.bottom;
+  g_dnSysWindowWidth = (u32)clientSize.right;
+  g_dnSysWindowHeight = (u32)clientSize.bottom;
   DN_LOG_INFO("Created %ix%i window", g_dnSysWindowWidth, g_dnSysWindowHeight);
 
   return true;

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 4.1)
 
 project(DoanLib
   VERSION 0.1.0
-  DESCRIPTION "Personal library for creating interactive applications"
+  DESCRIPTION "Personal C library for building real-time applications and tools"
   LANGUAGES C
 )
 

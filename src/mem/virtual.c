@@ -15,10 +15,10 @@ bool DnMemVirtualCommit(void* ptr, u64 size) {
   return VirtualAlloc(ptr, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
 }
 
-bool DnMemVirtualDecommit(void* ptr, u64 size) {
-  return VirtualFree(ptr, size, MEM_RELEASE) != 0;
+void DnMemVirtualDecommit(void* ptr, u64 size) {
+  DN_ASSERT_EVALUATE(VirtualFree(ptr, size, MEM_RELEASE) != 0);
 }
 
-bool DnMemVirtualRelease(void* ptr) {
-  return VirtualFree(ptr, 0, MEM_RELEASE) != 0;
+void DnMemVirtualRelease(void* ptr) {
+  DN_ASSERT_EVALUATE(VirtualFree(ptr, 0, MEM_RELEASE) != 0);
 }

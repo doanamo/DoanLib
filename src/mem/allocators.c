@@ -1,5 +1,5 @@
 #include "dn/shared.h"
-#include "dn/mem/malloc.h"
+#include "dn/mem/allocators.h"
 
 DnMemAllocator g_dnMemAllocatorMalloc = {};
 
@@ -18,7 +18,9 @@ void DnFree(DnMemAllocator* allocator, void* pointer) {
   free(pointer);
 }
 
-bool DnMemMallocInit() {
+bool DnMemAllocatorsInit() {
+  DN_LOG_INFO("Initializing memory allocators");
+
   g_dnMemAllocatorMalloc = (DnMemAllocator){
     .alloc = &DnMalloc,
     .realloc = &DnRealloc,
@@ -29,5 +31,6 @@ bool DnMemMallocInit() {
   return true;
 }
 
-void DnMemMallocDeinit() {
+void DnMemAllocatorsDeinit() {
+  DN_LOG_INFO("Deinitializing memory allocators");
 }

@@ -14,7 +14,7 @@ void CloseCallback() {
 bool DnAppInit() {
   DN_LOG_INFO("Initializing application");
 
-  if (!DnMemMallocInit()) {
+  if (!DnMemAllocatorsInit()) {
     return false;
   }
 
@@ -47,7 +47,7 @@ void DnAppDeinit() {
   DnGpuSwapChainDeinit();
   DnGpuDeviceDeinit();
   DnSysWindowDeinit();
-  DnMemMallocDeinit();
+  DnMemAllocatorsDeinit();
 }
 
 int DnAppRun() {

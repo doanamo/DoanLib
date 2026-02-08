@@ -58,7 +58,7 @@ endfunction()
 
 set(SOURCE_FILES
   "src/app.c"
-  "src/mem/malloc.c"
+  "src/mem/allocators.c"
   "src/util/file.c"
   "src/sys/window.c"
   "src/gpu/device.c"

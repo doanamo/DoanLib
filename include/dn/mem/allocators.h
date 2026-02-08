@@ -12,3 +12,8 @@ typedef struct DnMemAllocator {
   DnMemFree* free;
   void* context;
 } DnMemAllocator;
+
+extern DnMemAllocator g_dnMemAllocatorMalloc;
+
+bool DnMemAllocatorsInit();
+void DnMemAllocatorsDeinit();

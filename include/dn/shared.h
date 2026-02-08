@@ -30,12 +30,15 @@ typedef double f64;
 #define DN_BREAK() __builtin_debugtrap()
 #define DN_ABORT() __builtin_trap()
 
+#define DN_ASSERT_ALWAYS(expression) \
+  if (!(expression)) { \
+    DN_LOG_ERROR("Assertion failed: %s", #expression); \
+    DN_ABORT(); \
+  }
+
 #ifndef DN_CONFIG_RELEASE
-  #define DN_ASSERT(expression) \
-    if (!(expression)) { \
-      DN_LOG_ERROR("Assertion failed: %s", #expression); \
-      DN_ABORT(); \
-    }
+  #define DN_ASSERT(expression) DN_ASSERT_ALWAYS(expression)
+  #define DN_ASSERT_EVALUATE(expression) DN_ASSERT_ALWAYS(expression)
 
   #define DN_LOG_INFO(format, ...) \
     fprintf(stdout, format "\n" __VA_OPT__(,) __VA_ARGS__); \
@@ -47,6 +50,7 @@ typedef double f64;
     fflush(stderr)
 #else
   #define DN_ASSERT(expression)
+  #define DN_ASSERT_EVALUATE(expression) (void)(expression)
   #define DN_LOG_INFO(format, ...)
   #define DN_LOG_ERROR(format, ...)
 #endif

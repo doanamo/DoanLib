@@ -6,7 +6,7 @@ HWND g_dnSysWindowHandle = nullptr;
 int g_dnSysWindowWidth = 0;
 int g_dnSysWindowHeight = 0;
 
-LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK DnWindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   switch (uMsg) {
   case WM_CLOSE:
     if (g_dnSysWindowCloseCallback) {
@@ -44,7 +44,7 @@ bool DnSysWindowInit(const char* name, const int width, const int height) {
   WNDCLASSEX windowClass = {
     .cbSize = sizeof(WNDCLASSEX),
     .hInstance = instance,
-    .lpfnWndProc = WindowProcedure,
+    .lpfnWndProc = DnWindowProcedure,
     .lpszClassName = "DefaultWindowClass",
     .style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS,
     .hCursor = LoadCursor(nullptr, IDC_ARROW),

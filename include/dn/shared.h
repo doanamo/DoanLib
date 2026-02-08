@@ -18,11 +18,14 @@
 #define DN_UNUSED(x) (void)(x)
 #define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
 
+#define DN_BREAK() __builtin_debugtrap()
+#define DN_ABORT() __builtin_trap()
+
 #ifndef DN_CONFIG_RELEASE
   #define DN_ASSERT(expression) \
     if (!(expression)) { \
       DN_LOG_ERROR("Assertion failed: %s", #expression); \
-      __builtin_trap(); \
+      DN_ABORT(); \
     }
 
   #define DN_LOG_INFO(format, ...) \

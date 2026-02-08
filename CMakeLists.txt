@@ -58,6 +58,7 @@ endfunction()
 
 set(SOURCE_FILES
   "src/app.c"
+  "src/mem/virtual.c"
   "src/mem/allocators.c"
   "src/util/file.c"
   "src/sys/window.c"

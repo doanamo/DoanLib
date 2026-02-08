@@ -8,14 +8,14 @@ void* DnMalloc(DnMemAllocator* allocator, size_t size) {
   return malloc(size);
 }
 
-void* DnRealloc(DnMemAllocator* allocator, void* pointer, size_t size) {
+void* DnRealloc(DnMemAllocator* allocator, void* ptr, size_t size) {
   DN_UNUSED(allocator);
-  return realloc(pointer, size);
+  return realloc(ptr, size);
 }
 
-void DnFree(DnMemAllocator* allocator, void* pointer) {
+void DnFree(DnMemAllocator* allocator, void* ptr) {
   DN_UNUSED(allocator);
-  free(pointer);
+  free(ptr);
 }
 
 bool DnMemAllocatorsInit() {

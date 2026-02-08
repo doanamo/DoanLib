@@ -2,9 +2,15 @@
 #include "dn/mem/virtual.h"
 
 u32 DnMemVirtualPageSize() {
-  SYSTEM_INFO systemInfo = {};
-  GetSystemInfo(&systemInfo);
-  return systemInfo.dwPageSize;
+  static u32 pageSize = 0;
+
+  if (pageSize == 0) {
+    SYSTEM_INFO systemInfo = {};
+    GetSystemInfo(&systemInfo);
+    pageSize = systemInfo.dwPageSize;
+  }
+
+  return pageSize;
 }
 
 void* DnMemVirtualReserve(u64 size) {

@@ -26,7 +26,6 @@ typedef double f64;
 
 #define DN_UNUSED(x) (void)(x)
 #define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
-#define DN_ALIGN_POW2(size, alignment) (((u64)(size) + ((u64)(alignment) - 1)) & ~((u64)(alignment) - 1))
 
 #define DN_BREAK() __builtin_debugtrap()
 #define DN_ABORT() __builtin_trap()
@@ -56,10 +55,6 @@ typedef double f64;
   #define DN_LOG_ERROR(format, ...)
 #endif
 
-#define DN_KiB(n) ((u64)(n) << 10)
-#define DN_MiB(n) ((u64)(n) << 20)
-#define DN_GiB(n) ((u64)(n) << 30)
-
 #define DN_MAX(a, b) \
   ({ \
     auto _a = (a); \
@@ -72,6 +67,38 @@ typedef double f64;
     auto _a = (a); \
     auto _b = (b); \
     _a < _b ? _a : _b; \
+  })
+
+#define DN_IS_POW2(value) \
+  ({ \
+    u64 _value = (value); \
+    _value != 0 && (_value & (_value - 1)) == 0; \
+  })
+
+#define DN_ALIGN_UP(size, alignment) \
+  ({ \
+    u64 _size = (size); \
+    u64 _alignment = (alignment); \
+    DN_ASSERT(DN_IS_POW2(_alignment)); \
+    (_size + (_alignment - 1)) & ~(_alignment - 1); \
+  })
+
+#define DN_KiB(size) \
+  ({ \
+    u64 _size = (size); \
+    _size << 10; \
+  })
+
+#define DN_MiB(size) \
+  ({ \
+    u64 _size = (size); \
+    _size << 20; \
+  })
+
+#define DN_GiB(size) \
+  ({ \
+    u64 _size = (size); \
+    _size << 30; \
   })
 
 #include "mem/allocators.h"

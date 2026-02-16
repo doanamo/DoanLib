@@ -14,7 +14,7 @@ u32 DnMemVirtualPageSize() {
 }
 
 void* DnMemVirtualReserve(u64 size) {
-  return VirtualAlloc(nullptr, size, MEM_RESERVE, PAGE_READWRITE);
+  return VirtualAlloc(nullptr, size, MEM_RESERVE, PAGE_NOACCESS);
 }
 
 bool DnMemVirtualCommit(void* ptr, u64 size) {
@@ -22,7 +22,7 @@ bool DnMemVirtualCommit(void* ptr, u64 size) {
 }
 
 void DnMemVirtualDecommit(void* ptr, u64 size) {
-  DN_ASSERT_EVALUATE(VirtualFree(ptr, size, MEM_RELEASE) != 0);
+  DN_ASSERT_EVALUATE(VirtualFree(ptr, size, MEM_DECOMMIT) != 0);
 }
 
 void DnMemVirtualRelease(void* ptr) {

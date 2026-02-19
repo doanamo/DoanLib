@@ -75,6 +75,7 @@ typedef double f64;
     _value != 0 && (_value & (_value - 1)) == 0; \
   })
 
+#define DN_DEFAULT_ALIGNMENT alignof(max_align_t)
 #define DN_ALIGN_UP(size, alignment) \
   ({ \
     u64 _size = (size); \

@@ -59,6 +59,7 @@ set(SOURCE_FILES
   "src/app.c"
   "src/mem/virtual.c"
   "src/mem/allocators.c"
+  "src/mem/arena.c"
   "src/util/file.c"
   "src/sys/window.c"
   "src/gpu/device.c"

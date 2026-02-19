@@ -1,8 +1,8 @@
 #include "dn/shared.h"
 #include "dn/mem/virtual.h"
 
-u32 DnMemVirtualPageSize() {
-  static u32 pageSize = 0;
+u64 DnMemVirtualPageSize() {
+  static u64 pageSize = 0;
 
   if (pageSize == 0) {
     SYSTEM_INFO systemInfo = {};

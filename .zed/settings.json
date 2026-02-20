@@ -1,2 +1,4 @@
 // Documentation: https://zed.dev/docs/configuring-zed#settings-files
-{}
+{
+  "tab_size": 2
+}

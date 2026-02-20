@@ -1,2 +1,2 @@
 CompileFlags:
-  CompilationDatabase: build/cmake-debug
+  CompilationDatabase: build/debug

@@ -1,4 +1,3 @@
-#include "dn/shared.h"
 #include "dn/app.h"
 #include "dn/sys/window.h"
 #include "dn/gpu/device.h"

@@ -1,4 +1,3 @@
-#include "dn/shared.h"
 #include "dn/gpu/device.h"
 
 ID3D11Device5* g_dnGpuDevice = nullptr;

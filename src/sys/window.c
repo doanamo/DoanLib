@@ -1,4 +1,3 @@
-#include "dn/shared.h"
 #include "dn/sys/window.h"
 
 DnSysWindowCloseCallback g_dnSysWindowCloseCallback = nullptr;

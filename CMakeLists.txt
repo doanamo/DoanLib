@@ -30,6 +30,9 @@ function(dn_target_setup TARGET)
   )
 
   target_compile_options(${TARGET} PRIVATE
+    # Global include
+    -include "dn/shared.h"
+
     # Additional warnings
     -Wall
     -Wextra

@@ -1,0 +1,27 @@
+// Documentation: https://zed.dev/docs/debugger
+[
+  {
+    "label": "Example Debug",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/debug/Example/Example.exe",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "build": "Build Debug",
+  },
+  {
+    "label": "Example Develop",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/develop/Example/Example.exe",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "build": "Build Develop",
+  },
+  {
+    "label": "Example Release",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/build/release/Example/Example.exe",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "build": "Build Release",
+  },
+]

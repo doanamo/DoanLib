@@ -61,6 +61,7 @@ endfunction()
 
 set(SOURCE_FILES
   "src/app.c"
+  "src/mem/malloc.c"
   "src/mem/virtual.c"
   "src/mem/allocators.c"
   "src/mem/arena.c"

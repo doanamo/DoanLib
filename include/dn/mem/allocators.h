@@ -2,18 +2,18 @@
 
 typedef struct DnMemAllocator DnMemAllocator;
 
-typedef void* (DnMemAlloc)(DnMemAllocator* allocator, u64 size);
-typedef void* (DnMemRealloc)(DnMemAllocator* context, void* ptr, u64 size);
-typedef void (DnMemFree)(DnMemAllocator* context, void* ptr);
+typedef void* (DnMemAllocFunc)(DnMemAllocator* allocator, u64 size);
+typedef void* (DnMemReallocFunc)(DnMemAllocator* allocator, void* pointer, u64 size);
+typedef void (DnMemFreeFunc)(DnMemAllocator* allocator, void* pointer);
 
 typedef struct DnMemAllocator {
-  DnMemAlloc* alloc;
-  DnMemRealloc* realloc;
-  DnMemFree* free;
+  DnMemAllocFunc* alloc;
+  DnMemReallocFunc* realloc;
+  DnMemFreeFunc* free;
   void* context;
 } DnMemAllocator;
 
-extern DnMemAllocator g_dnMemAllocatorMalloc;
+bool DnMemAllocators_Init();
+void DnMemAllocators_Deinit();
 
-bool DnMemAllocatorsInit();
-void DnMemAllocatorsDeinit();
+const DnMemAllocator* DnMemAllocatorMalloc_Get();

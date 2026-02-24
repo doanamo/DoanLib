@@ -5,7 +5,7 @@ HWND g_dnSysWindowHandle = nullptr;
 u32 g_dnSysWindowWidth = 0;
 u32 g_dnSysWindowHeight = 0;
 
-LRESULT CALLBACK DnWindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK DnWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   switch (uMsg) {
   case WM_CLOSE:
     if (g_dnSysWindowCloseCallback) {
@@ -31,7 +31,7 @@ LRESULT CALLBACK DnWindowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
   return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-bool DnSysWindowInit(const char* name, u32 width, u32 height) {
+bool DnSysWindow_Init(const char* name, u32 width, u32 height) {
   DN_LOG_INFO("Initializing system window");
 
   HINSTANCE instance = GetModuleHandle(nullptr);
@@ -43,7 +43,7 @@ bool DnSysWindowInit(const char* name, u32 width, u32 height) {
   WNDCLASSEX windowClass = {
     .cbSize = sizeof(WNDCLASSEX),
     .hInstance = instance,
-    .lpfnWndProc = DnWindowProcedure,
+    .lpfnWndProc = DnWindow_Procedure,
     .lpszClassName = "DefaultWindowClass",
     .style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS,
     .hCursor = LoadCursor(nullptr, IDC_ARROW),
@@ -79,7 +79,7 @@ bool DnSysWindowInit(const char* name, u32 width, u32 height) {
   return true;
 }
 
-void DnSysWindowProcessMessages() {
+void DnSysWindow_ProcessMessages() {
   MSG message;
   while (PeekMessage(&message, g_dnSysWindowHandle, 0, 0, PM_REMOVE)) {
     TranslateMessage(&message);
@@ -87,7 +87,7 @@ void DnSysWindowProcessMessages() {
   }
 }
 
-void DnSysWindowDeinit() {
+void DnSysWindow_Deinit() {
   DN_LOG_INFO("Deinitializing system window");
 
   if (g_dnSysWindowHandle) {
@@ -99,12 +99,12 @@ void DnSysWindowDeinit() {
   g_dnSysWindowHeight = 0;
 }
 
-void DnSysWindowShow() {
+void DnSysWindow_Show() {
   DN_ASSERT(g_dnSysWindowHandle != nullptr);
   ShowWindow(g_dnSysWindowHandle, SW_SHOW);
 }
 
-void DnSysWindowHide() {
+void DnSysWindow_Hide() {
   DN_ASSERT(g_dnSysWindowHandle != nullptr);
   ShowWindow(g_dnSysWindowHandle, SW_HIDE);
 }

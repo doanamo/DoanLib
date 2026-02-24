@@ -6,19 +6,19 @@
 bool g_exit = false;
 int g_exitCode = 1;
 
-void CloseCallback() {
+void DnApp_CloseCallback() {
   g_exit = true;
 }
 
-bool DnAppInit() {
+bool DnApp_Init() {
   DN_LOG_INFO("Initializing application");
 
   if (!DnMemAllocators_Init()) {
     return false;
   }
 
-  g_dnSysWindowCloseCallback = &CloseCallback;
-  if (!DnSysWindowInit("Example", 1024, 576)) {
+  g_dnSysWindowCloseCallback = &DnApp_CloseCallback;
+  if (!DnSysWindow_Init("Example", 1024, 576)) {
     return false;
   }
 
@@ -33,40 +33,40 @@ bool DnAppInit() {
   return true;
 }
 
-void DnAppUpdate(float deltaTime) {
+void DnApp_Update(float deltaTime) {
   DN_UNUSED(deltaTime);
 }
 
-void DnAppRender(float alphaTime) {
+void DnApp_Render(float alphaTime) {
   DN_UNUSED(alphaTime);
 }
 
-void DnAppDeinit() {
+void DnApp_Deinit() {
   DN_LOG_INFO("Deinitializing application");
   DnGpuSwapChain_Deinit();
   DnGpuDevice_Deinit();
-  DnSysWindowDeinit();
+  DnSysWindow_Deinit();
   DnMemAllocators_Deinit();
 }
 
-int DnAppRun() {
-  if (!DnAppInit()) {
+int DnApp_Run() {
+  if (!DnApp_Init()) {
     goto error;
   }
 
   DN_LOG_INFO("Running application");
-  DnSysWindowShow();
+  DnSysWindow_Show();
 
   while (!g_exit) {
-    DnSysWindowProcessMessages();
-    DnAppUpdate(0.0f);
-    DnAppRender(1.0f);
+    DnSysWindow_ProcessMessages();
+    DnApp_Update(0.0f);
+    DnApp_Render(1.0f);
     DnGpuSwapChain_Present();
   }
 
   g_exitCode = 0;
 
 error:
-  DnAppDeinit();
+  DnApp_Deinit();
   return g_exitCode;
 }

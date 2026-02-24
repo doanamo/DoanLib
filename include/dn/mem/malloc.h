@@ -1,5 +1,5 @@
 #pragma once
 
-void* DnMemAlloc(u64 size);
-void* DnMemRealloc(void* allocation, u64 size);
-void DnMemFree(void* allocation);
+void* DnMem_Alloc(u64 size);
+void* DnMem_Realloc(void* allocation, u64 size);
+void DnMem_Free(void* allocation);

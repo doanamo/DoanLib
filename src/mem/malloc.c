@@ -1,17 +1,17 @@
 #include "dn/mem/malloc.h"
 
-void* DnMemAlloc(u64 size) {
+void* DnMem_Alloc(u64 size) {
   void* allocated = malloc(size);
   DN_ASSERT_ALWAYS(allocated);
   return allocated;
 }
 
-void* DnMemRealloc(void* allocation, u64 size) {
+void* DnMem_Realloc(void* allocation, u64 size) {
   void* reallocation = realloc(allocation, size);
   DN_ASSERT_ALWAYS(reallocation);
   return reallocation;
 }
 
-void DnMemFree(void* allocation) {
+void DnMem_Free(void* allocation) {
   free(allocation);
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-u64 DnMemVirtualPageSize();
-void* DnMemVirtualReserve(u64 size);
-bool DnMemVirtualCommit(void* ptr, u64 size);
-void DnMemVirtualDecommit(void* ptr, u64 size);
-void DnMemVirtualRelease(void* ptr);
+u64 DnMemVirtual_GetPageSize();
+void* DnMemVirtual_Reserve(u64 size);
+bool DnMemVirtual_Commit(void* ptr, u64 size);
+void DnMemVirtual_Decommit(void* ptr, u64 size);
+void DnMemVirtual_Release(void* ptr);

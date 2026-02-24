@@ -1,12 +1,12 @@
 #include "dn/mem/arena.h"
 #include "dn/mem/virtual.h"
 
-bool DnMemArenaInit(DnMemArena* arena, u64 reserveSize) {
+bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
   DN_ASSERT(arena != nullptr);
   DN_ASSERT(reserveSize > 0);
 
-  reserveSize = DN_ALIGN_UP(reserveSize, DnMemVirtualPageSize());
-  void* address = DnMemVirtualReserve(reserveSize);
+  reserveSize = DN_ALIGN_UP(reserveSize, DnMemVirtual_GetPageSize());
+  void* address = DnMemVirtual_Reserve(reserveSize);
   if (address == nullptr) {
     return false;
   }
@@ -21,7 +21,7 @@ bool DnMemArenaInit(DnMemArena* arena, u64 reserveSize) {
   return true;
 }
 
-void* DnMemArenaAlloc(DnMemArena* arena, u64 size) {
+void* DnMemArena_Alloc(DnMemArena* arena, u64 size) {
   DN_ASSERT(arena != nullptr);
   DN_ASSERT(size > 0);
 
@@ -33,11 +33,11 @@ void* DnMemArenaAlloc(DnMemArena* arena, u64 size) {
   }
 
   if (newUsedSize > arena->committedSize) {
-    u64 newCommittedSize = DN_ALIGN_UP(newUsedSize, DnMemVirtualPageSize());
+    u64 newCommittedSize = DN_ALIGN_UP(newUsedSize, DnMemVirtual_GetPageSize());
 
     void* pageCommitAddress = arena->address + arena->committedSize;
     u64 pageCommitSize = newCommittedSize - arena->committedSize;
-    if (!DnMemVirtualCommit(pageCommitAddress, pageCommitSize)) {
+    if (!DnMemVirtual_Commit(pageCommitAddress, pageCommitSize)) {
       return nullptr;
     }
 
@@ -48,18 +48,18 @@ void* DnMemArenaAlloc(DnMemArena* arena, u64 size) {
   return arena->address + allocationOffset;
 }
 
-void DnMemArenaFree(DnMemArena* arena, bool decommit) {
+void DnMemArena_Free(DnMemArena* arena, bool decommit) {
   DN_ASSERT(arena != nullptr);
   arena->usedSize = 0;
 
   if (decommit) {
-    DnMemVirtualDecommit(arena->address, arena->committedSize);
+    DnMemVirtual_Decommit(arena->address, arena->committedSize);
     arena->committedSize = 0;
   }
 }
 
-void DnMemArenaDeinit(DnMemArena* arena) {
+void DnMemArena_Deinit(DnMemArena* arena) {
   DN_ASSERT(arena != nullptr);
-  DnMemVirtualRelease(arena->address);
+  DnMemVirtual_Release(arena->address);
   *arena = (DnMemArena){};
 }

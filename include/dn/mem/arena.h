@@ -7,7 +7,7 @@ typedef struct DnMemArena {
   u64 usedSize;
 } DnMemArena;
 
-bool DnMemArenaInit(DnMemArena* arena, u64 reserveSize);
-void* DnMemArenaAlloc(DnMemArena* arena, u64 size);
-void DnMemArenaFree(DnMemArena* arena, bool decommit);
-void DnMemArenaDeinit(DnMemArena* arena);
+bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize);
+void* DnMemArena_Alloc(DnMemArena* arena, u64 size);
+void DnMemArena_Free(DnMemArena* arena, bool decommit);
+void DnMemArena_Deinit(DnMemArena* arena);

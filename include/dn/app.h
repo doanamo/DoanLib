@@ -1,3 +1,3 @@
 #pragma once
 
-int DnAppRun();
+int DnApp_Run();

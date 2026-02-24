@@ -9,19 +9,19 @@ const DnMemAllocator* DnMemAllocatorMalloc_Get() {
 void* DnMemAllocatorMalloc_Alloc(DnMemAllocator* allocator, u64 size) {
   DN_UNUSED(allocator);
   DN_ASSERT(allocator);
-  return DnMemAlloc(size);
+  return DnMem_Alloc(size);
 }
 
 void* DnMemAllocatorMalloc_Realloc(DnMemAllocator* allocator, void* ptr, u64 size) {
   DN_UNUSED(allocator);
   DN_ASSERT(allocator);
-  return DnMemRealloc(ptr, size);
+  return DnMem_Realloc(ptr, size);
 }
 
 void DnMemAllocatorMalloc_Free(DnMemAllocator* allocator, void* ptr) {
   DN_UNUSED(allocator);
   DN_ASSERT(allocator);
-  DnMemFree(ptr);
+  DnMem_Free(ptr);
 }
 
 bool DnMemAllocators_Init() {

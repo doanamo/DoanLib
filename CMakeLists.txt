@@ -74,7 +74,6 @@ set(SOURCE_FILES
 add_library(Doan STATIC ${SOURCE_FILES})
 target_include_directories(Doan PRIVATE "src/")
 target_include_directories(Doan PUBLIC "include/")
-target_link_libraries(Doan PUBLIC dxgi dxguid d3d11 d3dcompiler)
 dn_target_setup(Doan)
 
 #

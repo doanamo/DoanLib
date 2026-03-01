@@ -30,8 +30,10 @@ function(dn_target_setup TARGET)
   )
 
   target_compile_options(${TARGET} PRIVATE
-    # Global include
-    -include "dn/shared.h"
+    # Global includes
+    --include=dn/shared.h
+    --include=dn/memory.h
+    --include=dn/math.h
 
     # Additional warnings
     -Wall

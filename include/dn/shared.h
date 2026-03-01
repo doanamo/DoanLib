@@ -72,10 +72,3 @@ void DnLog_Error(const char* format, ...);
   #define DN_ASSERT(expression)
   #define DN_ASSERT_EVALUATE(expression) (void)(expression)
 #endif
-
-/*
- * Project includes
- */
-
-#include "math.h"
-#include "memory.h"

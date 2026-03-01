@@ -1,5 +1,9 @@
 #pragma once
 
+/*
+ * System window
+ */
+
 typedef void (*DnSysWindowCloseCallback)();
 
 extern DnSysWindowCloseCallback g_dnSysWindowCloseCallback;

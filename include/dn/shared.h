@@ -1,12 +1,24 @@
 #pragma once
 
+/*
+ * Standard includes
+ */
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+ * System includes
+ */
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+
+/*
+ * Predefined types
+ */
 
 typedef int8_t i8;
 typedef int16_t i16;
@@ -19,11 +31,19 @@ typedef uint64_t u64;
 typedef float f32;
 typedef double f64;
 
+/*
+ * Compiler macros
+ */
+
 #define DN_UNUSED(x) (void)(x)
 #define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
 
 #define DN_BREAK() __builtin_debugtrap()
 #define DN_ABORT() __builtin_trap()
+
+/*
+ * Assertion macros
+ */
 
 #define DN_ASSERT_ALWAYS(expression) \
   if (!(expression)) { \
@@ -50,51 +70,9 @@ typedef double f64;
   #define DN_LOG_ERROR(format, ...)
 #endif
 
-#define DN_MAX(a, b) \
-  ({ \
-    auto _a = (a); \
-    auto _b = (b); \
-    _a > _b ? _a : _b; \
-  })
+/*
+ * Project includes
+ */
 
-#define DN_MIN(a, b) \
-  ({ \
-    auto _a = (a); \
-    auto _b = (b); \
-    _a < _b ? _a : _b; \
-  })
-
-#define DN_IS_POW2(value) \
-  ({ \
-    u64 _value = (value); \
-    _value != 0 && (_value & (_value - 1)) == 0; \
-  })
-
-#define DN_DEFAULT_ALIGNMENT alignof(max_align_t)
-#define DN_ALIGN_UP(size, alignment) \
-  ({ \
-    u64 _size = (size); \
-    u64 _alignment = (alignment); \
-    DN_ASSERT(DN_IS_POW2(_alignment)); \
-    (_size + (_alignment - 1)) & ~(_alignment - 1); \
-  })
-
-#define DN_KiB(size) \
-  ({ \
-    u64 _size = (size); \
-    _size << 10; \
-  })
-
-#define DN_MiB(size) \
-  ({ \
-    u64 _size = (size); \
-    _size << 20; \
-  })
-
-#define DN_GiB(size) \
-  ({ \
-    u64 _size = (size); \
-    _size << 30; \
-  })
-
+#include "math.h"
 #include "memory.h"

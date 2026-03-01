@@ -1,6 +1,6 @@
-#include "dn/app.h"
-
-#include "dn/mem/virtual.h"
+#include "dn/shared.h"
+#include "dn/application.h"
+#include "dn/memory.h"
 
 int main(int argc, char* argv[]) {
   DN_UNUSED(argc);

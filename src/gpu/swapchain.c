@@ -1,4 +1,4 @@
-#include "dn/gpu/swapchain.h"
+#include "dn/gpu.h"
 
 bool DnGpuSwapChain_Init() {
   DN_LOG_INFO("Initializing gpu swapchain");

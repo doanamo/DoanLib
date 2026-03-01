@@ -5,13 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define COBJMACROS
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <dxgi1_6.h>
-#include <d3d11_4.h>
-#include <d3dcompiler.h>
-#include <dxgidebug.h>
 
 typedef int8_t i8;
 typedef int16_t i16;
@@ -102,4 +97,4 @@ typedef double f64;
     _size << 30; \
   })
 
-#include "mem/allocators.h"
+#include "memory.h"

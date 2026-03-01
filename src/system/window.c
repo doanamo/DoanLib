@@ -1,4 +1,4 @@
-#include "dn/sys/window.h"
+#include "dn/system.h"
 
 DnSysWindowCloseCallback g_dnSysWindowCloseCallback = nullptr;
 HWND g_dnSysWindowHandle = nullptr;

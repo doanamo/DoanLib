@@ -1,4 +1,4 @@
-#include "dn/gpu/device.h"
+#include "dn/gpu.h"
 
 bool DnGpuDevice_Init() {
   DN_LOG_INFO("Initializing gpu device");

@@ -1,4 +1,4 @@
-#include "dn/mem/virtual.h"
+#include "dn/memory.h"
 
 u64 DnMemVirtual_GetPageSize() {
   static u64 pageSize = 0;

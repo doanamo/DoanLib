@@ -1,7 +1,6 @@
-#include "dn/app.h"
-#include "dn/sys/window.h"
-#include "dn/gpu/device.h"
-#include "dn/gpu/swapchain.h"
+#include "dn/application.h"
+#include "dn/system.h"
+#include "dn/gpu.h"
 
 bool g_exit = false;
 int g_exitCode = 1;

@@ -60,15 +60,15 @@ endfunction()
 #
 
 set(SOURCE_FILES
-  "src/app.c"
-  "src/mem/malloc.c"
-  "src/mem/virtual.c"
-  "src/mem/allocators.c"
-  "src/mem/arena.c"
-  "src/util/file.c"
-  "src/sys/window.c"
+  "src/memory/malloc.c"
+  "src/memory/virtual.c"
+  "src/memory/allocators.c"
+  "src/memory/arena.c"
+  "src/utility/file.c"
+  "src/system/window.c"
   "src/gpu/device.c"
   "src/gpu/swapchain.c"
+  "src/application.c"
 )
 
 add_library(Doan STATIC ${SOURCE_FILES})

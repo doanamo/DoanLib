@@ -1,5 +1,4 @@
-#include "dn/mem/arena.h"
-#include "dn/mem/virtual.h"
+#include "dn/memory.h"
 
 bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
   DN_ASSERT(arena != nullptr);

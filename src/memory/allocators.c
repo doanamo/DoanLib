@@ -1,5 +1,4 @@
-#include "dn/mem/allocators.h"
-#include "dn/mem/malloc.h"
+#include "dn/memory.h"
 
 static DnMemAllocator g_dnMemAllocatorMalloc = {};
 const DnMemAllocator* DnMemAllocatorMalloc_Get() {

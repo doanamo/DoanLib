@@ -69,6 +69,7 @@ set(SOURCE_FILES
   "src/gpu/device.c"
   "src/gpu/swapchain.c"
   "src/application.c"
+  "src/shared.c"
 )
 
 add_library(Doan STATIC ${SOURCE_FILES})

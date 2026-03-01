@@ -1,4 +1,5 @@
 #include "dn/memory.h"
+#include <stdlib.h>
 
 void* DnMem_Alloc(u64 size) {
   void* allocated = malloc(size);

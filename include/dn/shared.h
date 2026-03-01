@@ -4,10 +4,9 @@
  * Standard includes
  */
 
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 /*
  * System includes
@@ -42,6 +41,21 @@ typedef double f64;
 #define DN_ABORT() __builtin_trap()
 
 /*
+ * Logging macros
+ */
+
+void DnLog_Info(const char* format, ...);
+void DnLog_Error(const char* format, ...);
+
+#ifndef DN_CONFIG_RELEASE
+  #define DN_LOG_INFO(format, ...) DnLog_Info(format "\n" __VA_OPT__(,) __VA_ARGS__)
+  #define DN_LOG_ERROR(format, ...) DnLog_Error(format "\n" __VA_OPT__(,) __VA_ARGS__)
+#else
+  #define DN_LOG_INFO(format, ...)
+  #define DN_LOG_ERROR(format, ...)
+#endif
+
+/*
  * Assertion macros
  */
 
@@ -54,20 +68,9 @@ typedef double f64;
 #ifndef DN_CONFIG_RELEASE
   #define DN_ASSERT(expression) DN_ASSERT_ALWAYS(expression)
   #define DN_ASSERT_EVALUATE(expression) DN_ASSERT_ALWAYS(expression)
-
-  #define DN_LOG_INFO(format, ...) \
-    fprintf(stdout, format "\n" __VA_OPT__(,) __VA_ARGS__); \
-    fflush(stdout)
-
-  #define DN_LOG_ERROR(format, ...) \
-    fprintf(stderr, format "\n" __VA_OPT__(,) __VA_ARGS__); \
-    fflush(stdout); \
-    fflush(stderr)
 #else
   #define DN_ASSERT(expression)
   #define DN_ASSERT_EVALUATE(expression) (void)(expression)
-  #define DN_LOG_INFO(format, ...)
-  #define DN_LOG_ERROR(format, ...)
 #endif
 
 /*

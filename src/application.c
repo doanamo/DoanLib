@@ -2,6 +2,8 @@
 #include "dn/system.h"
 #include "dn/gpu.h"
 
+DnSysWindow* g_window = nullptr;
+
 bool g_exit = false;
 int g_exitCode = 1;
 
@@ -16,10 +18,14 @@ bool DnApp_Init() {
     return false;
   }
 
-  g_dnSysWindowCloseCallback = &DnApp_CloseCallback;
-  if (!DnSysWindow_Init("Example", 1024, 576)) {
+  g_window = DnSysWindow_Create();
+  if (!g_window) {
     return false;
   }
+
+  DnSysWindow_SetSize(g_window, 1024, 576);
+  DnSysWindow_SetTitle(g_window, "DoanLib Example");
+  DnSysWindow_SetCloseCallback(g_window, &DnApp_CloseCallback);
 
   if (!DnGpuDevice_Init()) {
     return false;
@@ -44,7 +50,12 @@ void DnApp_Deinit() {
   DN_LOG_INFO("Deinitializing application");
   DnGpuSwapChain_Deinit();
   DnGpuDevice_Deinit();
-  DnSysWindow_Deinit();
+
+  if (g_window) {
+    DnSysWindow_Destroy(g_window);
+    g_window = nullptr;
+  }
+
   DnMemAllocators_Deinit();
 }
 
@@ -54,10 +65,10 @@ int DnApp_Run() {
   }
 
   DN_LOG_INFO("Running application");
-  DnSysWindow_Show();
+  DnSysWindow_SetVisibility(g_window, true);
 
   while (!g_exit) {
-    DnSysWindow_ProcessMessages();
+    DnSysWindow_ProcessMessages(g_window);
     DnApp_Update(0.0f);
     DnApp_Render(1.0f);
     DnGpuSwapChain_Present();

@@ -1,29 +1,47 @@
 #include "dn/system.h"
 
-DnSysWindowCloseCallback g_dnSysWindowCloseCallback = nullptr;
-HWND g_dnSysWindowHandle = nullptr;
-u32 g_dnSysWindowWidth = 0;
-u32 g_dnSysWindowHeight = 0;
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+struct DnSysWindow {
+  HWND handle;
+  u32 width;
+  u32 height;
+
+  DnSysWindowCloseCallback closeCallback;
+};
 
 LRESULT CALLBACK DnWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+  DnSysWindow* window = (DnSysWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+
   switch (uMsg) {
+  case WM_CREATE: {
+      LPCREATESTRUCT createStruct = (LPCREATESTRUCT)lParam;
+      window = (DnSysWindow*)createStruct->lpCreateParams;
+      SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)window);
+    }
+    break;
+
   case WM_CLOSE:
-    if (g_dnSysWindowCloseCallback) {
-      g_dnSysWindowCloseCallback();
+    if (window->closeCallback) {
+      window->closeCallback();
       return 0;
     }
     break;
 
-  case WM_EXITSIZEMOVE:
-    RECT clientSize;
-    GetClientRect(g_dnSysWindowHandle, &clientSize);
-    u32 newWindowWidth = (u32)clientSize.right;
-    u32 newWindowHeight = (u32)clientSize.bottom;
+  case WM_EXITSIZEMOVE: {
+      DN_ASSERT(window);
 
-    if (newWindowWidth != g_dnSysWindowWidth || newWindowHeight != g_dnSysWindowHeight) {
-      DN_LOG_INFO("Window resized from %ix%i to %ix%i", g_dnSysWindowWidth, g_dnSysWindowHeight, newWindowWidth, newWindowHeight);
-      g_dnSysWindowWidth = newWindowWidth;
-      g_dnSysWindowHeight = newWindowHeight;
+      RECT clientSize;
+      GetClientRect(window->handle, &clientSize);
+      u32 width = (u32)clientSize.right;
+      u32 height = (u32)clientSize.bottom;
+
+      if (width != window->width || height != window->height) {
+        DN_LOG_INFO("Window resized from %ux%u to %ux%u", window->width, window->height, width, height);
+        window->width = width;
+        window->height = height;
+      }
     }
     break;
   }
@@ -31,13 +49,20 @@ LRESULT CALLBACK DnWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
   return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-bool DnSysWindow_Init(const char* name, u32 width, u32 height) {
-  DN_LOG_INFO("Initializing system window");
+DnSysWindow* DnSysWindow_Create() {
+  DN_LOG_INFO("Creating system window");
+  bool result = false;
+
+  DnSysWindow* window = DN_MEM_ALLOC(DnSysWindow);
+  *window = (DnSysWindow){
+    .width = 1024,
+    .height = 576,
+  };
 
   HINSTANCE instance = GetModuleHandle(nullptr);
   if (!instance) {
     DN_LOG_ERROR("Failed to retrieve Win32 instance");
-    return false;
+    goto error;
   }
 
   WNDCLASSEX windowClass = {
@@ -53,58 +78,87 @@ bool DnSysWindow_Init(const char* name, u32 width, u32 height) {
 
   if (RegisterClassEx(&windowClass) == 0) {
     DN_LOG_ERROR("Failed to register Win32 window class");
-    return false;
+    goto error;
   }
 
   DWORD windowStyle = WS_OVERLAPPEDWINDOW;
   DWORD windowStyleEx = WS_EX_OVERLAPPEDWINDOW;
 
-  RECT windowSize = { 0, 0, (LONG)width, (LONG)height };
-  AdjustWindowRectEx(&windowSize, windowStyle, false, windowStyleEx);
+  RECT clientSize = { 0, 0, (LONG)window->width, (LONG)window->height };
+  AdjustWindowRectEx(&clientSize, windowStyle, false, windowStyleEx);
 
-  DN_ASSERT(g_dnSysWindowHandle == nullptr);
-  g_dnSysWindowHandle = CreateWindowEx(windowStyleEx, windowClass.lpszClassName, name, windowStyle, CW_USEDEFAULT, CW_USEDEFAULT, windowSize.right - windowSize.left, windowSize.bottom - windowSize.top, nullptr, nullptr, instance, nullptr);
+  window->handle = CreateWindowEx(windowStyleEx, windowClass.lpszClassName, "DoanLib Window", windowStyle, CW_USEDEFAULT, CW_USEDEFAULT, clientSize.right - clientSize.left, clientSize.bottom - clientSize.top, nullptr, nullptr, instance, window);
 
-  if (!g_dnSysWindowHandle) {
+  if (!window->handle) {
     DN_LOG_ERROR("Failed to create Win32 window");
-    return false;
+    goto error;
   }
 
-  RECT clientSize;
-  GetClientRect(g_dnSysWindowHandle, &clientSize);
-  g_dnSysWindowWidth = (u32)clientSize.right;
-  g_dnSysWindowHeight = (u32)clientSize.bottom;
-  DN_LOG_INFO("Created %ix%i window", g_dnSysWindowWidth, g_dnSysWindowHeight);
+  GetClientRect(window->handle, &clientSize);
+  window->width = (u32)clientSize.right;
+  window->height = (u32)clientSize.bottom;
 
-  return true;
+  result = true;
+
+error:
+  if (!result) {
+    DnSysWindow_Destroy(window);
+    window = nullptr;
+  }
+
+  return window;
 }
 
-void DnSysWindow_ProcessMessages() {
+void DnSysWindow_Destroy(DnSysWindow* window) {
+  DN_ASSERT(window);
+
+  if (window->handle) {
+    DestroyWindow(window->handle);
+  }
+
+  DN_MEM_FREE(window);
+}
+
+void DnSysWindow_ProcessMessages(DnSysWindow* window) {
+  DN_ASSERT(window->handle);
+
   MSG message;
-  while (PeekMessage(&message, g_dnSysWindowHandle, 0, 0, PM_REMOVE)) {
+  while (PeekMessage(&message, window->handle, 0, 0, PM_REMOVE)) {
     TranslateMessage(&message);
     DispatchMessage(&message);
   }
 }
 
-void DnSysWindow_Deinit() {
-  DN_LOG_INFO("Deinitializing system window");
-
-  if (g_dnSysWindowHandle) {
-    DestroyWindow(g_dnSysWindowHandle);
-    g_dnSysWindowHandle = nullptr;
-  }
-
-  g_dnSysWindowWidth = 0;
-  g_dnSysWindowHeight = 0;
+void DnSysWindow_SetTitle(DnSysWindow* window, const char* title) {
+  DN_ASSERT(window->handle);
+  SetWindowText(window->handle, title);
 }
 
-void DnSysWindow_Show() {
-  DN_ASSERT(g_dnSysWindowHandle != nullptr);
-  ShowWindow(g_dnSysWindowHandle, SW_SHOW);
+void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height) {
+  DN_ASSERT(window->handle);
+
+  if (width == window->width && height == window->height)
+    return;
+  
+  DWORD windowStyle = (DWORD)GetWindowLong(window->handle, GWL_STYLE);
+  DWORD windowStyleEx = (DWORD)GetWindowLong(window->handle, GWL_EXSTYLE);
+
+  RECT clientSize = { 0, 0, (LONG)width, (LONG)height };
+  AdjustWindowRectEx(&clientSize, windowStyle, false, windowStyleEx);
+
+  SetWindowPos(window->handle, nullptr, 0, 0, clientSize.right - clientSize.left, clientSize.bottom - clientSize.top, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+  DN_LOG_INFO("Window resized from %ux%u to %ux%u", window->width, window->height, width, height);
+  window->width = width;
+  window->height = height;
 }
 
-void DnSysWindow_Hide() {
-  DN_ASSERT(g_dnSysWindowHandle != nullptr);
-  ShowWindow(g_dnSysWindowHandle, SW_HIDE);
+void DnSysWindow_SetVisibility(DnSysWindow* window, bool visible) {
+  DN_ASSERT(window->handle);
+  ShowWindow(window->handle, visible ? SW_SHOW : SW_HIDE);
+}
+
+void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback) {
+  DN_ASSERT(window->handle);
+  window->closeCallback = callback;
 }

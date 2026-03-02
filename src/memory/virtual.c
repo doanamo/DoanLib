@@ -1,5 +1,8 @@
 #include "dn/memory.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 u64 DnMemVirtual_GetPageSize() {
   static u64 pageSize = 0;
 

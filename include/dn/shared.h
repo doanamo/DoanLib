@@ -7,13 +7,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-
-/*
- * System includes
- */
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <stdarg.h>
 
 /*
  * Predefined types

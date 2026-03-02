@@ -4,15 +4,14 @@
  * System window
  */
 
+typedef struct DnSysWindow DnSysWindow;
 typedef void (*DnSysWindowCloseCallback)();
 
-extern DnSysWindowCloseCallback g_dnSysWindowCloseCallback;
-extern HWND g_dnSysWindowHandle;
-extern u32 g_dnSysWindowWidth;
-extern u32 g_dnSysWindowHeight;
+DnSysWindow* DnSysWindow_Create();
+void DnSysWindow_Destroy(DnSysWindow* window);
 
-bool DnSysWindow_Init(const char* name, u32 width, u32 height);
-void DnSysWindow_Deinit();
-void DnSysWindow_ProcessMessages();
-void DnSysWindow_Show();
-void DnSysWindow_Hide();
+void DnSysWindow_ProcessMessages(DnSysWindow* window);
+void DnSysWindow_SetTitle(DnSysWindow* window, const char* title);
+void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height);
+void DnSysWindow_SetVisibility(DnSysWindow* window, bool visible);
+void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback);

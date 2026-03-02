@@ -41,8 +41,8 @@ void* DnMem_Realloc(void* allocation, u64 size);
 void DnMem_Free(void* allocation);
 
 #define DN_MEM_ALLOC(type) (type*)DnMem_Alloc(sizeof(type))
-#define DN_MEM_REALLOC(ptr, type, count) (type*)DnMem_Realloc(ptr, sizeof(type) * count)
-#define DN_MEM_FREE(ptr) DnMem_Free(ptr)
+#define DN_MEM_REALLOC(allocation, type, count) (type*)DnMem_Realloc(allocation, sizeof(type) * count)
+#define DN_MEM_FREE(allocation) DnMem_Free(allocation)
 
 /*
  * Virtual memory
@@ -75,6 +75,10 @@ bool DnMemAllocators_Init();
 void DnMemAllocators_Deinit();
 
 const DnMemAllocator* DnMemAllocatorMalloc_Get();
+
+#define DN_MEM_ALLOCATOR_ALLOC(allocator, type) (type*)allocator->alloc(allocator, sizeof(type))
+#define DN_MEM_ALLOCATOR_REALLOC(allocator, allocation, type, count) (type*)allocator->realloc(allocator, allocation, sizeof(type) * count)
+#define DN_MEM_ALLOCATOR_FREE(allocator, allocation) allocator->free(allocator, allocation)
 
 /*
  * Memory arena

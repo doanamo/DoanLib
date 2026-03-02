@@ -40,6 +40,10 @@ void* DnMem_Alloc(u64 size);
 void* DnMem_Realloc(void* allocation, u64 size);
 void DnMem_Free(void* allocation);
 
+#define DN_MEM_ALLOC(type) (type*)DnMem_Alloc(sizeof(type))
+#define DN_MEM_REALLOC(ptr, type, count) (Type*)DnMem_Realloc(ptr, sizeof(type) * count)
+#define DN_MEM_FREE(ptr) DnMem_Free(ptr)
+
 /*
  * Virtual memory
  */

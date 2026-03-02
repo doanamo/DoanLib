@@ -11,7 +11,7 @@ struct DnSysWindow {
   DnSysWindowCloseCallback closeCallback;
 };
 
-LRESULT CALLBACK DnWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK DnSysWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   DnSysWindow* window = (DnSysWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
   switch (uMsg) {
@@ -68,7 +68,7 @@ DnSysWindow* DnSysWindow_Create() {
   WNDCLASSEX windowClass = {
     .cbSize = sizeof(WNDCLASSEX),
     .hInstance = instance,
-    .lpfnWndProc = DnWindow_Procedure,
+    .lpfnWndProc = DnSysWindow_Procedure,
     .lpszClassName = "DefaultWindowClass",
     .style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS,
     .hCursor = LoadCursor(nullptr, IDC_ARROW),
@@ -139,7 +139,7 @@ void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height) {
 
   if (width == window->width && height == window->height)
     return;
-  
+
   DWORD windowStyle = (DWORD)GetWindowLong(window->handle, GWL_STYLE);
   DWORD windowStyleEx = (DWORD)GetWindowLong(window->handle, GWL_EXSTYLE);
 

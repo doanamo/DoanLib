@@ -60,9 +60,9 @@ void DnMemVirtual_Release(void* page);
 
 typedef struct DnMemAllocator DnMemAllocator;
 
-typedef void* (DnMemAllocatorAllocFunc)(DnMemAllocator* allocator, u64 size);
-typedef void* (DnMemAllocatorReallocFunc)(DnMemAllocator* allocator, void* pointer, u64 size);
-typedef void (DnMemAllocatorFreeFunc)(DnMemAllocator* allocator, void* pointer);
+typedef void* (DnMemAllocatorAllocFunc)(const DnMemAllocator* allocator, u64 size);
+typedef void* (DnMemAllocatorReallocFunc)(const DnMemAllocator* allocator, void* pointer, u64 size);
+typedef void (DnMemAllocatorFreeFunc)(const DnMemAllocator* allocator, void* pointer);
 
 typedef struct DnMemAllocator {
   DnMemAllocatorAllocFunc* alloc;

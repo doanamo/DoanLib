@@ -1,26 +1,26 @@
 #include "dn/memory.h"
 
-static DnMemAllocator g_dnMemAllocatorMalloc = {};
-const DnMemAllocator* DnMemAllocatorMalloc_Get() {
-  return &g_dnMemAllocatorMalloc;
-}
-
-void* DnMemAllocatorMalloc_Alloc(DnMemAllocator* allocator, u64 size) {
+void* DnMemAllocatorMalloc_Alloc(const DnMemAllocator* allocator, u64 size) {
   DN_UNUSED(allocator);
   DN_ASSERT(allocator);
   return DnMem_Alloc(size);
 }
 
-void* DnMemAllocatorMalloc_Realloc(DnMemAllocator* allocator, void* ptr, u64 size) {
+void* DnMemAllocatorMalloc_Realloc(const DnMemAllocator* allocator, void* allocation, u64 size) {
   DN_UNUSED(allocator);
   DN_ASSERT(allocator);
-  return DnMem_Realloc(ptr, size);
+  return DnMem_Realloc(allocation, size);
 }
 
-void DnMemAllocatorMalloc_Free(DnMemAllocator* allocator, void* ptr) {
+void DnMemAllocatorMalloc_Free(const DnMemAllocator* allocator, void* allocation) {
   DN_UNUSED(allocator);
   DN_ASSERT(allocator);
-  DnMem_Free(ptr);
+  DnMem_Free(allocation);
+}
+
+static DnMemAllocator g_dnMemAllocatorMalloc = {};
+const DnMemAllocator* DnMemAllocatorMalloc_Get() {
+  return &g_dnMemAllocatorMalloc;
 }
 
 bool DnMemAllocators_Init() {
@@ -38,4 +38,5 @@ bool DnMemAllocators_Init() {
 
 void DnMemAllocators_Deinit() {
   DN_LOG_INFO("Deinitializing memory allocators");
+  g_dnMemAllocatorMalloc = (DnMemAllocator){};
 }

@@ -19,14 +19,14 @@ void* DnMemVirtual_Reserve(u64 size) {
   return VirtualAlloc(nullptr, size, MEM_RESERVE, PAGE_NOACCESS);
 }
 
-bool DnMemVirtual_Commit(void* ptr, u64 size) {
-  return VirtualAlloc(ptr, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
+bool DnMemVirtual_Commit(void* page, u64 size) {
+  return VirtualAlloc(page, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
 }
 
-void DnMemVirtual_Decommit(void* ptr, u64 size) {
-  DN_ASSERT_EVALUATE(VirtualFree(ptr, size, MEM_DECOMMIT) != 0);
+void DnMemVirtual_Decommit(void* page, u64 size) {
+  DN_ASSERT_EVALUATE(VirtualFree(page, size, MEM_DECOMMIT) != 0);
 }
 
-void DnMemVirtual_Release(void* ptr) {
-  DN_ASSERT_EVALUATE(VirtualFree(ptr, 0, MEM_RELEASE) != 0);
+void DnMemVirtual_Release(void* page) {
+  DN_ASSERT_EVALUATE(VirtualFree(page, 0, MEM_RELEASE) != 0);
 }

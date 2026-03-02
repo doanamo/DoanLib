@@ -41,7 +41,7 @@ void* DnMem_Realloc(void* allocation, u64 size);
 void DnMem_Free(void* allocation);
 
 #define DN_MEM_ALLOC(type) (type*)DnMem_Alloc(sizeof(type))
-#define DN_MEM_REALLOC(ptr, type, count) (Type*)DnMem_Realloc(ptr, sizeof(type) * count)
+#define DN_MEM_REALLOC(ptr, type, count) (type*)DnMem_Realloc(ptr, sizeof(type) * count)
 #define DN_MEM_FREE(ptr) DnMem_Free(ptr)
 
 /*
@@ -50,9 +50,9 @@ void DnMem_Free(void* allocation);
 
 u64 DnMemVirtual_GetPageSize();
 void* DnMemVirtual_Reserve(u64 size);
-bool DnMemVirtual_Commit(void* ptr, u64 size);
-void DnMemVirtual_Decommit(void* ptr, u64 size);
-void DnMemVirtual_Release(void* ptr);
+bool DnMemVirtual_Commit(void* page, u64 size);
+void DnMemVirtual_Decommit(void* page, u64 size);
+void DnMemVirtual_Release(void* page);
 
 /*
  * Memory allocator

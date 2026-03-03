@@ -16,7 +16,7 @@ void DnApp_CloseCallback() {
 bool DnApp_Init() {
   DN_LOG_INFO("Initializing application");
 
-  if (!DnMemAllocators_Init()) {
+  if (!DnMem_Init()) {
     return false;
   }
 
@@ -68,7 +68,7 @@ void DnApp_Deinit() {
     g_sysWindow = nullptr;
   }
 
-  DnMemAllocators_Deinit();
+  DnMem_Deinit();
 }
 
 int DnApp_Run() {

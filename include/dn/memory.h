@@ -1,5 +1,8 @@
 #pragma once
 
+bool DnMem_Init();
+void DnMem_Deinit();
+
 /*
  * Memory macros
  */
@@ -70,9 +73,6 @@ typedef struct DnMemAllocator {
   DnMemAllocatorFreeFunc* free;
   void* context;
 } DnMemAllocator;
-
-bool DnMemAllocators_Init();
-void DnMemAllocators_Deinit();
 
 const DnMemAllocator* DnMemAllocatorMalloc_Get();
 

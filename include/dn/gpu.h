@@ -4,13 +4,17 @@
  * GPU device
  */
 
-bool DnGpuDevice_Init();
-void DnGpuDevice_Deinit();
+typedef struct DnGpuDevice DnGpuDevice;
+
+DnGpuDevice* DnGpuDevice_Create();
+void DnGpuDevice_Destroy(DnGpuDevice* device);
 
 /*
  * GPU swap chain
  */
 
-bool DnGpuSwapChain_Init();
-void DnGpuSwapChain_Deinit();
-void DnGpuSwapChain_Present();
+typedef struct DnGpuSwapChain DnGpuSwapChain;
+
+DnGpuSwapChain* DnGpuSwapChain_Create();
+void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain);
+void DnGpuSwapChain_Present(DnGpuSwapChain* swapChain);

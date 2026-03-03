@@ -1,13 +1,22 @@
 #include "dn/gpu.h"
 
-bool DnGpuSwapChain_Init() {
-  DN_LOG_INFO("Initializing gpu swapchain");
-  return true;
+struct DnGpuSwapChain {
+};
+
+DnGpuSwapChain* DnGpuSwapChain_Create() {
+  DN_LOG_INFO("Creating gpu swapchain");
+
+  DnGpuSwapChain* swapChain = DN_MEM_ALLOC(DnGpuSwapChain);
+  *swapChain = (DnGpuSwapChain){};
+
+  return swapChain;
 }
 
-void DnGpuSwapChain_Present() {
+void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain) {
+  DN_ASSERT(swapChain);
+  DN_MEM_FREE(swapChain);
 }
 
-void DnGpuSwapChain_Deinit() {
-  DN_LOG_INFO("Deinitializing gpu swapchain");
+void DnGpuSwapChain_Present(DnGpuSwapChain* swapChain) {
+  DN_ASSERT(swapChain);
 }

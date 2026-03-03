@@ -1,10 +1,18 @@
 #include "dn/gpu.h"
 
-bool DnGpuDevice_Init() {
-  DN_LOG_INFO("Initializing gpu device");
-  return true;
+struct DnGpuDevice {
+};
+
+DnGpuDevice* DnGpuDevice_Create() {
+  DN_LOG_INFO("Creating gpu device");
+
+  DnGpuDevice* device = DN_MEM_ALLOC(DnGpuDevice);
+  *device = (DnGpuDevice){};
+
+  return device;
 }
 
-void DnGpuDevice_Deinit() {
-  DN_LOG_INFO("Deinitializing gpu device");
+void DnGpuDevice_Destroy(DnGpuDevice* device) {
+  DN_ASSERT(device);
+  DN_MEM_FREE(device);
 }

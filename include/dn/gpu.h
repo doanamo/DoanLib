@@ -16,5 +16,5 @@ void DnGpuDevice_Destroy(DnGpuDevice* device);
 typedef struct DnGpuSwapChain DnGpuSwapChain;
 
 DnGpuSwapChain* DnGpuSwapChain_Create();
-void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain);
 void DnGpuSwapChain_Present(DnGpuSwapChain* swapChain);
+void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain);

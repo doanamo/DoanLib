@@ -12,11 +12,11 @@ DnGpuSwapChain* DnGpuSwapChain_Create() {
   return swapChain;
 }
 
+void DnGpuSwapChain_Present(DnGpuSwapChain* swapChain) {
+  DN_ASSERT(swapChain);
+}
+
 void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain) {
   DN_ASSERT(swapChain);
   DN_MEM_FREE(swapChain);
-}
-
-void DnGpuSwapChain_Present(DnGpuSwapChain* swapChain) {
-  DN_ASSERT(swapChain);
 }

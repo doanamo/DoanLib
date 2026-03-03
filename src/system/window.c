@@ -109,16 +109,6 @@ error:
   return window;
 }
 
-void DnSysWindow_Destroy(DnSysWindow* window) {
-  DN_ASSERT(window);
-
-  if (window->handle) {
-    DestroyWindow(window->handle);
-  }
-
-  DN_MEM_FREE(window);
-}
-
 void DnSysWindow_ProcessMessages(DnSysWindow* window) {
   DN_ASSERT(window->handle);
 
@@ -127,6 +117,16 @@ void DnSysWindow_ProcessMessages(DnSysWindow* window) {
     TranslateMessage(&message);
     DispatchMessage(&message);
   }
+}
+
+void DnSysWindow_Destroy(DnSysWindow* window) {
+  DN_ASSERT(window);
+
+  if (window->handle) {
+    DestroyWindow(window->handle);
+  }
+
+  DN_MEM_FREE(window);
 }
 
 void DnSysWindow_SetTitle(DnSysWindow* window, const char* title) {

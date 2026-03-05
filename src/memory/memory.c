@@ -1,13 +1,12 @@
 #include "dn/memory.h"
 
-bool DnMemVirtual_Init();
-void DnMemVirtual_Deinit();
+bool DnMemVirtual_ValidatePageSize();
 
 bool DnMem_Init() {
   DN_LOG_INFO("System memory page size: %llu", DnMem_SystemPageSize);
   DN_LOG_INFO("Default memory alignment: %llu", DnMem_DefaultAlignment);
 
-  if (!DnMemVirtual_Init()) {
+  if (!DnMemVirtual_ValidatePageSize()) {
     return false;
   }
 
@@ -15,5 +14,4 @@ bool DnMem_Init() {
 }
 
 void DnMem_Deinit() {
-  DnMemVirtual_Deinit();
 }

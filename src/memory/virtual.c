@@ -3,7 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-bool DnMemVirtual_Init() {
+bool DnMemVirtual_ValidatePageSize() {
   SYSTEM_INFO systemInfo = {};
   GetSystemInfo(&systemInfo);
 
@@ -13,9 +13,6 @@ bool DnMemVirtual_Init() {
   }
 
   return true;
-}
-
-void DnMemVirtual_Deinit() {
 }
 
 void* DnMemVirtual_Reserve(u64 size) {

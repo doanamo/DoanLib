@@ -3,16 +3,19 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-u64 DnMemVirtual_GetPageSize() {
-  static u64 pageSize = 0;
+bool DnMemVirtual_Init() {
+  SYSTEM_INFO systemInfo = {};
+  GetSystemInfo(&systemInfo);
 
-  if (pageSize == 0) {
-    SYSTEM_INFO systemInfo = {};
-    GetSystemInfo(&systemInfo);
-    pageSize = systemInfo.dwPageSize;
+  if (DnMem_SystemPageSize != systemInfo.dwPageSize) {
+    DN_LOG_ERROR("Unexpected system memory page size: expected %llu, got %llu", DnMem_SystemPageSize, systemInfo.dwPageSize);
+    return false;
   }
 
-  return pageSize;
+  return true;
+}
+
+void DnMemVirtual_Deinit() {
 }
 
 void* DnMemVirtual_Reserve(u64 size) {

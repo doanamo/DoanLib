@@ -4,10 +4,17 @@ bool DnMem_Init();
 void DnMem_Deinit();
 
 /*
+ * Memory constants
+ */
+
+constexpr u64 DnMem_DefaultAlignment = alignof(max_align_t);
+constexpr u64 DnMem_SystemPageSize = 4096;
+
+/*
  * Memory macros
  */
 
-#define DN_ALIGN_UP(size, alignment) \
+#define DN_MEM_ALIGN_UP(size, alignment) \
   ({ \
     u64 _size = (size); \
     u64 _alignment = (alignment); \
@@ -15,19 +22,19 @@ void DnMem_Deinit();
     (_size + (_alignment - 1)) & ~(_alignment - 1); \
   })
 
-#define DN_KiB(size) \
+#define DN_MEM_KB(size) \
   ({ \
     u64 _size = (size); \
     _size << 10; \
   })
 
-#define DN_MiB(size) \
+#define DN_MEM_MB(size) \
   ({ \
     u64 _size = (size); \
     _size << 20; \
   })
 
-#define DN_GiB(size) \
+#define DN_MEM_GB(size) \
   ({ \
     u64 _size = (size); \
     _size << 30; \
@@ -49,7 +56,6 @@ void DnMem_Free(void* allocation);
  * Virtual memory
  */
 
-u64 DnMemVirtual_GetPageSize();
 void* DnMemVirtual_Reserve(u64 size);
 bool DnMemVirtual_Commit(void* page, u64 size);
 void DnMemVirtual_Decommit(void* page, u64 size);

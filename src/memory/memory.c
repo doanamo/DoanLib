@@ -3,9 +3,16 @@
 bool DnMemAllocators_Init();
 void DnMemAllocators_Deinit();
 
+bool DnMemVirtual_Init();
+void DnMemVirtual_Deinit();
+
 bool DnMem_Init() {
-  DN_LOG_INFO("System memory page size: %llu", DnMemVirtual_GetPageSize());
-  DN_LOG_INFO("Default memory alignment: %llu", alignof(max_align_t));
+  DN_LOG_INFO("System memory page size: %llu", DnMem_SystemPageSize);
+  DN_LOG_INFO("Default memory alignment: %llu", DnMem_DefaultAlignment);
+
+  if (!DnMemVirtual_Init()) {
+    return false;
+  }
 
   if (!DnMemAllocators_Init()) {
     return false;
@@ -16,4 +23,5 @@ bool DnMem_Init() {
 
 void DnMem_Deinit() {
   DnMemAllocators_Deinit();
+  DnMemVirtual_Deinit();
 }

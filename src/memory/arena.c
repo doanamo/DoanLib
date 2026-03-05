@@ -4,7 +4,7 @@ bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
   DN_ASSERT(arena != nullptr);
   DN_ASSERT(reserveSize > 0);
 
-  reserveSize = DN_ALIGN_UP(reserveSize, DnMemVirtual_GetPageSize());
+  reserveSize = DN_MEM_ALIGN_UP(reserveSize, DnMem_SystemPageSize);
   void* address = DnMemVirtual_Reserve(reserveSize);
   if (address == nullptr) {
     return false;
@@ -24,7 +24,7 @@ void* DnMemArena_Alloc(DnMemArena* arena, u64 size) {
   DN_ASSERT(arena != nullptr);
   DN_ASSERT(size > 0);
 
-  u64 allocationOffset = DN_ALIGN_UP(arena->usedSize, alignof(max_align_t));
+  u64 allocationOffset = DN_MEM_ALIGN_UP(arena->usedSize, DnMem_DefaultAlignment);
 
   u64 newUsedSize = allocationOffset + size;
   if (newUsedSize > arena->reservedSize) {
@@ -32,7 +32,7 @@ void* DnMemArena_Alloc(DnMemArena* arena, u64 size) {
   }
 
   if (newUsedSize > arena->committedSize) {
-    u64 newCommittedSize = DN_ALIGN_UP(newUsedSize, DnMemVirtual_GetPageSize());
+    u64 newCommittedSize = DN_MEM_ALIGN_UP(newUsedSize, DnMem_SystemPageSize);
 
     void* pageCommitAddress = arena->address + arena->committedSize;
     u64 pageCommitSize = newCommittedSize - arena->committedSize;

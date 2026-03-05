@@ -24,7 +24,7 @@ void* DnMemArena_Alloc(DnMemArena* arena, u64 size) {
   DN_ASSERT(arena != nullptr);
   DN_ASSERT(size > 0);
 
-  u64 allocationOffset = DN_ALIGN_UP(arena->usedSize, DN_DEFAULT_ALIGNMENT);
+  u64 allocationOffset = DN_ALIGN_UP(arena->usedSize, alignof(max_align_t));
 
   u64 newUsedSize = allocationOffset + size;
   if (newUsedSize > arena->reservedSize) {

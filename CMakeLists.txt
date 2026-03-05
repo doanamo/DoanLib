@@ -65,7 +65,6 @@ set(SOURCE_FILES
   "src/memory/memory.c"
   "src/memory/malloc.c"
   "src/memory/virtual.c"
-  "src/memory/allocators.c"
   "src/memory/arena.c"
   "src/utility/file.c"
   "src/system/window.c"

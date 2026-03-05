@@ -1,8 +1,5 @@
 #include "dn/memory.h"
 
-bool DnMemAllocators_Init();
-void DnMemAllocators_Deinit();
-
 bool DnMemVirtual_Init();
 void DnMemVirtual_Deinit();
 
@@ -14,14 +11,9 @@ bool DnMem_Init() {
     return false;
   }
 
-  if (!DnMemAllocators_Init()) {
-    return false;
-  }
-
   return true;
 }
 
 void DnMem_Deinit() {
-  DnMemAllocators_Deinit();
   DnMemVirtual_Deinit();
 }

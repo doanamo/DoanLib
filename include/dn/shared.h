@@ -54,10 +54,12 @@ void DnLog_Error(const char* format, ...);
  */
 
 #define DN_ASSERT_ALWAYS(expression) \
-  if (!(expression)) { \
-    DN_LOG_ERROR("Assertion failed: %s", #expression); \
-    DN_ABORT(); \
-  }
+  do { \
+    if (!(expression)) { \
+      DN_LOG_ERROR("Assertion failed: %s", #expression); \
+      DN_ABORT(); \
+    } \
+  } while (0)
 
 #ifndef DN_CONFIG_RELEASE
   #define DN_ASSERT(expression) DN_ASSERT_ALWAYS(expression)

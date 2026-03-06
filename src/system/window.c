@@ -1,4 +1,5 @@
 #include "dn/system.h"
+#include <winerror.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -77,8 +78,10 @@ DnSysWindow* DnSysWindow_Create() {
   };
 
   if (RegisterClassEx(&windowClass) == 0) {
-    DN_LOG_ERROR("Failed to register Win32 window class");
-    goto error;
+    if (GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
+      DN_LOG_ERROR("Failed to register Win32 window class");
+      goto error;
+    }
   }
 
   DWORD windowStyle = WS_OVERLAPPEDWINDOW;

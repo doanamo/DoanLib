@@ -36,7 +36,7 @@ void DnMem_Free(void* allocation);
 #define DN_MEM_ALLOC(size) DnMem_Alloc(size)
 #define DN_MEM_REALLOC(allocation, size) DnMem_Realloc(allocation, size)
 #define DN_MEM_ALLOC_TYPE(type) (type*)DnMem_Alloc(sizeof(type))
-#define DN_MEM_REALLOC_TYPE(allocation, type, count) (type*)DnMem_Realloc(_allocation, sizeof(type) * (count))
+#define DN_MEM_REALLOC_TYPE(allocation, type, count) (type*)DnMem_Realloc(allocation, sizeof(type) * (count))
 #define DN_MEM_FREE(allocation) DnMem_Free(allocation)
 
 /*

@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 bool DnUtilFile_Read(const DnMemAllocator* allocator, const char* path, u8** outData, u64* outSize) {
-  DN_UNUSED(allocator != nullptr);
+  DN_ASSERT(allocator != nullptr);
   DN_ASSERT(path != nullptr);
   DN_ASSERT(outData != nullptr);
   DN_ASSERT(outSize != nullptr);

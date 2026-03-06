@@ -54,7 +54,7 @@ DnSysWindow* DnSysWindow_Create() {
   DN_LOG_INFO("Creating system window");
   bool result = false;
 
-  DnSysWindow* window = DN_MEM_ALLOC(DnSysWindow);
+  DnSysWindow* window = DN_MEM_ALLOC_TYPE(DnSysWindow);
   *window = (DnSysWindow){
     .width = 1024,
     .height = 576,

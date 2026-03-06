@@ -6,7 +6,7 @@ struct DnGpuDevice {
 DnGpuDevice* DnGpuDevice_Create() {
   DN_LOG_INFO("Creating gpu device");
 
-  DnGpuDevice* device = DN_MEM_ALLOC(DnGpuDevice);
+  DnGpuDevice* device = DN_MEM_ALLOC_TYPE(DnGpuDevice);
   *device = (DnGpuDevice){};
 
   return device;

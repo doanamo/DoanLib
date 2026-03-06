@@ -6,7 +6,7 @@ struct DnGpuSwapChain {
 DnGpuSwapChain* DnGpuSwapChain_Create() {
   DN_LOG_INFO("Creating gpu swapchain");
 
-  DnGpuSwapChain* swapChain = DN_MEM_ALLOC(DnGpuSwapChain);
+  DnGpuSwapChain* swapChain = DN_MEM_ALLOC_TYPE(DnGpuSwapChain);
   *swapChain = (DnGpuSwapChain){};
 
   return swapChain;

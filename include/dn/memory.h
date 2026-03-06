@@ -16,29 +16,14 @@ constexpr u64 DnMem_SystemPageSize = 4096;
 
 #define DN_MEM_ALIGN_UP(size, alignment) \
   ({ \
-    u64 _size = (size); \
     u64 _alignment = (alignment); \
     DN_ASSERT(DN_IS_POW2(_alignment)); \
-    (_size + (_alignment - 1)) & ~(_alignment - 1); \
+    ((size) + (_alignment - 1)) & ~(_alignment - 1); \
   })
 
-#define DN_MEM_KB(size) \
-  ({ \
-    u64 _size = (size); \
-    _size << 10; \
-  })
-
-#define DN_MEM_MB(size) \
-  ({ \
-    u64 _size = (size); \
-    _size << 20; \
-  })
-
-#define DN_MEM_GB(size) \
-  ({ \
-    u64 _size = (size); \
-    _size << 30; \
-  })
+#define DN_MEM_KB(size) ((size) << 10)
+#define DN_MEM_MB(size) ((size) << 20)
+#define DN_MEM_GB(size) ((size) << 30)
 
 /*
  * Memory allocation
@@ -48,23 +33,11 @@ void* DnMem_Alloc(u64 size);
 void* DnMem_Realloc(void* allocation, u64 size);
 void DnMem_Free(void* allocation);
 
-#define DN_MEM_ALLOC(type) \
-  ({ \
-    (type*)DnMem_Alloc(sizeof(type)); \
-  })
-
-#define DN_MEM_REALLOC(allocation, type, count) \
-  ({ \
-    void* _allocation = (allocation); \
-    u64 _size = sizeof(type) * (count); \
-    (type*)DnMem_Realloc(_allocation, _size); \
-  })
-
-#define DN_MEM_FREE(allocation) \
-  ({ \
-    void* _allocation = (allocation); \
-    DnMem_Free(_allocation); \
-  })
+#define DN_MEM_ALLOC(size) DnMem_Alloc(size)
+#define DN_MEM_REALLOC(allocation, size) DnMem_Realloc(allocation, size)
+#define DN_MEM_ALLOC_TYPE(type) (type*)DnMem_Alloc(sizeof(type))
+#define DN_MEM_REALLOC_TYPE(allocation, type, count) (type*)DnMem_Realloc(_allocation, sizeof(type) * (count))
+#define DN_MEM_FREE(allocation) DnMem_Free(allocation)
 
 /*
  * Virtual memory
@@ -93,13 +66,25 @@ typedef struct DnMemAllocator {
 
 const DnMemAllocator* DnMemAllocatorMalloc_Get();
 
-#define DN_MEM_ALLOCATOR_ALLOC(allocator, type) \
+#define DN_MEM_ALLOCATOR_ALLOC(allocator, size) \
+  ({ \
+    const DnMemAllocator* _allocator = (allocator); \
+    _allocator->alloc(_allocator, (size)); \
+  })
+
+#define DN_MEM_ALLOCATOR_REALLOC(allocator, allocation, size) \
+  ({ \
+    const DnMemAllocator* _allocator = (allocator); \
+    _allocator->realloc(_allocator, allocation, (size)); \
+  })
+
+#define DN_MEM_ALLOCATOR_ALLOC_TYPE(allocator, type) \
   ({ \
     const DnMemAllocator* _allocator = (allocator); \
     (type*)_allocator->alloc(_allocator, sizeof(type)); \
   })
 
-#define DN_MEM_ALLOCATOR_REALLOC(allocator, allocation, type, count) \
+#define DN_MEM_ALLOCATOR_REALLOC_TYPE(allocator, allocation, type, count) \
   ({ \
     const DnMemAllocator* _allocator = (allocator); \
     (type*)_allocator->realloc(_allocator, allocation, sizeof(type) * (count)); \
@@ -123,6 +108,6 @@ typedef struct DnMemArena {
 } DnMemArena;
 
 bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize);
-void* DnMemArena_Alloc(DnMemArena* arena, u64 size);
+void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize);
 void DnMemArena_Free(DnMemArena* arena, bool decommit);
 void DnMemArena_Deinit(DnMemArena* arena);

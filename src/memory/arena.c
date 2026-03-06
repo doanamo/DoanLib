@@ -20,13 +20,13 @@ bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
   return true;
 }
 
-void* DnMemArena_Alloc(DnMemArena* arena, u64 size) {
+void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize) {
   DN_ASSERT(arena != nullptr);
-  DN_ASSERT(size > 0);
+  DN_ASSERT(allocationSize > 0);
 
   u64 allocationOffset = DN_MEM_ALIGN_UP(arena->usedSize, DnMem_DefaultAlignment);
 
-  u64 newUsedSize = allocationOffset + size;
+  u64 newUsedSize = allocationOffset + allocationSize;
   if (newUsedSize > arena->reservedSize) {
     return nullptr;
   }

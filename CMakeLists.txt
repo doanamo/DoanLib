@@ -33,6 +33,7 @@ function(dn_target_setup TARGET)
     # Global includes
     --include=dn/shared.h
     --include=dn/memory.h
+    --include=dn/string.h
     --include=dn/math.h
 
     # Additional warnings
@@ -67,7 +68,7 @@ set(SOURCE_FILES
   "src/memory/virtual.c"
   "src/memory/arena.c"
   "src/memory/temp.c"
-  "src/memory/string.c"
+  "src/common/string.c"
   "src/utility/file.c"
   "src/system/window.c"
   "src/gpu/device.c"

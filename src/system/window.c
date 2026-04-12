@@ -54,7 +54,7 @@ DnSysWindow* DnSysWindow_Create() {
   DN_LOG_INFO("Creating system window");
   bool result = false;
 
-  DnSysWindow* window = DN_MEM_ALLOC_TYPE(DnMemAllocatorDefault_Get(), DnSysWindow);
+  DnSysWindow* window = DN_MEM_ALLOC_TYPE(g_dnMemAllocatorDefault, DnSysWindow);
   *window = (DnSysWindow){
     .width = 1024,
     .height = 576,
@@ -129,7 +129,7 @@ void DnSysWindow_Destroy(DnSysWindow* window) {
     DestroyWindow(window->handle);
   }
 
-  DN_MEM_FREE(DnMemAllocatorDefault_Get(), window);
+  DN_MEM_FREE(g_dnMemAllocatorDefault, window);
 }
 
 void DnSysWindow_SetTitle(DnSysWindow* window, const char* title) {

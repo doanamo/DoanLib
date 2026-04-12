@@ -84,8 +84,8 @@ typedef struct DnMemAllocator {
   void* context;
 } DnMemAllocator;
 
-const DnMemAllocator* DnMemAllocatorDefault_Get();
-const DnMemAllocator* DnMemAllocatorMalloc_Get();
+extern const DnMemAllocator* const g_dnMemAllocatorDefault;
+extern const DnMemAllocator* const g_dnMemAllocatorMalloc;
 
 /*
  * Memory arena

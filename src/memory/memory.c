@@ -15,8 +15,3 @@ bool DnMem_Init() {
 
 void DnMem_Deinit() {
 }
-
-extern DnMemAllocator g_dnMemAllocatorMalloc;
-const DnMemAllocator* DnMemAllocatorDefault_Get() {
-  return &g_dnMemAllocatorMalloc;
-}

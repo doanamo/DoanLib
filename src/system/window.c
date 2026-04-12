@@ -1,3 +1,4 @@
+#include "dn/memory.h"
 #include "dn/system.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -53,7 +54,7 @@ DnSysWindow* DnSysWindow_Create() {
   DN_LOG_INFO("Creating system window");
   bool result = false;
 
-  DnSysWindow* window = DN_MEM_ALLOC_TYPE(DnSysWindow);
+  DnSysWindow* window = DN_MEM_ALLOC_TYPE(DnMemAllocatorDefault_Get(), DnSysWindow);
   *window = (DnSysWindow){
     .width = 1024,
     .height = 576,
@@ -128,7 +129,7 @@ void DnSysWindow_Destroy(DnSysWindow* window) {
     DestroyWindow(window->handle);
   }
 
-  DN_MEM_FREE(window);
+  DN_MEM_FREE(DnMemAllocatorDefault_Get(), window);
 }
 
 void DnSysWindow_SetTitle(DnSysWindow* window, const char* title) {

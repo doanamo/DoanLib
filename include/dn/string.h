@@ -16,7 +16,7 @@
 
 typedef struct DnStringView {
   const char* data;
-  size_t length;
+  u64 length;
 } DnStringView;
 
 static inline DnStringView DnStringView_FromCString(const char* string) {
@@ -26,7 +26,7 @@ static inline DnStringView DnStringView_FromCString(const char* string) {
   };
 }
 
-static inline DnStringView DnStringView_FromCStringLength(const char* string, size_t length) {
+static inline DnStringView DnStringView_FromCStringLength(const char* string, u64 length) {
   return (DnStringView){
     .data = string,
     .length = length,

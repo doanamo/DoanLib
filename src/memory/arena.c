@@ -7,6 +7,7 @@ bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
   reserveSize = DN_MEM_ALIGN_UP(reserveSize, DnMem_SystemPageSize);
   void* address = DnMemVirtual_Reserve(reserveSize);
   if (address == nullptr) {
+    DN_LOG_ERROR("Failed to reserve memory for arena");
     return false;
   }
 
@@ -28,6 +29,7 @@ void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize) {
 
   u64 newUsedSize = allocationOffset + allocationSize;
   if (newUsedSize > arena->reservedSize) {
+    DN_LOG_ERROR("Allocation exceeds reserved arena memory");
     return nullptr;
   }
 
@@ -37,6 +39,7 @@ void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize) {
     void* pageCommitAddress = arena->address + arena->committedSize;
     u64 pageCommitSize = newCommittedSize - arena->committedSize;
     if (!DnMemVirtual_Commit(pageCommitAddress, pageCommitSize)) {
+      DN_LOG_ERROR("Failed to commit memory for arena");
       return nullptr;
     }
 

@@ -35,10 +35,10 @@ constexpr u64 DnMem_SystemPageSize = 4096;
     _allocator->alloc(_allocator, (size)); \
   })
 
-#define DN_MEM_REALLOC(allocator, allocation, size) \
+#define DN_MEM_REALLOC(allocator, allocation, oldSize, newSize) \
   ({ \
     const DnMemAllocator* _allocator = (allocator); \
-    _allocator->realloc(_allocator, allocation, (size)); \
+    _allocator->realloc(_allocator, allocation, (oldSize), (newSize)); \
   })
 
 #define DN_MEM_ALLOC_TYPE(allocator, type) \
@@ -47,10 +47,10 @@ constexpr u64 DnMem_SystemPageSize = 4096;
     (type*)_allocator->alloc(_allocator, sizeof(type)); \
   })
 
-#define DN_MEM_REALLOC_TYPE(allocator, allocation, type, count) \
+#define DN_MEM_REALLOC_TYPE(allocator, allocation, type, oldCount, newCount) \
   ({ \
     const DnMemAllocator* _allocator = (allocator); \
-    (type*)_allocator->realloc(_allocator, allocation, sizeof(type) * (count)); \
+    (type*)_allocator->realloc(_allocator, allocation, sizeof(type) * (oldCount), sizeof(type) * (newCount)); \
   })
 
 #define DN_MEM_FREE(allocator, allocation) \
@@ -74,7 +74,7 @@ void DnMemVirtual_Release(void* page);
 
 typedef struct DnMemAllocator DnMemAllocator;
 typedef void* (DnMemAllocatorAllocFunc)(const DnMemAllocator* allocator, u64 size);
-typedef void* (DnMemAllocatorReallocFunc)(const DnMemAllocator* allocator, void* pointer, u64 size);
+typedef void* (DnMemAllocatorReallocFunc)(const DnMemAllocator* allocator, void* pointer, u64 oldSize, u64 newSize);
 typedef void (DnMemAllocatorFreeFunc)(const DnMemAllocator* allocator, void* pointer);
 
 typedef struct DnMemAllocator {

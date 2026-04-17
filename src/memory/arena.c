@@ -25,9 +25,10 @@ void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize) {
   DN_ASSERT(arena != nullptr);
   DN_ASSERT(allocationSize > 0);
 
-  u64 allocationOffset = DN_MEM_ALIGN_UP(arena->usedSize, DnMem_DefaultAlignment);
+  DN_ASSERT(DN_MEM_IS_ALIGNED(arena->usedSize, DnMem_DefaultAlignment));
+  allocationSize = DN_MEM_ALIGN_UP(allocationSize, DnMem_DefaultAlignment);
 
-  u64 newUsedSize = allocationOffset + allocationSize;
+  u64 newUsedSize = arena->usedSize + allocationSize;
   if (newUsedSize > arena->reservedSize) {
     DN_LOG_ERROR("Allocation exceeds reserved arena memory");
     return nullptr;
@@ -46,11 +47,23 @@ void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize) {
     arena->committedSize = newCommittedSize;
   }
 
+  void* allocation = arena->address + arena->usedSize;
   arena->usedSize = newUsedSize;
-  return arena->address + allocationOffset;
+  return allocation;
 }
 
-void DnMemArena_Free(DnMemArena* arena, bool decommit) {
+void DnMemArena_Free(DnMemArena* arena, u64 allocationSize) {
+  DN_ASSERT(arena != nullptr);
+  DN_ASSERT(allocationSize > 0);
+
+  DN_ASSERT(DN_MEM_IS_ALIGNED(arena->usedSize, DnMem_DefaultAlignment));
+  allocationSize = DN_MEM_ALIGN_UP(allocationSize, DnMem_DefaultAlignment);
+
+  DN_ASSERT(arena->usedSize >= allocationSize);
+  arena->usedSize = arena->usedSize - allocationSize;
+}
+
+void DnMemArena_Reset(DnMemArena* arena, bool decommit) {
   DN_ASSERT(arena != nullptr);
   arena->usedSize = 0;
 
@@ -62,6 +75,11 @@ void DnMemArena_Free(DnMemArena* arena, bool decommit) {
 
 void DnMemArena_Deinit(DnMemArena* arena) {
   DN_ASSERT(arena != nullptr);
-  DnMemVirtual_Release(arena->address);
+
+  if (arena->address)
+  {
+    DnMemVirtual_Release(arena->address);
+  }
+
   *arena = (DnMemArena){};
 }

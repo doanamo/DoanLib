@@ -14,6 +14,14 @@ constexpr u64 DnMem_SystemPageSize = 4096;
  * Memory utility
  */
 
+#define DN_MEM_IS_ALIGNED(size, alignment) \
+  ({ \
+    u64 _size = (size); \
+    u64 _alignment = (alignment); \
+    DN_ASSERT(DN_IS_POW2(_alignment)); \
+    (_size & (_alignment - 1)) == 0; \
+  })
+
 #define DN_MEM_ALIGN_UP(size, alignment) \
   ({ \
     u64 _alignment = (alignment); \
@@ -100,5 +108,20 @@ typedef struct DnMemArena {
 
 bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize);
 void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize);
-void DnMemArena_Free(DnMemArena* arena, bool decommit);
+void DnMemArena_Free(DnMemArena* arena, u64 allocationSize);
+void DnMemArena_Reset(DnMemArena* arena, bool decommit);
 void DnMemArena_Deinit(DnMemArena* arena);
+
+/*
+ * Temporary memory
+ */
+
+typedef struct DnMemTempScope {
+  u64 savedUsedSize;
+  bool valid;
+} DnMemTempScope;
+
+DnMemTempScope DnMemTemp_PushScope();
+void DnMemTemp_PopScope(DnMemTempScope* scope);
+
+extern const DnMemAllocator* const g_dnMemAllocatorTemp;

@@ -2,6 +2,7 @@
 #include "dn/application.h"
 
 int main(int argc, char* argv[]) {
+  // #todo: Pass arguments through config and parse them.
   DN_UNUSED(argc);
   DN_UNUSED(argv);
 

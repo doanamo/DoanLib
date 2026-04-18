@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
       .tempReservedSize = DN_MEM_GB(1),
     },
     .system = {
-      .windowTitle = "DoanLib Example",
+      .windowTitle = DN_STR_VIEW_LITERAL("DoanLib Example"),
       .windowWidth = 1024,
       .windowHeight = 576,
     }

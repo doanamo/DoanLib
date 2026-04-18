@@ -37,9 +37,13 @@ constexpr u64 DnMem_SystemPageSize = 4096;
     ((size) + (_alignment - 1)) & ~(_alignment - 1); \
   })
 
-#define DN_MEM_KB(size) ((size) << 10)
-#define DN_MEM_MB(size) ((size) << 20)
-#define DN_MEM_GB(size) ((size) << 30)
+#define DN_MEM_KB(bytes) ((bytes) << 10)
+#define DN_MEM_MB(bytes) ((bytes) << 20)
+#define DN_MEM_GB(bytes) ((bytes) << 30)
+
+#define DN_MEM_TO_KB(bytes) ((f64)(bytes) / (1ull << 10))
+#define DN_MEM_TO_MB(bytes) ((f64)(bytes) / (1ull << 20))
+#define DN_MEM_TO_GB(bytes) ((f64)(bytes) / (1ull << 30))
 
 /*
  * Memory allocation

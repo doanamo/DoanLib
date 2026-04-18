@@ -9,8 +9,8 @@ void DnMemTemp_Deinit();
 bool DnMem_Init(const DnMemConfig* config) {
   DN_ASSERT(config);
 
-  DN_LOG_INFO("System memory page size: %llu", DnMem_SystemPageSize);
-  DN_LOG_INFO("Default memory alignment: %llu", DnMem_DefaultAlignment);
+  DN_LOG_INFO("System memory page size: %llu bytes", DnMem_SystemPageSize);
+  DN_LOG_INFO("Default memory alignment: %llu bytes", DnMem_DefaultAlignment);
 
   if (!DnMemVirtual_Init()) {
     return false;

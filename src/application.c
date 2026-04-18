@@ -1,5 +1,6 @@
 #include "dn/application.h"
 #include "dn/shared.h"
+#include "dn/string.h"
 #include "dn/system.h"
 #include "dn/gpu.h"
 
@@ -27,9 +28,9 @@ bool DnApp_Init(const DnAppConfig* config) {
     return false;
   }
 
-  const char* windowTitle = config->system.windowTitle;
-  if (!windowTitle) {
-    windowTitle = "DoanLib Window";
+  DnStrView windowTitle = config->system.windowTitle;
+  if (DnStrView_IsEmpty(windowTitle)) {
+    windowTitle = DN_STR_VIEW_LITERAL("DoanLib Window");
   }
 
   u32 windowWidth = config->system.windowWidth;
@@ -56,11 +57,11 @@ bool DnApp_Init(const DnAppConfig* config) {
   return true;
 }
 
-void DnApp_Update(float deltaTime) {
+void DnApp_Update(f32 deltaTime) {
   DN_UNUSED(deltaTime);
 }
 
-void DnApp_Render(float alphaTime) {
+void DnApp_Render(f32 alphaTime) {
   DN_UNUSED(alphaTime);
 }
 

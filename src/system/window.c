@@ -132,9 +132,13 @@ void DnSysWindow_Destroy(DnSysWindow* window) {
   DN_MEM_FREE(g_dnMemAllocatorDefault, window);
 }
 
-void DnSysWindow_SetTitle(DnSysWindow* window, const char* title) {
+void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title) {
   DN_ASSERT(window->handle);
-  SetWindowText(window->handle, title);
+
+  DnMemTempScope memTempScope = DnMemTemp_PushScope();
+  const char* titleStr = DnStrView_AsCStr(g_dnMemAllocatorTemp, title);
+  SetWindowText(window->handle, titleStr);
+  DnMemTemp_PopScope(&memTempScope);
 }
 
 void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height) {

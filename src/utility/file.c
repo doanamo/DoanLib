@@ -1,9 +1,9 @@
+#include "dn/memory.h"
 #include "dn/utility.h"
 #include <stdio.h>
 
-bool DnUtilFile_Read(const DnMemAllocator* allocator, const char* path, u8** outData, u64* outSize) {
+bool DnUtilFile_Read(const DnMemAllocator* allocator, DnStrView path, u8** outData, u64* outSize) {
   DN_ASSERT(allocator != nullptr);
-  DN_ASSERT(path != nullptr);
   DN_ASSERT(outData != nullptr);
   DN_ASSERT(outSize != nullptr);
 
@@ -11,7 +11,10 @@ bool DnUtilFile_Read(const DnMemAllocator* allocator, const char* path, u8** out
   FILE* file = nullptr;
   u8* data = nullptr;
 
-  file = fopen(path, "rb");
+  DnMemTempScope memTempScope = DnMemTemp_PushScope();
+
+  const char* pathStr = DnStrView_AsCStr(g_dnMemAllocatorTemp, path);
+  file = fopen(pathStr, "rb");
   if (!file) {
     goto error;
   }
@@ -43,6 +46,8 @@ error:
   if (!result && data) {
     DN_MEM_FREE(allocator, data);
   }
+
+  DnMemTemp_PopScope(&memTempScope);
 
   return result;
 }

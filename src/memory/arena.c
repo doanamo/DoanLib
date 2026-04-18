@@ -1,7 +1,7 @@
 #include "dn/memory.h"
 
 bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
-  DN_ASSERT(arena != nullptr);
+  DN_ASSERT(arena);
   DN_ASSERT(reserveSize > 0);
 
   reserveSize = DN_MEM_ALIGN_UP(reserveSize, DnMem_SystemPageSize);
@@ -22,7 +22,7 @@ bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
 }
 
 void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize) {
-  DN_ASSERT(arena != nullptr);
+  DN_ASSERT(arena);
   DN_ASSERT(allocationSize > 0);
 
   DN_ASSERT(DN_MEM_IS_ALIGNED(arena->usedSize, DnMem_DefaultAlignment));
@@ -53,7 +53,7 @@ void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize) {
 }
 
 void DnMemArena_Free(DnMemArena* arena, u64 allocationSize) {
-  DN_ASSERT(arena != nullptr);
+  DN_ASSERT(arena);
   DN_ASSERT(allocationSize > 0);
 
   DN_ASSERT(DN_MEM_IS_ALIGNED(arena->usedSize, DnMem_DefaultAlignment));
@@ -64,7 +64,7 @@ void DnMemArena_Free(DnMemArena* arena, u64 allocationSize) {
 }
 
 void DnMemArena_Reset(DnMemArena* arena, bool decommit) {
-  DN_ASSERT(arena != nullptr);
+  DN_ASSERT(arena);
   arena->usedSize = 0;
 
   if (decommit) {
@@ -74,7 +74,7 @@ void DnMemArena_Reset(DnMemArena* arena, bool decommit) {
 }
 
 void DnMemArena_Deinit(DnMemArena* arena) {
-  DN_ASSERT(arena != nullptr);
+  DN_ASSERT(arena);
 
   if (arena->address)
   {

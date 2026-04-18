@@ -27,7 +27,7 @@ static inline DnStrView DnStrView_FromCStr(const char* string) {
 }
 
 static inline DnStrView DnStrView_FromCStrLength(const char* string, u64 length) {
-  DN_ASSERT(string != nullptr || length == 0);
+  DN_ASSERT(string || length == 0);
   return (DnStrView){
     .data = string,
     .length = length,
@@ -35,7 +35,7 @@ static inline DnStrView DnStrView_FromCStrLength(const char* string, u64 length)
 }
 
 static inline bool DnStrView_IsEmpty(DnStrView view) {
-  DN_ASSERT(view.data != nullptr || view.length == 0);
+  DN_ASSERT(view.data || view.length == 0);
   return view.data == nullptr || view.length == 0;
 }
 

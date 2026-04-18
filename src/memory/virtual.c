@@ -23,7 +23,7 @@ void* DnMemVirtual_Reserve(u64 size) {
 }
 
 bool DnMemVirtual_Commit(void* page, u64 size) {
-  return VirtualAlloc(page, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
+  return VirtualAlloc(page, size, MEM_COMMIT, PAGE_READWRITE);
 }
 
 void DnMemVirtual_Decommit(void* page, u64 size) {

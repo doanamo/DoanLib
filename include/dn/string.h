@@ -6,37 +6,37 @@
  * String macros
  */
 
-#define DN_STRING_VIEW_FMT "%.*s"
-#define DN_STRING_VIEW_ARG(view) (view.length), (view.data)
-#define DN_STRING_VIEW_LITERAL(text) ((DnStringView){ .data = text, .length = sizeof(text) - 1 })
+#define DN_STR_VIEW_FMT "%.*s"
+#define DN_STR_VIEW_ARG(view) (view.length), (view.data)
+#define DN_STR_VIEW_LITERAL(literal) ((DnStrView){ .data = text, .length = sizeof(literal) - 1 })
 
 /*
  * String view
  */
 
-typedef struct DnStringView {
+typedef struct DnStrView {
   const char* data;
   u64 length;
-} DnStringView;
+} DnStrView;
 
-static inline DnStringView DnStringView_FromCString(const char* string) {
-  return (DnStringView){
+static inline DnStrView DnStrView_FromCStr(const char* string) {
+  return (DnStrView){
     .data = string,
     .length = strlen(string),
   };
 }
 
-static inline DnStringView DnStringView_FromCStringLength(const char* string, u64 length) {
-  return (DnStringView){
+static inline DnStrView DnStrView_FromCStrLength(const char* string, u64 length) {
+  return (DnStrView){
     .data = string,
     .length = length,
   };
 }
 
-static inline bool DnStringView_IsValid(DnStringView view) {
+static inline bool DnStrView_IsValid(DnStrView view) {
   return view.data != nullptr;
 }
 
-static inline bool DnStringView_IsEmpty(DnStringView view) {
+static inline bool DnStrView_IsEmpty(DnStrView view) {
   return view.data == nullptr || view.length == 0;
 }

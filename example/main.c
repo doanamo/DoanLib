@@ -11,6 +11,8 @@ int main(int argc, char* argv[]) {
     },
     .system = {
       .windowTitle = "DoanLib Example",
+      .windowWidth = 1024,
+      .windowHeight = 768,
     }
   };
 

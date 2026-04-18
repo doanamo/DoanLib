@@ -3,9 +3,9 @@
 #include <stdio.h>
 
 bool DnUtilFile_Read(const DnMemAllocator* allocator, DnStrView path, u8** outData, u64* outSize) {
-  DN_ASSERT(allocator != nullptr);
-  DN_ASSERT(outData != nullptr);
-  DN_ASSERT(outSize != nullptr);
+  DN_ASSERT(allocator);
+  DN_ASSERT(outData);
+  DN_ASSERT(outSize);
 
   bool result = false;
   FILE* file = nullptr;

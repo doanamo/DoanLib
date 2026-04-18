@@ -5,5 +5,14 @@ int main(int argc, char* argv[]) {
   DN_UNUSED(argc);
   DN_UNUSED(argv);
 
-  return DnApp_Run();
+  DnAppConfig config = {
+    .memory = {
+      .tempReservedSize = DN_MEM_GB(1),
+    },
+    .system = {
+      .windowTitle = "DoanLib Example",
+    }
+  };
+
+  return DnApp_Run(&config);
 }

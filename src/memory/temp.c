@@ -40,9 +40,9 @@ void DnMemAllocatorTemp_Free(const DnMemAllocator* allocator, void* allocation) 
   // #todo: Debug reset freed memory to a specific pattern.
 }
 
-bool DnMemTemp_Init() {
-  // #todo: Parametarize temporary allocator reserved size via config.
-  if (!DnMemArena_Init(&g_dnMemArenaTemp, DN_MEM_GB(1))) {
+bool DnMemTemp_Init(const DnMemConfig* config) {
+  u64 tempReservedSize = config->tempReservedSize ? config->tempReservedSize : DN_MEM_GB(1);
+  if (!DnMemArena_Init(&g_dnMemArenaTemp, tempReservedSize)) {
     return false;
   }
 

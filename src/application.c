@@ -1,4 +1,5 @@
 #include "dn/application.h"
+#include "dn/shared.h"
 #include "dn/system.h"
 #include "dn/gpu.h"
 
@@ -13,10 +14,11 @@ void DnApp_CloseCallback() {
   g_exit = true;
 }
 
-bool DnApp_Init() {
+bool DnApp_Init(const DnAppConfig* config) {
   DN_LOG_INFO("Initializing application");
+  DN_ASSERT(config);
 
-  if (!DnMem_Init()) {
+  if (!DnMem_Init(&config->memory)) {
     return false;
   }
 
@@ -25,8 +27,20 @@ bool DnApp_Init() {
     return false;
   }
 
-  DnSysWindow_SetSize(g_sysWindow, 1024, 576);
-  DnSysWindow_SetTitle(g_sysWindow, "DoanLib Example");
+  const char* windowTitle = config->system.windowTitle;
+  if (!windowTitle) {
+    windowTitle = "DoanLib Window";
+  }
+
+  u32 windowWidth = config->system.windowWidth;
+  u32 windowHeight = config->system.windowHeight;
+  if (!windowWidth || !windowHeight) {
+    windowWidth = 1024;
+    windowHeight = 576;
+  }
+
+  DnSysWindow_SetTitle(g_sysWindow, windowTitle);
+  DnSysWindow_SetSize(g_sysWindow, windowWidth, windowHeight);
   DnSysWindow_SetCloseCallback(g_sysWindow, &DnApp_CloseCallback);
 
   g_gpuDevice = DnGpuDevice_Create();
@@ -71,8 +85,9 @@ void DnApp_Deinit() {
   DnMem_Deinit();
 }
 
-int DnApp_Run() {
-  if (!DnApp_Init()) {
+int DnApp_Run(const DnAppConfig* config) {
+  DN_ASSERT(config);
+  if (!DnApp_Init(config)) {
     goto error;
   }
 

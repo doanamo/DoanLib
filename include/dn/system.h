@@ -1,6 +1,16 @@
 #pragma once
 
 /*
+ * System configuration
+ */
+
+typedef struct DnSysConfig {
+  const char* windowTitle;
+  u32 windowWidth;
+  u32 windowHeight;
+} DnSysConfig;
+
+/*
  * System window
  */
 

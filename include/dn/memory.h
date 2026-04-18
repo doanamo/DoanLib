@@ -1,6 +1,14 @@
 #pragma once
 
-bool DnMem_Init();
+/*
+ * Memory initialization
+ */
+
+typedef struct DnMemConfig {
+  u64 tempReservedSize;
+} DnMemConfig;
+
+bool DnMem_Init(const DnMemConfig* config);
 void DnMem_Deinit();
 
 /*

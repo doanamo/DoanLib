@@ -3,10 +3,12 @@
 bool DnMemVirtual_Init();
 void DnMemVirtual_Deinit();
 
-bool DnMemTemp_Init();
+bool DnMemTemp_Init(const DnMemConfig* config);
 void DnMemTemp_Deinit();
 
-bool DnMem_Init() {
+bool DnMem_Init(const DnMemConfig* config) {
+  DN_ASSERT(config);
+
   DN_LOG_INFO("System memory page size: %llu", DnMem_SystemPageSize);
   DN_LOG_INFO("Default memory alignment: %llu", DnMem_DefaultAlignment);
 
@@ -14,7 +16,7 @@ bool DnMem_Init() {
     return false;
   }
 
-  if (!DnMemTemp_Init()) {
+  if (!DnMemTemp_Init(config)) {
     return false;
   }
 

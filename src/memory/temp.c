@@ -42,7 +42,7 @@ void DnMemAllocatorTemp_Free(const DnMemAllocator* allocator, void* allocation) 
 
 bool DnMemTemp_Init(const DnMemConfig* config) {
   u64 tempReservedSize = config->tempReservedSize ? config->tempReservedSize : DN_MEM_GB(1);
-  DN_LOG_INFO("Reserved temporary memory size: %.2f GB", DN_MEM_TO_GB(tempReservedSize));
+  DN_LOG_INFO("Reserved temporary memory: %.2f GB", DN_MEM_TO_GB(tempReservedSize));
 
   if (!DnMemArena_Init(&g_dnMemArenaTemp, tempReservedSize)) {
     return false;

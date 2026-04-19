@@ -1,11 +1,18 @@
 #include "dn/gpu.h"
 #include "dn/memory.h"
 
+#include <vma/vk_mem_alloc.h>
+
 struct DnGpuDevice {
 };
 
 DnGpuDevice* DnGpuDevice_Create() {
   DN_LOG_INFO("Creating gpu device");
+
+  if (volkInitialize() != VK_SUCCESS) {
+    DN_LOG_ERROR("Failed to initialize volk");
+    return nullptr;
+  }
 
   DnGpuDevice* device = DN_MEM_ALLOC_TYPE(g_dnMemAllocatorDefault, DnGpuDevice);
   *device = (DnGpuDevice){};

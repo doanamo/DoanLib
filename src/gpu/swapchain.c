@@ -15,6 +15,7 @@ DnGpuSwapChain* DnGpuSwapChain_Create() {
 
 void DnGpuSwapChain_Present(DnGpuSwapChain* swapChain) {
   DN_ASSERT(swapChain);
+  DN_UNUSED(swapChain);
 }
 
 void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain) {

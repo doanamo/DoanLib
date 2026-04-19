@@ -93,6 +93,13 @@ target_include_directories(Doan PUBLIC "include/")
 dn_target_setup(Doan)
 
 #
+# Dependencies
+#
+
+target_include_directories(Doan PUBLIC "$ENV{VULKAN_SDK}/Include")
+target_sources(Doan PRIVATE "$ENV{VULKAN_SDK}/Include/Volk/volk.c")
+
+#
 # Example
 #
 

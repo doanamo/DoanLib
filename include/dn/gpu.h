@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Volk/volk.h>
+
 /*
  * GPU device
  */

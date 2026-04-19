@@ -30,32 +30,42 @@ function(dn_target_setup TARGET)
   )
 
   target_compile_options(${TARGET} PRIVATE
-    # Global includes
+    # Global includes.
     --include=dn/shared.h
     --include=dn/memory.h
     --include=dn/string.h
     --include=dn/math.h
 
-    # Additional warnings
+    # Additional warnings.
     -Wall
     -Wextra
     -Wconversion
 
-    # Always produce debug symbols
+    # Always produce debug symbols.
     -g
 
-    # Additional optimizations
+    # Additional optimizations.
     $<$<CONFIG:Release>:-flto>
     -ffast-math
   )
 
   target_link_options(${TARGET} PRIVATE
-    # Always produce debug symbols
+    # Always produce debug symbols.
     -g
 
-    # Additional optimizations
+    # Additional optimizations.
     $<$<CONFIG:Release>:-flto>
+
+    # Keep standard main entry.
+    LINKER:/ENTRY:mainCRTStartup
   )
+
+  if(WIN32)
+    # Hide console window in Release configuration.
+    set_target_properties(${TARGET} PROPERTIES
+      WIN32_EXECUTABLE $<CONFIG:Release>
+    )
+  endif()
 endfunction()
 
 #

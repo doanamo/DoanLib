@@ -40,6 +40,7 @@ function(dn_target_setup TARGET)
     -Wall
     -Wextra
     -Wconversion
+    -Werror
 
     # Always produce debug symbols.
     -g

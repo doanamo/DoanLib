@@ -82,7 +82,7 @@ set(SOURCE_FILES
   "src/common/string.c"
   "src/utility/file.c"
   "src/system/window.c"
-  "src/gpu/device.c"
+  "src/gpu/context.c"
   "src/gpu/swapchain.c"
   "src/application.c"
   "src/shared.c"

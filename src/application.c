@@ -5,7 +5,7 @@
 #include "dn/gpu.h"
 
 DnSysWindow* g_sysWindow = nullptr;
-DnGpuDevice* g_gpuDevice = nullptr;
+DnGpuContext* g_gpuContext = nullptr;
 DnGpuSwapChain* g_gpuSwapChain = nullptr;
 
 bool g_exit = false;
@@ -44,8 +44,8 @@ bool DnApp_Init(const DnAppConfig* config) {
   DnSysWindow_SetSize(g_sysWindow, windowWidth, windowHeight);
   DnSysWindow_SetCloseCallback(g_sysWindow, &DnApp_CloseCallback);
 
-  g_gpuDevice = DnGpuDevice_Create();
-  if (!g_gpuDevice) {
+  g_gpuContext = DnGpuContext_Create();
+  if (!g_gpuContext) {
     return false;
   }
 
@@ -73,9 +73,9 @@ void DnApp_Deinit() {
     g_gpuSwapChain = nullptr;
   }
 
-  if (g_gpuDevice) {
-    DnGpuDevice_Destroy(g_gpuDevice);
-    g_gpuDevice = nullptr;
+  if (g_gpuContext) {
+    DnGpuContext_Destroy(g_gpuContext);
+    g_gpuContext = nullptr;
   }
 
   if (g_sysWindow) {

@@ -3,13 +3,13 @@
 #include <Volk/volk.h>
 
 /*
- * GPU device
+ * GPU context
  */
 
-typedef struct DnGpuDevice DnGpuDevice;
+typedef struct DnGpuContext DnGpuContext;
 
-DnGpuDevice* DnGpuDevice_Create();
-void DnGpuDevice_Destroy(DnGpuDevice* device);
+DnGpuContext* DnGpuContext_Create();
+void DnGpuContext_Destroy(DnGpuContext* context);
 
 /*
  * GPU swap chain

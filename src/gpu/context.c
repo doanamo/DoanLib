@@ -27,7 +27,7 @@ DnGpuContext* DnGpuContext_Create() {
     .apiVersion = VK_API_VERSION_1_4,
     .pEngineName = "DoanLib",
     .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-    .pApplicationName = "",
+    .pApplicationName = nullptr,
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
   };
 

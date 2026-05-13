@@ -100,6 +100,10 @@ dn_target_setup(Doan)
 target_include_directories(Doan PUBLIC "$ENV{VULKAN_SDK}/Include")
 target_sources(Doan PRIVATE "$ENV{VULKAN_SDK}/Include/Volk/volk.c")
 
+if(WIN32)
+  target_compile_definitions(Doan PUBLIC VK_USE_PLATFORM_WIN32_KHR)
+endif()
+
 #
 # Example
 #

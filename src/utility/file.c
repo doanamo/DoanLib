@@ -7,7 +7,7 @@ bool DnUtilFile_Read(const DnMemAllocator* allocator, DnStrView path, u8** outDa
   DN_ASSERT(outData);
   DN_ASSERT(outSize);
 
-  bool result = false;
+  bool success = false;
   FILE* file = nullptr;
   u8* data = nullptr;
 
@@ -34,7 +34,7 @@ bool DnUtilFile_Read(const DnMemAllocator* allocator, DnStrView path, u8** outDa
     goto error;
   }
 
-  result = true;
+  success = true;
   *outData = data;
   *outSize = (u64)size;
 
@@ -43,11 +43,11 @@ error:
     fclose(file);
   }
 
-  if (!result && data) {
+  if (!success) {
     DN_MEM_FREE(allocator, data);
   }
 
   DnMemTemp_PopScope(&memTempScope);
 
-  return result;
+  return success;
 }

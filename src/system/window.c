@@ -52,7 +52,7 @@ LRESULT CALLBACK DnSysWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
 DnSysWindow* DnSysWindow_Create() {
   DN_LOG_INFO("Creating system window");
-  bool result = false;
+  bool success = false;
 
   DnSysWindow* window = DN_MEM_ALLOC_TYPE(g_dnMemAllocatorDefault, DnSysWindow);
   *window = (DnSysWindow){
@@ -101,10 +101,10 @@ DnSysWindow* DnSysWindow_Create() {
   window->width = (u32)clientSize.right;
   window->height = (u32)clientSize.bottom;
 
-  result = true;
+  success = true;
 
 error:
-  if (!result) {
+  if (!success) {
     DnSysWindow_Destroy(window);
     window = nullptr;
   }

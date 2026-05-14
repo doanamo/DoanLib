@@ -99,9 +99,8 @@ void DnMemTemp_PopScope(DnMemTempScope* scope) {
   if (scope->valid) {
     DN_ASSERT(g_dnMemArenaTemp.usedSize >= scope->savedUsedSize);
     g_dnMemArenaTemp.usedSize = scope->savedUsedSize;
+    scope->valid = false;
   }
-
-  scope->valid = false;
 }
 
 static DnMemAllocator g_dnMemAllocatorTempPrivate = {

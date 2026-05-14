@@ -1,11 +1,6 @@
 #include "dn/gpu.h"
 #include "dn/memory.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnullability-completeness"
-#include <vma/vk_mem_alloc.h>
-#pragma clang diagnostic pop
-
 struct DnGpuContext {
   VkInstance instance;
 };
@@ -40,7 +35,7 @@ DnGpuContext* DnGpuContext_Create() {
     .ppEnabledExtensionNames = nullptr,
   };
 
-  if (vkCreateInstance(&createInfo, nullptr, &context->instance) != VK_SUCCESS) {
+  if (vkCreateInstance(&createInfo, g_dnGpuAllocatorVulkan, &context->instance) != VK_SUCCESS) {
     DN_LOG_ERROR("Failed to create instance");
     goto error;
   }
@@ -61,7 +56,7 @@ error:
 void DnGpuContext_Destroy(DnGpuContext* context) {
   DN_ASSERT(context);
 
-  vkDestroyInstance(context->instance, nullptr);
+  vkDestroyInstance(context->instance, g_dnGpuAllocatorVulkan);
 
   DN_MEM_FREE(g_dnMemAllocatorDefault, context);
 }

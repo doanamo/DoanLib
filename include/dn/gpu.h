@@ -3,6 +3,12 @@
 #include <Volk/volk.h>
 
 /*
+ * GPU memory
+ */
+
+extern const VkAllocationCallbacks* const g_dnGpuAllocatorVulkan;
+
+/*
  * GPU context
  */
 

@@ -32,9 +32,10 @@ constexpr u64 DnMem_SystemPageSize = 4096;
 
 #define DN_MEM_ALIGN_UP(size, alignment) \
   ({ \
+    u64 _size = (size); \
     u64 _alignment = (alignment); \
     DN_ASSERT(DN_IS_POW2(_alignment)); \
-    ((size) + (_alignment - 1)) & ~(_alignment - 1); \
+    ((_size) + (_alignment - 1)) & ~(_alignment - 1); \
   })
 
 #define DN_MEM_KB(bytes) ((bytes) << 10)
@@ -79,6 +80,36 @@ constexpr u64 DnMem_SystemPageSize = 4096;
     _allocator->free(_allocator, allocation); \
   })
 
+#define DN_MEM_ALLOC_ALIGNED(allocator, size, alignment) \
+  ({ \
+    const DnMemAllocator* _allocator = (allocator); \
+    _allocator->allocAligned(_allocator, (size), (alignment)); \
+  })
+
+#define DN_MEM_REALLOC_ALIGNED(allocator, allocation, oldSize, newSize, alignment) \
+  ({ \
+    const DnMemAllocator* _allocator = (allocator); \
+    _allocator->reallocAligned(_allocator, allocation, (oldSize), (newSize), (alignment)); \
+  })
+
+#define DN_MEM_ALLOC_ALIGNED_TYPE(allocator, type) \
+  ({ \
+    const DnMemAllocator* _allocator = (allocator); \
+    (type*)_allocator->allocAligned(_allocator, sizeof(type), alignof(type)); \
+  })
+
+#define DN_MEM_REALLOC_ALIGNED_TYPE(allocator, allocation, type, oldCount, newCount) \
+  ({ \
+    const DnMemAllocator* _allocator = (allocator); \
+    (type*)_allocator->reallocAligned(_allocator, allocation, sizeof(type) * (oldCount), sizeof(type) * (newCount), alignof(type)); \
+  })
+
+#define DN_MEM_FREE_ALIGNED(allocator, allocation) \
+  ({ \
+    const DnMemAllocator* _allocator = (allocator); \
+    _allocator->freeAligned(_allocator, allocation); \
+  })
+
 /*
  * Virtual memory
  */
@@ -96,11 +127,17 @@ typedef struct DnMemAllocator DnMemAllocator;
 typedef void* (DnMemAllocatorAllocFunc)(const DnMemAllocator* allocator, u64 size);
 typedef void* (DnMemAllocatorReallocFunc)(const DnMemAllocator* allocator, void* pointer, u64 oldSize, u64 newSize);
 typedef void (DnMemAllocatorFreeFunc)(const DnMemAllocator* allocator, void* pointer);
+typedef void* (DnMemAllocatorAllocAlignedFunc)(const DnMemAllocator* allocator, u64 size, u64 alignment);
+typedef void* (DnMemAllocatorReallocAlignedFunc)(const DnMemAllocator* allocator, void* pointer, u64 oldSize, u64 newSize, u64 alignment);
+typedef void (DnMemAllocatorFreeAlignedFunc)(const DnMemAllocator* allocator, void* pointer);
 
 typedef struct DnMemAllocator {
   DnMemAllocatorAllocFunc* alloc;
   DnMemAllocatorReallocFunc* realloc;
   DnMemAllocatorFreeFunc* free;
+  DnMemAllocatorAllocAlignedFunc* allocAligned;
+  DnMemAllocatorReallocAlignedFunc* reallocAligned;
+  DnMemAllocatorFreeAlignedFunc* freeAligned;
   void* context;
 } DnMemAllocator;
 

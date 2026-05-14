@@ -1,5 +1,7 @@
 #include "dn/memory.h"
 
+// Temporary allocator intentionally leaks old allocations. There can be the worst case scenario for repeated reallocations (imagine continously resized array), but temporary allocator should be used for very short lived transient allocations only.
+
 static DnMemArena g_dnMemArenaTemp = {};
 
 void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size) {
@@ -13,16 +15,11 @@ void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size) {
   return allocation;
 }
 
-// Temporary allocator intentionally leaks old allocations. There can be the worst case scenario for repeated reallocations (imagine continously resized array), but temporary allocator should be used for very short lived transient allocations only.
 void* DnMemAllocatorTemp_Realloc(const DnMemAllocator* allocator, void* allocation, u64 oldSize, u64 newSize) {
-  DN_ASSERT(allocator);
-  DN_UNUSED(allocator);
-
-  void* reallocation = DnMemArena_Alloc(&g_dnMemArenaTemp, newSize);
+  void* reallocation = DnMemAllocatorTemp_Alloc(allocator, newSize);
   DN_ASSERT_ALWAYS(reallocation);
 
-  if (allocation)
-  {
+  if (allocation) {
     DN_ASSERT(oldSize);
     memcpy(reallocation, allocation, oldSize < newSize ? oldSize : newSize);
     // #todo: Debug reset old memory to a specific pattern.
@@ -31,8 +28,41 @@ void* DnMemAllocatorTemp_Realloc(const DnMemAllocator* allocator, void* allocati
   return reallocation;
 }
 
-// Temporary allocator does not free allocations.
 void DnMemAllocatorTemp_Free(const DnMemAllocator* allocator, void* allocation) {
+  DN_ASSERT(allocator);
+  DN_UNUSED(allocator);
+  DN_UNUSED(allocation);
+
+  // #todo: Debug reset freed memory to a specific pattern.
+}
+
+void* DnMemAllocatorTemp_AllocAligned(const DnMemAllocator* allocator, u64 size, u64 alignment) {
+  DN_ASSERT(allocator);
+  DN_UNUSED(allocator);
+
+  u64 alignmentSize = alignment - 1;
+  void* allocation = DnMemArena_Alloc(&g_dnMemArenaTemp, size + alignmentSize);
+  DN_ASSERT_ALWAYS(allocation);
+
+  // #todo: Debug reset allocated memory to a specific pattern.
+  allocation = (void*)DN_MEM_ALIGN_UP((u64)allocation, alignment);
+  return allocation;
+}
+
+void* DnMemAllocatorTemp_ReallocAligned(const DnMemAllocator* allocator, void* allocation, u64 oldSize, u64 newSize, u64 alignment) {
+  void* reallocation = DnMemAllocatorTemp_AllocAligned(allocator, newSize, alignment);
+  DN_ASSERT_ALWAYS(reallocation);
+
+  if (allocation) {
+    DN_ASSERT(oldSize);
+    memcpy(reallocation, allocation, oldSize < newSize ? oldSize : newSize);
+    // #todo: Debug reset old memory to a specific pattern.
+  }
+
+  return reallocation;
+}
+
+void DnMemAllocatorTemp_FreeAligned(const DnMemAllocator* allocator, void* allocation) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
   DN_UNUSED(allocation);
@@ -56,7 +86,7 @@ void DnMemTemp_Deinit() {
 }
 
 DnMemTempScope DnMemTemp_PushScope() {
-  return (DnMemTempScope){
+  return (DnMemTempScope) {
     .savedUsedSize = g_dnMemArenaTemp.usedSize,
     .valid = true,
   };
@@ -66,8 +96,7 @@ void DnMemTemp_PopScope(DnMemTempScope* scope) {
   DN_ASSERT(scope);
 
   // Simplify scope handling by allowing pop to be called on invalid scopes.
-  if (scope->valid)
-  {
+  if (scope->valid) {
     DN_ASSERT(g_dnMemArenaTemp.usedSize >= scope->savedUsedSize);
     g_dnMemArenaTemp.usedSize = scope->savedUsedSize;
   }
@@ -79,6 +108,9 @@ static DnMemAllocator g_dnMemAllocatorTempPrivate = {
   .alloc = DnMemAllocatorTemp_Alloc,
   .realloc = DnMemAllocatorTemp_Realloc,
   .free = DnMemAllocatorTemp_Free,
+  .allocAligned = DnMemAllocatorTemp_AllocAligned,
+  .reallocAligned = DnMemAllocatorTemp_ReallocAligned,
+  .freeAligned = DnMemAllocatorTemp_FreeAligned,
   .context = nullptr,
 };
 

@@ -8,7 +8,7 @@
 
 #define DN_STR_VIEW_FMT "%.*s"
 #define DN_STR_VIEW_ARG(view) (view.length), (view.data)
-#define DN_STR_VIEW_LITERAL(text) ((DnStrView){ .data = text, .length = sizeof(text) - 1 })
+#define DN_STR_VIEW_LITERAL(text) ((DnStrView) { .data = text, .length = sizeof(text) - 1 })
 
 /*
  * String view
@@ -20,7 +20,7 @@ typedef struct DnStrView {
 } DnStrView;
 
 static inline DnStrView DnStrView_FromCStr(const char* string) {
-  return (DnStrView){
+  return (DnStrView) {
     .data = string,
     .length = strlen(string),
   };
@@ -28,7 +28,7 @@ static inline DnStrView DnStrView_FromCStr(const char* string) {
 
 static inline DnStrView DnStrView_FromCStrLength(const char* string, u64 length) {
   DN_ASSERT(string || length == 0);
-  return (DnStrView){
+  return (DnStrView) {
     .data = string,
     .length = length,
   };

@@ -6,8 +6,7 @@ const char* DnStrView_AsCStr(const DnMemAllocator* allocator, DnStrView view) {
   DN_ASSERT(allocator);
 
   char* result = (char*)DN_MEM_ALLOC(allocator, view.length + 1);
-  if (!DnStrView_IsEmpty(view))
-  {
+  if (!DnStrView_IsEmpty(view)) {
     memcpy(result, view.data, view.length);
   }
 

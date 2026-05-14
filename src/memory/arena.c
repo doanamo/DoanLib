@@ -11,7 +11,7 @@ bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
     return false;
   }
 
-  *arena = (DnMemArena){
+  *arena = (DnMemArena) {
     .address = address,
     .reservedSize = reserveSize,
     .committedSize = 0,
@@ -76,10 +76,9 @@ void DnMemArena_Reset(DnMemArena* arena, bool decommit) {
 void DnMemArena_Deinit(DnMemArena* arena) {
   DN_ASSERT(arena);
 
-  if (arena->address)
-  {
+  if (arena->address) {
     DnMemVirtual_Release(arena->address);
   }
 
-  *arena = (DnMemArena){};
+  *arena = (DnMemArena) {};
 }

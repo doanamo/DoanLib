@@ -55,7 +55,7 @@ DnSysWindow* DnSysWindow_Create() {
   bool success = false;
 
   DnSysWindow* window = DN_MEM_ALLOC_TYPE(g_dnMemAllocatorDefault, DnSysWindow);
-  *window = (DnSysWindow){
+  *window = (DnSysWindow) {
     .width = 1024,
     .height = 576,
   };

@@ -10,7 +10,7 @@ DnGpuContext* DnGpuContext_Create() {
   bool success = false;
 
   DnGpuContext* context = DN_MEM_ALLOC_TYPE(g_dnMemAllocatorDefault, DnGpuContext);
-  *context = (DnGpuContext){};
+  *context = (DnGpuContext) {};
 
   if (volkInitialize() != VK_SUCCESS) {
     DN_LOG_ERROR("Failed to initialize volk");

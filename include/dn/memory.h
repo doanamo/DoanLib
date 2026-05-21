@@ -18,9 +18,9 @@ void DnMem_Deinit();
 constexpr u64 DnMem_DefaultAlignment = alignof(max_align_t);
 constexpr u64 DnMem_SystemPageSize = 4096;
 
-constexpr u8 DnMem_PatternAllocated = 0xAC;
-constexpr u8 DnMem_PatternFreed = 0xFE;
-constexpr u8 DnMem_PatternPadding = 0xAD;
+constexpr u8 DnMem_PatternAllocated = 0xCD;
+constexpr u8 DnMem_PatternFreed = 0xDD;
+constexpr u8 DnMem_PatternPadding = 0xFD;
 
 /*
  * Memory utility

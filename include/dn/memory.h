@@ -152,7 +152,6 @@ void DnMemVirtual_Release(void* page);
  */
 
 // #todo: Add calloc
-// #todo: Add size to free function
 
 typedef struct DnMemAllocator DnMemAllocator;
 typedef void* (DnMemAllocatorAllocFunc)(const DnMemAllocator* allocator, u64 size);

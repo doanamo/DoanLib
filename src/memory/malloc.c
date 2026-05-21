@@ -7,22 +7,26 @@ void* DnMemAllocatorMalloc_Alloc(const DnMemAllocator* allocator, u64 size) {
 
   void* allocated = malloc(size);
   DN_ASSERT_ALWAYS(allocated);
+
   return allocated;
 }
 
-void* DnMemAllocatorMalloc_Realloc(const DnMemAllocator* allocator, void* allocation, u64 oldSize, u64 size) {
+void* DnMemAllocatorMalloc_Realloc(const DnMemAllocator* allocator, void* allocation, u64 oldSize, u64 newSize) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
   DN_UNUSED(oldSize);
 
-  void* reallocation = realloc(allocation, size);
+  void* reallocation = realloc(allocation, newSize);
   DN_ASSERT_ALWAYS(reallocation);
+
   return reallocation;
 }
 
-void DnMemAllocatorMalloc_Free(const DnMemAllocator* allocator, void* allocation) {
+void DnMemAllocatorMalloc_Free(const DnMemAllocator* allocator, void* allocation, u64 size) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
+  DN_UNUSED(size);
+
   free(allocation);
 }
 
@@ -32,6 +36,7 @@ void* DnMemAllocatorMalloc_AllocAligned(const DnMemAllocator* allocator, u64 siz
 
   void* allocated = _aligned_malloc(size, alignment);
   DN_ASSERT_ALWAYS(allocated);
+
   return allocated;
 }
 
@@ -42,12 +47,15 @@ void* DnMemAllocatorMalloc_ReallocAligned(const DnMemAllocator* allocator, void*
 
   void* reallocation = _aligned_realloc(allocation, size, alignment);
   DN_ASSERT_ALWAYS(reallocation);
+
   return reallocation;
 }
 
-void DnMemAllocatorMalloc_FreeAligned(const DnMemAllocator* allocator, void* allocation) {
+void DnMemAllocatorMalloc_FreeAligned(const DnMemAllocator* allocator, void* allocation, u64 size) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
+  DN_UNUSED(size);
+
   _aligned_free(allocation);
 }
 

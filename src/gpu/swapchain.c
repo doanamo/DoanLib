@@ -20,5 +20,5 @@ void DnGpuSwapChain_Present(DnGpuSwapChain* swapChain) {
 
 void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain) {
   DN_ASSERT(swapChain);
-  DN_MEM_FREE(g_dnMemAllocatorDefault, swapChain);
+  DN_MEM_FREE_TYPE(g_dnMemAllocatorDefault, swapChain, DnGpuSwapChain);
 }

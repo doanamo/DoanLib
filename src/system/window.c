@@ -129,7 +129,7 @@ void DnSysWindow_Destroy(DnSysWindow* window) {
     DestroyWindow(window->handle);
   }
 
-  DN_MEM_FREE(g_dnMemAllocatorDefault, window);
+  DN_MEM_FREE_TYPE(g_dnMemAllocatorDefault, window, DnSysWindow);
 }
 
 void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title) {

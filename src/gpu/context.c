@@ -46,7 +46,7 @@ DnGpuContext* DnGpuContext_Create() {
 
 error:
   if (!success) {
-    DN_MEM_FREE(g_dnMemAllocatorDefault, context);
+    DN_MEM_FREE_TYPE(g_dnMemAllocatorDefault, context, DnGpuContext);
     context = nullptr;
   }
 
@@ -58,5 +58,5 @@ void DnGpuContext_Destroy(DnGpuContext* context) {
 
   vkDestroyInstance(context->instance, g_dnGpuAllocatorVulkan);
 
-  DN_MEM_FREE(g_dnMemAllocatorDefault, context);
+  DN_MEM_FREE_TYPE(g_dnMemAllocatorDefault, context, DnGpuContext);
 }

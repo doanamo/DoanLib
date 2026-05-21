@@ -66,6 +66,11 @@ function(dn_target_setup TARGET)
     set_target_properties(${TARGET} PROPERTIES
       WIN32_EXECUTABLE $<CONFIG:Release>
     )
+
+    # Enable debug CRT runtime in Debug configuration.
+    set_property(TARGET ${TARGET} PROPERTY
+      MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+    )
   endif()
 endfunction()
 

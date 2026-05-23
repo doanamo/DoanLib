@@ -30,12 +30,6 @@ function(dn_target_setup TARGET)
   )
 
   target_compile_options(${TARGET} PRIVATE
-    # Global includes.
-    --include=dn/shared.h
-    --include=dn/memory.h
-    --include=dn/string.h
-    --include=dn/math.h
-
     # Additional warnings.
     -Wall
     -Wextra
@@ -84,14 +78,14 @@ set(SOURCE_FILES
   "src/memory/virtual.c"
   "src/memory/arena.c"
   "src/memory/temp.c"
-  "src/common/string.c"
+  "src/structs/string.c"
   "src/utility/file.c"
   "src/system/window.c"
   "src/gpu/memory.c"
   "src/gpu/context.c"
   "src/gpu/swapchain.c"
-  "src/application.c"
   "src/shared.c"
+  "src/app.c"
 )
 
 add_library(Doan STATIC ${SOURCE_FILES})

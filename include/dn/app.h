@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dn/memory.h"
-#include "dn/system.h"
+#include "memory.h"
+#include "system.h"
 
 /*
  * Application

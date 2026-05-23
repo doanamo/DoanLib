@@ -1,4 +1,4 @@
-#include "dn/string.h"
+#include "dn/structs.h"
 
 // #todo: Implement string object
 

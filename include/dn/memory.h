@@ -1,5 +1,9 @@
 #pragma once
 
+#include "shared.h"
+#include "math.h"
+#include <memory.h>
+
 /*
  * Memory initialization
  */

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "shared.h"
+#include "structs.h"
+
 /*
  * File utility
  */

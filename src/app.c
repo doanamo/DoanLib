@@ -1,6 +1,6 @@
-#include "dn/application.h"
+#include "dn/app.h"
 #include "dn/shared.h"
-#include "dn/string.h"
+#include "dn/structs.h"
 #include "dn/system.h"
 #include "dn/gpu.h"
 

@@ -82,6 +82,12 @@ constexpr u8 DnMem_PatternPadding = 0xFD;
     (type*)_allocator->alloc(_allocator, sizeof(type)); \
   })
 
+#define DN_MEM_ALLOC_TYPES(allocator, type, count) \
+  ({ \
+    const DnMemAllocator* _allocator = allocator; \
+    (type*)_allocator->alloc(_allocator, sizeof(type) * (count)); \
+  })
+
 #define DN_MEM_REALLOC_TYPES(allocator, allocation, type, count) \
   ({ \
     const DnMemAllocator* _allocator = allocator; \
@@ -110,6 +116,12 @@ constexpr u8 DnMem_PatternPadding = 0xFD;
   ({ \
     const DnMemAllocator* _allocator = allocator; \
     (type*)_allocator->allocAligned(_allocator, sizeof(type), alignof(type)); \
+  })
+
+#define DN_MEM_ALLOC_TYPES(allocator, type, count) \
+  ({ \
+    const DnMemAllocator* _allocator = allocator; \
+    (type*)_allocator->alloc(_allocator, sizeof(type) * (count)); \
   })
 
 #define DN_MEM_REALLOC_ALIGNED_TYPES(allocator, allocation, type, count) \

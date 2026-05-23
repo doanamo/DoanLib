@@ -1,9 +1,48 @@
 #include "dn/gpu.h"
 #include "dn/memory.h"
+#include "vulkan/vulkan_core.h"
 
 struct DnGpuContext {
   VkInstance instance;
+  VkDebugUtilsMessengerEXT debugMessenger;
 };
+
+#ifdef DN_CONFIG_DEBUG
+
+static VKAPI_ATTR VkBool32 VKAPI_CALL DnGpuContext_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT type, const VkDebugUtilsMessengerCallbackDataEXT* callbackData, void* userData) {
+  DN_UNUSED(severity);
+  DN_UNUSED(userData);
+
+  const char* typeText;
+  switch (type) {
+    case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
+      typeText = "General";
+      break;
+
+    case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
+      typeText = "Validation";
+      break;
+
+    case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
+      typeText = "Performance";
+      break;
+
+    default:
+      typeText = "Unknown";
+      break;
+  }
+
+  if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
+    DN_LOG_ERROR("Vulkan: %s: %s", typeText, callbackData->pMessage);
+  }
+  else {
+    DN_LOG_INFO("Vulkan: %s: %s", typeText, callbackData->pMessage);
+  }
+
+  return VK_FALSE;
+}
+
+#endif
 
 static void DnGpuContext_PrintAvailableInstanceLayers() {
   bool success = false;
@@ -89,32 +128,56 @@ DnGpuContext* DnGpuContext_Create() {
   DnGpuContext_PrintAvailableInstanceLayers();
   DnGpuContext_PrintAvailableInstanceExtensions();
 
-  const char* enabledExtensions[] = {
+  const char* enabledInstanceLayers[] = {
+#ifdef DN_CONFIG_DEBUG
+    "VK_LAYER_KHRONOS_validation",
+    "VK_LAYER_KHRONOS_synchronization2",
+#endif
+  };
+
+  const char* enabledInstanceExtensions[] = {
     VK_KHR_SURFACE_EXTENSION_NAME,
     VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+#ifdef DN_CONFIG_DEBUG
+    VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+#endif
   };
 
-  VkInstanceCreateInfo createInfo = {
+  VkInstanceCreateInfo instanceCreateInfo = {
     .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
     .pApplicationInfo = &appInfo,
-    .enabledLayerCount = 0,
-    .ppEnabledLayerNames = nullptr,
-    .enabledExtensionCount = DN_ARRAY_LENGTH(enabledExtensions),
-    .ppEnabledExtensionNames = enabledExtensions,
+    .enabledLayerCount = DN_ARRAY_LENGTH(enabledInstanceLayers),
+    .ppEnabledLayerNames = enabledInstanceLayers,
+    .enabledExtensionCount = DN_ARRAY_LENGTH(enabledInstanceExtensions),
+    .ppEnabledExtensionNames = enabledInstanceExtensions,
   };
 
-  if (vkCreateInstance(&createInfo, g_dnGpuAllocatorVulkan, &context->instance) != VK_SUCCESS) {
+  if (vkCreateInstance(&instanceCreateInfo, g_dnGpuAllocatorVulkan, &context->instance) != VK_SUCCESS) {
     DN_LOG_ERROR("Failed to create instance");
     goto error;
   }
 
   volkLoadInstance(context->instance);
 
+#ifdef DN_CONFIG_DEBUG
+  VkDebugUtilsMessengerCreateInfoEXT debugMessangerCreateInfo = {
+    .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+    .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+    .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+    .pfnUserCallback = DnGpuContext_DebugCallback,
+  };
+
+  if (vkCreateDebugUtilsMessengerEXT(context->instance, &debugMessangerCreateInfo, g_dnGpuAllocatorVulkan, &context->debugMessenger)) {
+    DN_LOG_ERROR("Failed to create debug  messenger");
+    goto error;
+  }
+#endif
+
   success = true;
 
 error:
   if (!success) {
-    DN_MEM_FREE(g_dnMemAllocatorDefault, context);
+    DnGpuContext_Destroy(context);
     context = nullptr;
   }
 
@@ -124,7 +187,13 @@ error:
 void DnGpuContext_Destroy(DnGpuContext* context) {
   DN_ASSERT(context);
 
-  vkDestroyInstance(context->instance, g_dnGpuAllocatorVulkan);
+  if (context->debugMessenger) {
+    vkDestroyDebugUtilsMessengerEXT(context->instance, context->debugMessenger, g_dnGpuAllocatorVulkan);
+  }
+
+  if (context->instance) {
+    vkDestroyInstance(context->instance, g_dnGpuAllocatorVulkan);
+  }
 
   DN_MEM_FREE(g_dnMemAllocatorDefault, context);
 }

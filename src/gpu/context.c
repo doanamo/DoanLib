@@ -5,7 +5,37 @@ struct DnGpuContext {
   VkInstance instance;
 };
 
-static void DnGpuContext_PrintAvailableExtensions() {
+static void DnGpuContext_PrintAvailableInstanceLayers() {
+  bool success = false;
+
+  DnMemTempScope tempScope = DnMemTemp_PushScope();
+
+  u32 availableLayerCount = 0;
+  if (vkEnumerateInstanceLayerProperties(&availableLayerCount, nullptr) != VK_SUCCESS) {
+    goto error;
+  }
+
+  VkLayerProperties* availableLayers = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkLayerProperties, availableLayerCount);
+  if (vkEnumerateInstanceLayerProperties(&availableLayerCount, availableLayers) != VK_SUCCESS) {
+    goto error;
+  }
+
+  DN_LOG_INFO("Available Vulkan instance layers:");
+  for (u32 i = 0; i < availableLayerCount; i++) {
+    DN_LOG_INFO("  %s", availableLayers[i].layerName);
+  }
+
+  success = true;
+
+error:
+  if (!success) {
+    DN_LOG_ERROR("Failed to enumerate available instance layers");
+  }
+
+  DnMemTemp_PopScope(&tempScope);
+}
+
+static void DnGpuContext_PrintAvailableInstanceExtensions() {
   bool success = false;
 
   DnMemTempScope tempScope = DnMemTemp_PushScope();
@@ -20,7 +50,7 @@ static void DnGpuContext_PrintAvailableExtensions() {
     goto error;
   }
 
-  DN_LOG_INFO("Available Vulkan extensions:");
+  DN_LOG_INFO("Available Vulkan instance extensions:");
   for (u32 i = 0; i < availableExtensionCount; i++) {
     DN_LOG_INFO("  %s", availableExtensions[i].extensionName);
   }
@@ -29,7 +59,7 @@ static void DnGpuContext_PrintAvailableExtensions() {
 
 error:
   if (!success) {
-    DN_LOG_ERROR("Failed to enumerate available instance extension");
+    DN_LOG_ERROR("Failed to enumerate available instance extensions");
   }
 
   DnMemTemp_PopScope(&tempScope);
@@ -56,7 +86,8 @@ DnGpuContext* DnGpuContext_Create() {
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
   };
 
-  DnGpuContext_PrintAvailableExtensions();
+  DnGpuContext_PrintAvailableInstanceLayers();
+  DnGpuContext_PrintAvailableInstanceExtensions();
 
   const char* enabledExtensions[] = {
     VK_KHR_SURFACE_EXTENSION_NAME,

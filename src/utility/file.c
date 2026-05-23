@@ -44,7 +44,7 @@ error:
   }
 
   if (!success) {
-    DN_MEM_FREE(allocator, data, (u64)size);
+    DN_MEM_FREE(allocator, data);
   }
 
   DnMemTemp_PopScope(&memTempScope);

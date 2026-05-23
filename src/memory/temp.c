@@ -2,12 +2,26 @@
 
 static DnMemArena g_dnMemArenaTemp = {};
 
+typedef struct DnMemAllocatorTempHeader {
+  u64 size;
+} DnMemAllocatorTempHeader;
+
 void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
 
-  void* allocation = DnMemArena_Alloc(&g_dnMemArenaTemp, size);
+  if (size == 0) {
+    return nullptr;
+  }
+
+  u64 headerSize = sizeof(DnMemAllocatorTempHeader);
+  void* allocation = DnMemArena_Alloc(&g_dnMemArenaTemp, headerSize + size);
   DN_ASSERT_ALWAYS(allocation);
+
+  DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)allocation;
+  header->size = size;
+
+  allocation = (void*)((u8*)allocation + headerSize);
 
 #ifdef DN_CONFIG_DEBUG
   memset(allocation, DnMem_PatternAllocated, size);
@@ -16,25 +30,35 @@ void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size) {
   return allocation;
 }
 
-void DnMemAllocatorTemp_Free(const DnMemAllocator* allocator, void* allocation, u64 size) {
+void DnMemAllocatorTemp_Free(const DnMemAllocator* allocator, void* allocation) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
   DN_UNUSED(allocation);
-  DN_UNUSED(size);
 
 #ifdef DN_CONFIG_DEBUG
-  memset(allocation, DnMem_PatternFreed, size);
+  if (allocation) {
+    DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
+    memset(allocation, DnMem_PatternFreed, header->size);
+  }
 #endif
 }
 
-void* DnMemAllocatorTemp_Realloc(const DnMemAllocator* allocator, void* allocation, u64 oldSize, u64 newSize) {
-  void* reallocation = DnMemAllocatorTemp_Alloc(allocator, newSize);
+void* DnMemAllocatorTemp_Realloc(const DnMemAllocator* allocator, void* allocation, u64 size) {
+  DN_ASSERT(allocator);
+  DN_UNUSED(allocator);
+
+  if (size == 0) {
+    DnMemAllocatorTemp_Free(allocator, allocation);
+    return nullptr;
+  }
+
+  void* reallocation = DnMemAllocatorTemp_Alloc(allocator, size);
   DN_ASSERT_ALWAYS(reallocation);
 
   if (allocation) {
-    DN_ASSERT(oldSize);
-    memcpy(reallocation, allocation, oldSize < newSize ? oldSize : newSize);
-    DnMemAllocatorTemp_Free(allocator, allocation, oldSize);
+    DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
+    memcpy(reallocation, allocation, header->size < size ? header->size : size);
+    DnMemAllocatorTemp_Free(allocator, allocation);
   }
 
   return reallocation;
@@ -44,16 +68,24 @@ void* DnMemAllocatorTemp_AllocAligned(const DnMemAllocator* allocator, u64 size,
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
 
+  if (size == 0) {
+    return nullptr;
+  }
+
   u64 alignmentPadding = alignment - 1;
-  void* allocation = DnMemArena_Alloc(&g_dnMemArenaTemp, size + alignmentPadding);
+  u64 alignedHeaderSize = DN_MEM_ALIGN_UP(sizeof(DnMemAllocatorTempHeader), alignment);
+  void* allocation = DnMemArena_Alloc(&g_dnMemArenaTemp, alignmentPadding + alignedHeaderSize + size);
   DN_ASSERT_ALWAYS(allocation);
 
 #ifdef DN_CONFIG_DEBUG
-  memset(allocation, DnMem_PatternPadding, alignmentPadding);
-  memset(allocation + size, DnMem_PatternPadding, alignmentPadding);
+  memset(allocation, DnMem_PatternPadding, alignmentPadding + alignedHeaderSize);
+  memset((u8*)allocation + size, DnMem_PatternPadding, alignmentPadding + alignedHeaderSize);
 #endif
 
-  allocation = (void*)DN_MEM_ALIGN_UP((u64)allocation, alignment);
+  allocation = (void*)(DN_MEM_ALIGN_UP((u64)allocation, alignment) + alignedHeaderSize);
+
+  DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
+  header->size = size;
 
 #ifdef DN_CONFIG_DEBUG
   memset(allocation, DnMem_PatternAllocated, size);
@@ -62,25 +94,35 @@ void* DnMemAllocatorTemp_AllocAligned(const DnMemAllocator* allocator, u64 size,
   return allocation;
 }
 
-void DnMemAllocatorTemp_FreeAligned(const DnMemAllocator* allocator, void* allocation, u64 size) {
+void DnMemAllocatorTemp_FreeAligned(const DnMemAllocator* allocator, void* allocation) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
   DN_UNUSED(allocation);
-  DN_UNUSED(size);
 
 #ifdef DN_CONFIG_DEBUG
-  memset(allocation, DnMem_PatternFreed, size);
+  if (allocation) {
+    DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
+    memset(allocation, DnMem_PatternFreed, header->size);
+  }
 #endif
 }
 
-void* DnMemAllocatorTemp_ReallocAligned(const DnMemAllocator* allocator, void* allocation, u64 oldSize, u64 newSize, u64 alignment) {
-  void* reallocation = DnMemAllocatorTemp_AllocAligned(allocator, newSize, alignment);
+void* DnMemAllocatorTemp_ReallocAligned(const DnMemAllocator* allocator, void* allocation, u64 size, u64 alignment) {
+  DN_ASSERT(allocator);
+  DN_UNUSED(allocator);
+
+  if (size == 0) {
+    DnMemAllocatorTemp_FreeAligned(allocator, allocation);
+    return nullptr;
+  }
+
+  void* reallocation = DnMemAllocatorTemp_AllocAligned(allocator, size, alignment);
   DN_ASSERT_ALWAYS(reallocation);
 
   if (allocation) {
-    DN_ASSERT(oldSize);
-    memcpy(reallocation, allocation, oldSize < newSize ? oldSize : newSize);
-    DnMemAllocatorTemp_FreeAligned(allocator, allocation, oldSize);
+    DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
+    memcpy(reallocation, allocation, header->size < size ? header->size : size);
+    DnMemAllocatorTemp_FreeAligned(allocator, allocation);
   }
 
   return reallocation;

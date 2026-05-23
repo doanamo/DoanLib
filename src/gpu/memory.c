@@ -17,15 +17,13 @@ static void* VKAPI_PTR DnGpuAllocatorVulkan_Realloc(void* userData, void* alloca
   DN_UNUSED(userData);
   DN_UNUSED(scope);
 
-  // #todo: Realloc with proper size argument. Currently fine because it is unused.
-  return DN_MEM_REALLOC_ALIGNED(g_dnMemAllocatorDefault, allocation, 0, size, alignment);
+  return DN_MEM_REALLOC_ALIGNED(g_dnMemAllocatorDefault, allocation, size, alignment);
 }
 
 static void VKAPI_PTR DnGpuAllocatorVulkan_Free(void* userData, void* allocation) {
   DN_UNUSED(userData);
 
-  // #todo: Free with proper size argument. Currently fine because it is unused.
-  DN_MEM_FREE_ALIGNED(g_dnMemAllocatorDefault, allocation, 0);
+  DN_MEM_FREE_ALIGNED(g_dnMemAllocatorDefault, allocation);
 }
 
 static VkAllocationCallbacks g_dnGpuAllocatorVulkanPrivate = {

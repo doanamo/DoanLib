@@ -5,6 +5,36 @@ struct DnGpuContext {
   VkInstance instance;
 };
 
+static void DnGpuContext_PrintAvailableExtensions() {
+  bool success = false;
+
+  DnMemTempScope tempScope = DnMemTemp_PushScope();
+
+  u32 availableExtensionCount = 0;
+  if (vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionCount, nullptr) != VK_SUCCESS) {
+    goto error;
+  }
+
+  VkExtensionProperties* availableExtensions = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkExtensionProperties, availableExtensionCount);
+  if (vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionCount, availableExtensions) != VK_SUCCESS) {
+    goto error;
+  }
+
+  DN_LOG_INFO("Available Vulkan extensions:");
+  for (u32 i = 0; i < availableExtensionCount; i++) {
+    DN_LOG_INFO("  %s", availableExtensions[i].extensionName);
+  }
+
+  success = true;
+
+error:
+  if (!success) {
+    DN_LOG_ERROR("Failed to enumerate available instance extension");
+  }
+
+  DnMemTemp_PopScope(&tempScope);
+}
+
 DnGpuContext* DnGpuContext_Create() {
   DN_LOG_INFO("Creating gpu context");
   bool success = false;
@@ -26,13 +56,20 @@ DnGpuContext* DnGpuContext_Create() {
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
   };
 
+  DnGpuContext_PrintAvailableExtensions();
+
+  const char* enabledExtensions[] = {
+    VK_KHR_SURFACE_EXTENSION_NAME,
+    VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+  };
+
   VkInstanceCreateInfo createInfo = {
     .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
     .pApplicationInfo = &appInfo,
     .enabledLayerCount = 0,
     .ppEnabledLayerNames = nullptr,
-    .enabledExtensionCount = 0,
-    .ppEnabledExtensionNames = nullptr,
+    .enabledExtensionCount = DN_ARRAY_LENGTH(enabledExtensions),
+    .ppEnabledExtensionNames = enabledExtensions,
   };
 
   if (vkCreateInstance(&createInfo, g_dnGpuAllocatorVulkan, &context->instance) != VK_SUCCESS) {

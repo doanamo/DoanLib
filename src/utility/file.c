@@ -11,7 +11,7 @@ bool DnUtilFile_Read(const DnMemAllocator* allocator, DnStrView path, u8** outDa
   FILE* file = nullptr;
   u8* data = nullptr;
 
-  DnMemTempScope memTempScope = DnMemTemp_PushScope();
+  DnMemTempScope tempScope = DnMemTemp_PushScope();
 
   const char* pathStr = DnStrView_AsCStr(g_dnMemAllocatorTemp, path);
   file = fopen(pathStr, "rb");
@@ -47,7 +47,7 @@ error:
     DN_MEM_FREE(allocator, data);
   }
 
-  DnMemTemp_PopScope(&memTempScope);
+  DnMemTemp_PopScope(&tempScope);
 
   return success;
 }

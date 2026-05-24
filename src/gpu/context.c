@@ -1,10 +1,13 @@
 #include "dn/gpu.h"
 #include "dn/memory.h"
+#include "vulkan/vulkan_core.h"
 
 struct DnGpuContext {
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
   VkPhysicalDevice physicalDevice;
+  VkDevice device;
+  VkQueue graphicsQueue;
 };
 
 static void DnGpuContext_PrintAvailableInstanceLayers(const char* enabledLayers[], u32 enabledLayerCount) {
@@ -12,13 +15,13 @@ static void DnGpuContext_PrintAvailableInstanceLayers(const char* enabledLayers[
 
   u32 availableLayerCount = 0;
   if (vkEnumerateInstanceLayerProperties(&availableLayerCount, nullptr) != VK_SUCCESS) {
-    DN_LOG_ERROR("Failed to enumerate available instance layer count");
+    DN_LOG_ERROR("Failed to enumerate Vulkan instance layer count");
     goto error;
   }
 
   VkLayerProperties* availableLayers = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkLayerProperties, availableLayerCount);
   if (vkEnumerateInstanceLayerProperties(&availableLayerCount, availableLayers) != VK_SUCCESS) {
-    DN_LOG_ERROR("Failed to enumerate available instance layers");
+    DN_LOG_ERROR("Failed to enumerate Vulkan instance layers");
     goto error;
   }
 
@@ -44,13 +47,13 @@ static void DnGpuContext_PrintAvailableInstanceExtensions(const char* enabledExt
 
   u32 availableExtensionCount = 0;
   if (vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionCount, nullptr) != VK_SUCCESS) {
-    DN_LOG_ERROR("Failed to enumerate available instance extension count");
+    DN_LOG_ERROR("Failed to enumerate Vulkan instance extension count");
     goto error;
   }
 
   VkExtensionProperties* availableExtensions = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkExtensionProperties, availableExtensionCount);
   if (vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionCount, availableExtensions) != VK_SUCCESS) {
-    DN_LOG_ERROR("Failed to enumerate available instance extensions");
+    DN_LOG_ERROR("Failed to enumerate Vulkan instance extensions");
     goto error;
   }
 
@@ -72,6 +75,7 @@ error:
 }
 
 static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
+  DN_LOG_INFO("Creating Vulkan instance");
   bool success = false;
 
   VkApplicationInfo appInfo = {
@@ -112,7 +116,7 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
   };
 
   if (vkCreateInstance(&instanceCreateInfo, g_dnGpuAllocatorVulkan, &context->instance) != VK_SUCCESS) {
-    DN_LOG_ERROR("Failed to create instance");
+    DN_LOG_ERROR("Failed to create Vulkan instance");
     goto error;
   }
 
@@ -170,7 +174,7 @@ static bool DnGpuContext_CreateDebugMessenger(DnGpuContext* context) {
   };
 
   if (vkCreateDebugUtilsMessengerEXT(context->instance, &debugMessangerCreateInfo, g_dnGpuAllocatorVulkan, &context->debugMessenger)) {
-    DN_LOG_ERROR("Failed to create debug messenger");
+    DN_LOG_ERROR("Failed to create Vulkan debug messenger");
     goto error;
   }
 
@@ -182,25 +186,25 @@ error:
 
 #endif
 
-static bool DnGpuContext_CreatePhysicalDevice(DnGpuContext* context) {
+static bool DnGpuContext_SelectPhysicalDevice(DnGpuContext* context) {
   bool success = false;
 
   DnMemTempScope tempScope = DnMemTemp_PushScope();
 
   u32 physicalDeviceCount;
   if (vkEnumeratePhysicalDevices(context->instance, &physicalDeviceCount, nullptr) != VK_SUCCESS) {
-    DN_LOG_ERROR("Failed to enumerate physical graphics device count");
+    DN_LOG_ERROR("Failed to enumerate Vulkan physical device count");
     goto error;
   }
 
   if (physicalDeviceCount == 0) {
-    DN_LOG_ERROR("No physical graphics graphics devices found");
+    DN_LOG_ERROR("No available Vulkan physical devices found");
     goto error;
   }
 
   VkPhysicalDevice* physicalDevices = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkPhysicalDevice, physicalDeviceCount);
   if (vkEnumeratePhysicalDevices(context->instance, &physicalDeviceCount, physicalDevices) != VK_SUCCESS) {
-    DN_LOG_ERROR("Failed to enumerate physical graphics devices");
+    DN_LOG_ERROR("Failed to enumerate Vulkan physical devices");
     goto error;
   }
 
@@ -237,6 +241,73 @@ error:
   return success;
 }
 
+static bool DnGpuContext_CreateDevice(DnGpuContext* context) {
+  DN_LOG_INFO("Creating Vulkan device");
+  bool success = false;
+
+  DnMemTempScope tempScope = DnMemTemp_PushScope();
+
+  u32 queueFamilyCount;
+  vkGetPhysicalDeviceQueueFamilyProperties(context->physicalDevice, &queueFamilyCount, nullptr);
+
+  if (queueFamilyCount == 0) {
+    DN_LOG_ERROR("No available Vulkan queue families found");
+    goto error;
+  }
+
+  VkQueueFamilyProperties* queueFamilyProperties = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkQueueFamilyProperties, queueFamilyCount);
+  vkGetPhysicalDeviceQueueFamilyProperties(context->physicalDevice, &queueFamilyCount, queueFamilyProperties);
+
+  u32 queueFamilyIndex;
+  bool queueFamilyFound = false;
+  for (u32 i = 0; i < queueFamilyCount; i++) {
+    if (queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+      queueFamilyIndex = i;
+      queueFamilyFound = true;
+      break;
+    }
+  }
+
+  if (!queueFamilyFound) {
+    DN_LOG_ERROR("Failed to find suitable Vulkan queue family");
+    goto error;
+  }
+
+  const float queuePriorities[] = { 1.0f };
+  VkDeviceQueueCreateInfo queueCreateInfo = {};
+  queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+  queueCreateInfo.queueFamilyIndex = queueFamilyIndex;
+  queueCreateInfo.queueCount = 1;
+  queueCreateInfo.pQueuePriorities = queuePriorities;
+
+  const char* requiredDeviceExtensions[] = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+  };
+
+  VkDeviceCreateInfo deviceCreateInfo = {};
+  deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  deviceCreateInfo.queueCreateInfoCount = 1;
+  deviceCreateInfo.pQueueCreateInfos = &queueCreateInfo;
+  deviceCreateInfo.enabledExtensionCount = DN_ARRAY_LENGTH(requiredDeviceExtensions);
+  deviceCreateInfo.ppEnabledExtensionNames = requiredDeviceExtensions;
+
+  // #todo: Enable Vulkan device extensions for simplifying API
+
+  if (vkCreateDevice(context->physicalDevice, &deviceCreateInfo, g_dnGpuAllocatorVulkan, &context->device) != VK_SUCCESS) {
+    DN_LOG_ERROR("Failed to create Vulkan device");
+    goto error;
+  }
+
+  vkGetDeviceQueue(context->device, queueFamilyIndex, 0, &context->graphicsQueue);
+
+  success = true;
+
+error:
+  DnMemTemp_PopScope(&tempScope);
+
+  return success;
+}
+
 DnGpuContext* DnGpuContext_Create() {
   DN_LOG_INFO("Creating gpu context");
   bool success = false;
@@ -245,7 +316,7 @@ DnGpuContext* DnGpuContext_Create() {
   *context = (DnGpuContext) {};
 
   if (volkInitialize() != VK_SUCCESS) {
-    DN_LOG_ERROR("Failed to initialize volk");
+    DN_LOG_ERROR("Failed to initialize Volk");
     goto error;
   }
 
@@ -259,7 +330,11 @@ DnGpuContext* DnGpuContext_Create() {
   }
 #endif
 
-  if (!DnGpuContext_CreatePhysicalDevice(context)) {
+  if (!DnGpuContext_SelectPhysicalDevice(context)) {
+    goto error;
+  }
+
+  if (!DnGpuContext_CreateDevice(context)) {
     goto error;
   }
 
@@ -276,6 +351,10 @@ error:
 
 void DnGpuContext_Destroy(DnGpuContext* context) {
   DN_ASSERT(context);
+
+  if (context->device) {
+    vkDestroyDevice(context->device, g_dnGpuAllocatorVulkan);
+  }
 
   if (context->debugMessenger) {
     vkDestroyDebugUtilsMessengerEXT(context->instance, context->debugMessenger, g_dnGpuAllocatorVulkan);

@@ -10,7 +10,7 @@ struct DnGpuContext {
   VkQueue graphicsQueue;
 };
 
-static void DnGpuContext_PrintAvailableInstanceLayers(const char* enabledLayers[], u32 enabledLayerCount) {
+static void DnGpuContext_PrintAvailableInstanceLayers() {
   DnMemTempScope tempScope = DnMemTemp_PushScope();
 
   u32 availableLayerCount = 0;
@@ -27,22 +27,14 @@ static void DnGpuContext_PrintAvailableInstanceLayers(const char* enabledLayers[
 
   DN_LOG_INFO("Available Vulkan instance layers:");
   for (u32 i = 0; i < availableLayerCount; i++) {
-    const char* enabledText = "";
-    for (u32 j = 0; j < enabledLayerCount; j++) {
-      if (strcmp(availableLayers[i].layerName, enabledLayers[j]) == 0) {
-        enabledText = " (Enabled)";
-        break;
-      }
-    }
-
-    DN_LOG_INFO("  %s%s", availableLayers[i].layerName, enabledText);
+    DN_LOG_INFO("  %s", availableLayers[i].layerName);
   }
 
 error:
   DnMemTemp_PopScope(&tempScope);
 }
 
-static void DnGpuContext_PrintAvailableInstanceExtensions(const char* enabledExtensions[], u32 enabledExtensionCount) {
+static void DnGpuContext_PrintAvailableInstanceExtensions() {
   DnMemTempScope tempScope = DnMemTemp_PushScope();
 
   u32 availableExtensionCount = 0;
@@ -59,15 +51,31 @@ static void DnGpuContext_PrintAvailableInstanceExtensions(const char* enabledExt
 
   DN_LOG_INFO("Available Vulkan instance extensions:");
   for (u32 i = 0; i < availableExtensionCount; i++) {
-    const char* enabledText = "";
-    for (u32 j = 0; j < enabledExtensionCount; j++) {
-      if (strcmp(availableExtensions[i].extensionName, enabledExtensions[j]) == 0) {
-        enabledText = " (Enabled)";
-        break;
-      }
-    }
+    DN_LOG_INFO("  %s", availableExtensions[i].extensionName);
+  }
 
-    DN_LOG_INFO("  %s%s", availableExtensions[i].extensionName, enabledText);
+error:
+  DnMemTemp_PopScope(&tempScope);
+}
+
+static void DnGpuContext_PrintAvailableDeviceExtensions(VkPhysicalDevice physicalDevice) {
+  DnMemTempScope tempScope = DnMemTemp_PushScope();
+
+  u32 availableExtensionCount = 0;
+  if (vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &availableExtensionCount, nullptr) != VK_SUCCESS) {
+    DN_LOG_ERROR("Failed to enumerate Vulkan device extension count");
+    goto error;
+  }
+
+  VkExtensionProperties* availableExtensions = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkExtensionProperties, availableExtensionCount);
+  if (vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &availableExtensionCount, availableExtensions) != VK_SUCCESS) {
+    DN_LOG_ERROR("Failed to enumerate Vulkan device extensions");
+    goto error;
+  }
+
+  DN_LOG_INFO("Available Vulkan device extensions:");
+  for (u32 i = 0; i < availableExtensionCount; i++) {
+    DN_LOG_INFO("  %s", availableExtensions[i].extensionName);
   }
 
 error:
@@ -87,6 +95,8 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
   };
 
+  DnGpuContext_PrintAvailableInstanceLayers();
+
   const char* enabledInstanceLayers[] = {
 #ifdef DN_CONFIG_DEBUG
     "VK_LAYER_KHRONOS_validation",
@@ -94,7 +104,7 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
 #endif
   };
 
-  DnGpuContext_PrintAvailableInstanceLayers(enabledInstanceLayers, DN_ARRAY_LENGTH(enabledInstanceLayers));
+  DnGpuContext_PrintAvailableInstanceExtensions();
 
   const char* enabledInstanceExtensions[] = {
     VK_KHR_SURFACE_EXTENSION_NAME,
@@ -103,8 +113,6 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
     VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
   };
-
-  DnGpuContext_PrintAvailableInstanceExtensions(enabledInstanceExtensions, DN_ARRAY_LENGTH(enabledInstanceExtensions));
 
   VkInstanceCreateInfo instanceCreateInfo = {
     .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
@@ -280,8 +288,10 @@ static bool DnGpuContext_CreateDevice(DnGpuContext* context) {
   queueCreateInfo.queueCount = 1;
   queueCreateInfo.pQueuePriorities = queuePriorities;
 
+  DnGpuContext_PrintAvailableDeviceExtensions(context->physicalDevice);
+
   const char* requiredDeviceExtensions[] = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
   };
 
   VkDeviceCreateInfo deviceCreateInfo = {};
@@ -291,14 +301,13 @@ static bool DnGpuContext_CreateDevice(DnGpuContext* context) {
   deviceCreateInfo.enabledExtensionCount = DN_ARRAY_LENGTH(requiredDeviceExtensions);
   deviceCreateInfo.ppEnabledExtensionNames = requiredDeviceExtensions;
 
-  // #todo: Enable Vulkan device extensions for simplifying API
-
   if (vkCreateDevice(context->physicalDevice, &deviceCreateInfo, g_dnGpuAllocatorVulkan, &context->device) != VK_SUCCESS) {
     DN_LOG_ERROR("Failed to create Vulkan device");
     goto error;
   }
 
   vkGetDeviceQueue(context->device, queueFamilyIndex, 0, &context->graphicsQueue);
+  volkLoadDevice(context->device);
 
   success = true;
 

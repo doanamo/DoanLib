@@ -57,17 +57,20 @@ void DnLog_Error(const char* format, ...);
  * Assertion macros
  */
 
-#define DN_ASSERT_ALWAYS(expression) \
+#define DN_ASSERT_IMPL(expression, expressionString) \
   do { \
     if (DN_UNLIKELY(!(expression))) { \
-      DN_LOG_ERROR("Assertion failed: %s", #expression); \
+      DN_LOG_ERROR("Assertion failed: %s", expressionString); \
       DN_ABORT(); \
     } \
   } while (0)
 
+#define DN_ASSERT_ALWAYS(expression) \
+  DN_ASSERT_IMPLEMENTATION(expression, #expression)
+
 #ifndef DN_CONFIG_RELEASE
-  #define DN_ASSERT(expression) DN_ASSERT_ALWAYS(expression)
-  #define DN_ASSERT_EVALUATE(expression) DN_ASSERT_ALWAYS(expression)
+  #define DN_ASSERT(expression) DN_ASSERT_IMPL(expression, #expression)
+  #define DN_ASSERT_EVALUATE(expression) DN_ASSERT_IMPL(expression, #expression)
 #else
   #define DN_ASSERT(expression)
   #define DN_ASSERT_EVALUATE(expression) (void)(expression)

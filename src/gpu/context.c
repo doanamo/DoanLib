@@ -7,7 +7,7 @@ struct DnGpuContext {
   VkPhysicalDevice physicalDevice;
 };
 
-static void DnGpuContext_PrintAvailableInstanceLayers() {
+static void DnGpuContext_PrintAvailableInstanceLayers(const char* enabledLayers[], u32 enabledLayerCount) {
   DnMemTempScope tempScope = DnMemTemp_PushScope();
 
   u32 availableLayerCount = 0;
@@ -24,14 +24,22 @@ static void DnGpuContext_PrintAvailableInstanceLayers() {
 
   DN_LOG_INFO("Available Vulkan instance layers:");
   for (u32 i = 0; i < availableLayerCount; i++) {
-    DN_LOG_INFO("  %s", availableLayers[i].layerName);
+    const char* enabledText = "";
+    for (u32 j = 0; j < enabledLayerCount; j++) {
+      if (strcmp(availableLayers[i].layerName, enabledLayers[j]) == 0) {
+        enabledText = " (Enabled)";
+        break;
+      }
+    }
+
+    DN_LOG_INFO("  %s%s", availableLayers[i].layerName, enabledText);
   }
 
 error:
   DnMemTemp_PopScope(&tempScope);
 }
 
-static void DnGpuContext_PrintAvailableInstanceExtensions() {
+static void DnGpuContext_PrintAvailableInstanceExtensions(const char* enabledExtensions[], u32 enabledExtensionCount) {
   DnMemTempScope tempScope = DnMemTemp_PushScope();
 
   u32 availableExtensionCount = 0;
@@ -48,7 +56,15 @@ static void DnGpuContext_PrintAvailableInstanceExtensions() {
 
   DN_LOG_INFO("Available Vulkan instance extensions:");
   for (u32 i = 0; i < availableExtensionCount; i++) {
-    DN_LOG_INFO("  %s", availableExtensions[i].extensionName);
+    const char* enabledText = "";
+    for (u32 j = 0; j < enabledExtensionCount; j++) {
+      if (strcmp(availableExtensions[i].extensionName, enabledExtensions[j]) == 0) {
+        enabledText = " (Enabled)";
+        break;
+      }
+    }
+
+    DN_LOG_INFO("  %s%s", availableExtensions[i].extensionName, enabledText);
   }
 
 error:
@@ -67,15 +83,14 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
   };
 
-  DnGpuContext_PrintAvailableInstanceLayers();
-  DnGpuContext_PrintAvailableInstanceExtensions();
-
   const char* enabledInstanceLayers[] = {
 #ifdef DN_CONFIG_DEBUG
     "VK_LAYER_KHRONOS_validation",
     "VK_LAYER_KHRONOS_synchronization2",
 #endif
   };
+
+  DnGpuContext_PrintAvailableInstanceLayers(enabledInstanceLayers, DN_ARRAY_LENGTH(enabledInstanceLayers));
 
   const char* enabledInstanceExtensions[] = {
     VK_KHR_SURFACE_EXTENSION_NAME,
@@ -84,6 +99,8 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
     VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
   };
+
+  DnGpuContext_PrintAvailableInstanceExtensions(enabledInstanceExtensions, DN_ARRAY_LENGTH(enabledInstanceExtensions));
 
   VkInstanceCreateInfo instanceCreateInfo = {
     .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
@@ -153,7 +170,7 @@ static bool DnGpuContext_CreateDebugMessenger(DnGpuContext* context) {
   };
 
   if (vkCreateDebugUtilsMessengerEXT(context->instance, &debugMessangerCreateInfo, g_dnGpuAllocatorVulkan, &context->debugMessenger)) {
-    DN_LOG_ERROR("Failed to create debug  messenger");
+    DN_LOG_ERROR("Failed to create debug messenger");
     goto error;
   }
 
@@ -187,14 +204,6 @@ static bool DnGpuContext_CreatePhysicalDevice(DnGpuContext* context) {
     goto error;
   }
 
-  DN_LOG_INFO("Available physical graphics devices:");
-  for (u32 i = 0; i < physicalDeviceCount; i++) {
-    VkPhysicalDevice physicalDevice = physicalDevices[i];
-    VkPhysicalDeviceProperties physicalDeviceProperties;
-    vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
-    DN_LOG_INFO("  %s", physicalDeviceProperties.deviceName);
-  }
-
   for (u32 i = 0; i < physicalDeviceCount; i++) {
     VkPhysicalDevice physicalDevice = physicalDevices[i];
     VkPhysicalDeviceProperties physicalDeviceProperties;
@@ -210,9 +219,15 @@ static bool DnGpuContext_CreatePhysicalDevice(DnGpuContext* context) {
     context->physicalDevice = physicalDevices[0];
   }
 
-  VkPhysicalDeviceProperties physicalDeviceProperties;
-  vkGetPhysicalDeviceProperties(context->physicalDevice, &physicalDeviceProperties);
-  DN_LOG_INFO("Physical graphics device: %s", physicalDeviceProperties.deviceName);
+  DN_LOG_INFO("Available Vulkan physical devices:");
+  for (u32 i = 0; i < physicalDeviceCount; i++) {
+    VkPhysicalDevice physicalDevice = physicalDevices[i];
+    VkPhysicalDeviceProperties physicalDeviceProperties;
+    vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+
+    const char* selectedText = (physicalDevice == context->physicalDevice) ? " (Selected)" : "";
+    DN_LOG_INFO("  %s%s", physicalDeviceProperties.deviceName, selectedText);
+  }
 
   success = true;
 

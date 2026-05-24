@@ -26,7 +26,7 @@ void* DnMemArena_Push(DnMemArena* arena, u64 allocationSize) {
   DN_ASSERT(allocationSize > 0);
 
   DN_ASSERT(DN_MEM_IS_ALIGNED(arena->usedSize, DnMem_DefaultAlignment));
-  DN_ASSERT(DN_MEM_IS_ALIGNED(allocationSize, DnMem_DefaultAlignment));
+  allocationSize = DN_MEM_ALIGN_UP(allocationSize, DnMem_DefaultAlignment);
 
   u64 newUsedSize = arena->usedSize + allocationSize;
   if (DN_UNLIKELY(newUsedSize > arena->reservedSize)) {
@@ -57,7 +57,7 @@ void DnMemArena_Free(DnMemArena* arena, u64 allocationSize) {
   DN_ASSERT(allocationSize > 0);
 
   DN_ASSERT(DN_MEM_IS_ALIGNED(arena->usedSize, DnMem_DefaultAlignment));
-  DN_ASSERT(DN_MEM_IS_ALIGNED(allocationSize, DnMem_DefaultAlignment));
+  allocationSize = DN_MEM_ALIGN_UP(allocationSize, DnMem_DefaultAlignment);
 
   DN_ASSERT(arena->usedSize >= allocationSize);
   arena->usedSize = arena->usedSize - allocationSize;

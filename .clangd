@@ -1,3 +1,9 @@
 CompileFlags:
   CompilationDatabase: build/debug
   Add: -ferror-limit=100
+---
+If:
+  PathMatch: include/dn/shared\.h
+Diagnostics:
+  Includes:
+    IgnoreHeader: string\.h

@@ -9,10 +9,7 @@ typedef struct DnMemAllocatorTempHeader {
 void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
-
-  if (size == 0) {
-    return nullptr;
-  }
+  DN_ASSERT(size > 0);
 
   u64 headerSize = sizeof(DnMemAllocatorTempHeader);
   void* allocation = DnMemArena_Push(&g_dnMemArenaTemp, headerSize + size);
@@ -67,10 +64,7 @@ void* DnMemAllocatorTemp_Realloc(const DnMemAllocator* allocator, void* allocati
 void* DnMemAllocatorTemp_AllocAligned(const DnMemAllocator* allocator, u64 size, u64 alignment) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
-
-  if (size == 0) {
-    return nullptr;
-  }
+  DN_ASSERT(size > 0);
 
   u64 alignmentPadding = alignment - 1;
   u64 alignedHeaderSize = DN_MEM_ALIGN_UP(sizeof(DnMemAllocatorTempHeader), alignment);
@@ -157,7 +151,6 @@ DnMemTempScope DnMemTemp_PushScope() {
 void DnMemTemp_PopScope(DnMemTempScope* scope) {
   DN_ASSERT(scope);
 
-  // Simplify scope handling by allowing pop to be called on invalid scopes.
   if (scope->valid) {
     DN_ASSERT(g_dnMemArenaTemp.usedSize >= scope->savedUsedSize);
     g_dnMemArenaTemp.usedSize = scope->savedUsedSize;

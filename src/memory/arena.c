@@ -6,7 +6,7 @@ bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
 
   reserveSize = DN_MEM_ALIGN_UP(reserveSize, DnMem_SystemPageSize);
   void* address = DnMemVirtual_Reserve(reserveSize);
-  if (address == nullptr) {
+  if (DN_UNLIKELY(address == nullptr)) {
     DN_LOG_ERROR("Failed to reserve memory for arena");
     return false;
   }
@@ -29,7 +29,7 @@ void* DnMemArena_Push(DnMemArena* arena, u64 allocationSize) {
   DN_ASSERT(DN_MEM_IS_ALIGNED(allocationSize, DnMem_DefaultAlignment));
 
   u64 newUsedSize = arena->usedSize + allocationSize;
-  if (newUsedSize > arena->reservedSize) {
+  if (DN_UNLIKELY(newUsedSize > arena->reservedSize)) {
     DN_LOG_ERROR("Allocation exceeds reserved arena memory");
     return nullptr;
   }

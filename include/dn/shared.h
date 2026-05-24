@@ -34,6 +34,9 @@ typedef double f64;
 #define DN_BREAK() __builtin_debugtrap()
 #define DN_ABORT() __builtin_trap()
 
+#define DN_LIKELY(expression) __builtin_expect(!!(expression), 1)
+#define DN_UNLIKELY(expression) __builtin_expect(!!(expression), 0)
+
 /*
  * Logging macros
  */
@@ -55,7 +58,7 @@ void DnLog_Error(const char* format, ...);
 
 #define DN_ASSERT_ALWAYS(expression) \
   do { \
-    if (!(expression)) { \
+    if (DN_UNLIKELY(!(expression))) { \
       DN_LOG_ERROR("Assertion failed: %s", #expression); \
       DN_ABORT(); \
     } \

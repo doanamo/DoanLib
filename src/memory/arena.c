@@ -21,12 +21,12 @@ bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize) {
   return true;
 }
 
-void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize) {
+void* DnMemArena_Push(DnMemArena* arena, u64 allocationSize) {
   DN_ASSERT(arena);
   DN_ASSERT(allocationSize > 0);
 
   DN_ASSERT(DN_MEM_IS_ALIGNED(arena->usedSize, DnMem_DefaultAlignment));
-  allocationSize = DN_MEM_ALIGN_UP(allocationSize, DnMem_DefaultAlignment);
+  DN_ASSERT(DN_MEM_IS_ALIGNED(allocationSize, DnMem_DefaultAlignment));
 
   u64 newUsedSize = arena->usedSize + allocationSize;
   if (newUsedSize > arena->reservedSize) {
@@ -36,9 +36,9 @@ void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize) {
 
   if (newUsedSize > arena->committedSize) {
     u64 newCommittedSize = DN_MEM_ALIGN_UP(newUsedSize, DnMem_SystemPageSize);
-
     void* pageCommitAddress = arena->address + arena->committedSize;
     u64 pageCommitSize = newCommittedSize - arena->committedSize;
+
     if (!DnMemVirtual_Commit(pageCommitAddress, pageCommitSize)) {
       DN_LOG_ERROR("Failed to commit memory for arena");
       return nullptr;
@@ -57,7 +57,7 @@ void DnMemArena_Free(DnMemArena* arena, u64 allocationSize) {
   DN_ASSERT(allocationSize > 0);
 
   DN_ASSERT(DN_MEM_IS_ALIGNED(arena->usedSize, DnMem_DefaultAlignment));
-  allocationSize = DN_MEM_ALIGN_UP(allocationSize, DnMem_DefaultAlignment);
+  DN_ASSERT(DN_MEM_IS_ALIGNED(allocationSize, DnMem_DefaultAlignment));
 
   DN_ASSERT(arena->usedSize >= allocationSize);
   arena->usedSize = arena->usedSize - allocationSize;

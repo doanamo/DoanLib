@@ -15,7 +15,7 @@ void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size) {
   }
 
   u64 headerSize = sizeof(DnMemAllocatorTempHeader);
-  void* allocation = DnMemArena_Alloc(&g_dnMemArenaTemp, headerSize + size);
+  void* allocation = DnMemArena_Push(&g_dnMemArenaTemp, headerSize + size);
   DN_ASSERT_ALWAYS(allocation);
 
   DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)allocation;
@@ -74,7 +74,7 @@ void* DnMemAllocatorTemp_AllocAligned(const DnMemAllocator* allocator, u64 size,
 
   u64 alignmentPadding = alignment - 1;
   u64 alignedHeaderSize = DN_MEM_ALIGN_UP(sizeof(DnMemAllocatorTempHeader), alignment);
-  void* allocation = DnMemArena_Alloc(&g_dnMemArenaTemp, alignmentPadding + alignedHeaderSize + size);
+  void* allocation = DnMemArena_Push(&g_dnMemArenaTemp, alignmentPadding + alignedHeaderSize + size);
   DN_ASSERT_ALWAYS(allocation);
 
 #ifdef DN_CONFIG_DEBUG

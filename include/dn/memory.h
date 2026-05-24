@@ -178,8 +178,8 @@ typedef struct DnMemArena {
 } DnMemArena;
 
 bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize);
-void* DnMemArena_Alloc(DnMemArena* arena, u64 allocationSize);
-void DnMemArena_Free(DnMemArena* arena, u64 allocationSize);
+void* DnMemArena_Push(DnMemArena* arena, u64 allocationSize);
+void DnMemArena_Pop(DnMemArena* arena, u64 allocationSize);
 void DnMemArena_Reset(DnMemArena* arena, bool decommit);
 void DnMemArena_Deinit(DnMemArena* arena);
 

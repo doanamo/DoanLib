@@ -1,6 +1,5 @@
 #include "dn/gpu.h"
 #include "dn/memory.h"
-#include "vulkan/vulkan_core.h"
 
 struct DnGpuContext {
   VkInstance instance;

@@ -26,6 +26,15 @@ typedef float f32;
 typedef double f64;
 
 /*
+ * Shared defines
+ */
+
+#ifndef DN_CONFIG_RELEASE
+  #define DN_LOG_ENABLED
+  #define DN_ASSERT_ENABLED
+#endif
+
+/*
  * Compiler macros
  */
 
@@ -41,10 +50,6 @@ typedef double f64;
 /*
  * Logging macros
  */
-
-#ifndef DN_CONFIG_RELEASE
-  #define DN_LOG_ENABLED
-#endif
 
 #ifdef DN_LOG_ENABLED
   void DnLog_Info(const char* format, ...);
@@ -72,7 +77,7 @@ typedef double f64;
 #define DN_ASSERT_ALWAYS(expression) \
   DN_ASSERT_IMPLEMENTATION(expression, #expression)
 
-#ifndef DN_CONFIG_RELEASE
+#ifdef DN_ASSERT_ENABLED
   #define DN_ASSERT(expression) DN_ASSERT_IMPLEMENTATION(expression, #expression)
   #define DN_ASSERT_EVALUATE(expression) DN_ASSERT_IMPLEMENTATION(expression, #expression)
 #else

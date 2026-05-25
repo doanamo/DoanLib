@@ -28,3 +28,4 @@ void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title);
 void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height);
 void DnSysWindow_SetVisibility(DnSysWindow* window, bool visible);
 void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback);
+void* DnSysWindow_GetPrivateHandle(DnSysWindow* window);

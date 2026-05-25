@@ -169,3 +169,8 @@ void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback 
   DN_ASSERT(window->handle);
   window->closeCallback = callback;
 }
+
+void* DnSysWindow_GetPrivateHandle(DnSysWindow* window) {
+  DN_ASSERT(window->handle);
+  return (void*)window->handle;
+}

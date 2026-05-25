@@ -9,7 +9,7 @@ typedef struct DnSysWindow DnSysWindow;
  */
 
 #ifdef DN_CONFIG_DEBUG
-  #define DN_GPU_VALIDATION
+  #define DN_GPU_VALIDATION_ENABLED
 #endif
 
 /*

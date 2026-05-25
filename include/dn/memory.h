@@ -8,7 +8,7 @@
  */
 
 #ifndef DN_CONFIG_RELEASE
-  #define DN_MEM_DEBUG_PATTERNS
+  #define DN_MEM_DEBUG_PATTERNS_ENABLED
 #endif
 
 /*
@@ -18,9 +18,11 @@
 constexpr u64 DnMem_DefaultAlignment = alignof(max_align_t);
 constexpr u64 DnMem_SystemPageSize = 4096;
 
-constexpr u8 DnMem_PatternAllocated = 0xCD;
-constexpr u8 DnMem_PatternFreed = 0xDD;
-constexpr u8 DnMem_PatternPadding = 0xFD;
+#ifdef DN_MEM_PATTERNS_ENABLED
+  constexpr u8 DnMem_PatternAllocated = 0xCD;
+  constexpr u8 DnMem_PatternFreed = 0xDD;
+  constexpr u8 DnMem_PatternPadding = 0xFD;
+#endif
 
 /*
  * Memory initialization

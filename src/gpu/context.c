@@ -104,7 +104,7 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
 #endif
 
   const char* enabledInstanceLayers[] = {
-#ifdef DN_GPU_VALIDATION
+#ifdef DN_GPU_VALIDATION_ENABLED
     "VK_LAYER_KHRONOS_validation",
     "VK_LAYER_KHRONOS_synchronization2",
 #endif
@@ -113,7 +113,7 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
   const char* enabledInstanceExtensions[] = {
     VK_KHR_SURFACE_EXTENSION_NAME,
     VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
-#ifdef DN_GPU_VALIDATION
+#ifdef DN_GPU_VALIDATION_ENABLED
     VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
   };
@@ -140,7 +140,7 @@ error:
   return success;
 }
 
-#ifdef DN_GPU_VALIDATION
+#ifdef DN_GPU_VALIDATION_ENABLED
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL DnGpuContext_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT type, const VkDebugUtilsMessengerCallbackDataEXT* callbackData, void* userData) {
   DN_UNUSED(severity);
@@ -341,7 +341,7 @@ DnGpuContext* DnGpuContext_Create() {
     goto error;
   }
 
-#ifdef DN_GPU_VALIDATION
+#ifdef DN_GPU_VALIDATION_ENABLED
   if (!DnGpuContext_CreateDebugMessenger(context)) {
     goto error;
   }

@@ -49,7 +49,7 @@ bool DnApp_Init(const DnAppConfig* config) {
     return false;
   }
 
-  g_gpuSwapChain = DnGpuSwapChain_Create();
+  g_gpuSwapChain = DnGpuSwapChain_Create(g_gpuContext, g_sysWindow);
   if (!g_gpuSwapChain) {
     return false;
   }

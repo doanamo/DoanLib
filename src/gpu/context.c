@@ -1,6 +1,5 @@
 #include "dn/gpu.h"
 #include "dn/memory.h"
-#include "vulkan/vulkan_core.h"
 
 struct DnGpuContext {
   VkInstance instance;
@@ -383,4 +382,12 @@ void DnGpuContext_Destroy(DnGpuContext* context) {
   }
 
   DN_MEM_FREE(g_dnMemAllocatorDefault, context);
+}
+
+VkInstance DnGpuContext_GetInstance(DnGpuContext* context) {
+  return context->instance;
+}
+
+VkDevice DnGpuContext_GetDevice(DnGpuContext* context) {
+  return context->device;
 }

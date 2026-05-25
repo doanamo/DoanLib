@@ -8,7 +8,7 @@
  */
 
 #ifndef DN_CONFIG_RELEASE
-  #define DN_MEM_DEBUG_PATTERNS_ENABLED
+  #define DN_MEM_PATTERNS_ENABLED
 #endif
 
 /*

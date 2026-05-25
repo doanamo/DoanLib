@@ -40,7 +40,8 @@ function(dn_target_setup TARGET)
     -g
 
     # Additional optimizations.
-    $<$<CONFIG:Release>:-flto>
+    $<$<CONFIG:Development>:-flto=thin>
+    $<$<CONFIG:Release>:-flto=full>
     -ffast-math
   )
 
@@ -49,7 +50,8 @@ function(dn_target_setup TARGET)
     -g
 
     # Additional optimizations.
-    $<$<CONFIG:Release>:-flto>
+    $<$<CONFIG:Development>:-flto=thin>
+    $<$<CONFIG:Release>:-flto=full>
 
     # Keep standard main entry.
     LINKER:/ENTRY:mainCRTStartup

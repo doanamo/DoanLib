@@ -20,7 +20,7 @@ bool DnGpuSwapChain_CreateSurface(DnGpuContext* context, DnSysWindow* window, Dn
     .hwnd = (HWND)DnSysWindow_GetPrivateHandle(window),
   };
 
-  if (vkCreateWin32SurfaceKHR(DnGpuContext_GetInstance(context), &surfaceInfo, nullptr, &swapChain->surface) != VK_SUCCESS) {
+  if (vkCreateWin32SurfaceKHR(DnGpuContext_GetInstance(context), &surfaceInfo, g_dnGpuAllocatorVulkan, &swapChain->surface) != VK_SUCCESS) {
     DN_LOG_ERROR("Failed to create Vulkan surface");
     goto error;
   }
@@ -67,7 +67,7 @@ void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain) {
   DN_ASSERT(swapChain);
 
   if (swapChain->surface) {
-    vkDestroySurfaceKHR(DnGpuContext_GetInstance(swapChain->context), swapChain->surface, nullptr);
+    vkDestroySurfaceKHR(DnGpuContext_GetInstance(swapChain->context), swapChain->surface, g_dnGpuAllocatorVulkan);
   }
 
   DN_MEM_FREE(g_dnMemAllocatorDefault, swapChain);

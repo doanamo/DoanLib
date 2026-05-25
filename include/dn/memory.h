@@ -2,18 +2,14 @@
 
 #include "shared.h"
 #include "math.h"
-#include <memory.h>
 
 /*
- * Memory initialization
+ * Memory defines
  */
 
-typedef struct DnMemConfig {
-  u64 tempReservedSize;
-} DnMemConfig;
-
-bool DnMem_Init(const DnMemConfig* config);
-void DnMem_Deinit();
+#ifndef DN_CONFIG_RELEASE
+  #define DN_MEM_DEBUG_PATTERNS
+#endif
 
 /*
  * Memory constants
@@ -25,6 +21,17 @@ constexpr u64 DnMem_SystemPageSize = 4096;
 constexpr u8 DnMem_PatternAllocated = 0xCD;
 constexpr u8 DnMem_PatternFreed = 0xDD;
 constexpr u8 DnMem_PatternPadding = 0xFD;
+
+/*
+ * Memory initialization
+ */
+
+typedef struct DnMemConfig {
+  u64 tempReservedSize;
+} DnMemConfig;
+
+bool DnMem_Init(const DnMemConfig* config);
+void DnMem_Deinit();
 
 /*
  * Memory utility

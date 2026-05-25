@@ -23,9 +23,9 @@ set(CMAKE_RC_FLAGS_DEVELOP "${CMAKE_RC_FLAGS_RELWITHDEBINFO_INIT}" CACHE INTERNA
 
 function(dn_target_setup TARGET)
   target_compile_definitions(${TARGET} PRIVATE
-    $<$<CONFIG:Debug>:DN_CONFIG_DEBUG>
-    $<$<CONFIG:Develop>:DN_CONFIG_DEVELOP>
-    $<$<CONFIG:Release>:DN_CONFIG_RELEASE>
+    DN_CONFIG_DEBUG=$<CONFIG:Debug>
+    DN_CONFIG_DEVELOP=$<CONFIG:Develop>
+    DN_CONFIG_RELEASE=$<CONFIG:Release>
     _CRT_SECURE_NO_WARNINGS
   )
 
@@ -63,7 +63,7 @@ function(dn_target_setup TARGET)
       WIN32_EXECUTABLE $<CONFIG:Release>
     )
 
-    # Enable debug CRT runtime in Debug configuration.
+    # Enable debug CRT runtime in Debug configuration only.
     set_property(TARGET ${TARGET} PROPERTY
       MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
     )

@@ -7,9 +7,7 @@
  * Memory defines
  */
 
-#ifndef DN_CONFIG_RELEASE
-  #define DN_MEM_PATTERNS_ENABLED
-#endif
+#define DN_MEM_PATTERNS_ENABLED !DN_CONFIG_RELEASE
 
 /*
  * Memory constants
@@ -18,7 +16,7 @@
 constexpr u64 DnMem_DefaultAlignment = alignof(max_align_t);
 constexpr u64 DnMem_SystemPageSize = 4096;
 
-#ifdef DN_MEM_PATTERNS_ENABLED
+#if DN_MEM_PATTERNS_ENABLED
   constexpr u8 DnMem_PatternAllocated = 0xCD;
   constexpr u8 DnMem_PatternFreed = 0xDD;
   constexpr u8 DnMem_PatternPadding = 0xFD;

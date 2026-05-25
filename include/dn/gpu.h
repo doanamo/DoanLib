@@ -8,9 +8,7 @@ typedef struct DnSysWindow DnSysWindow;
  * GPU defines
  */
 
-#ifdef DN_CONFIG_DEBUG
-  #define DN_GPU_VALIDATION_ENABLED
-#endif
+#define DN_GPU_VALIDATION_ENABLED DN_CONFIG_DEBUG
 
 /*
  * GPU memory

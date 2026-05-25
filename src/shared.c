@@ -1,7 +1,7 @@
 #include "dn/shared.h"
 #include <stdio.h>
 
-#ifdef DN_LOG_ENABLED
+#if DN_LOG_ENABLED
 
 void DnLog_Info(const char* format, ...) {
   va_list args;

@@ -9,7 +9,7 @@ struct DnGpuContext {
   VkQueue graphicsQueue;
 };
 
-#ifdef DN_LOG_ENABLED
+#if DN_LOG_ENABLED
 
 static void DnGpuContext_PrintAvailableInstanceLayers() {
   DnMemTempScope tempScope = DnMemTemp_PushScope();
@@ -98,13 +98,13 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
   };
 
-#ifdef DN_LOG_ENABLED
+#if DN_LOG_ENABLED
   DnGpuContext_PrintAvailableInstanceLayers();
   DnGpuContext_PrintAvailableInstanceExtensions();
 #endif
 
   const char* enabledInstanceLayers[] = {
-#ifdef DN_GPU_VALIDATION_ENABLED
+#if DN_GPU_VALIDATION_ENABLED
     "VK_LAYER_KHRONOS_validation",
     "VK_LAYER_KHRONOS_synchronization2",
 #endif
@@ -113,7 +113,7 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
   const char* enabledInstanceExtensions[] = {
     VK_KHR_SURFACE_EXTENSION_NAME,
     VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
-#ifdef DN_GPU_VALIDATION_ENABLED
+#if DN_GPU_VALIDATION_ENABLED
     VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
   };
@@ -140,7 +140,7 @@ error:
   return success;
 }
 
-#ifdef DN_GPU_VALIDATION_ENABLED
+#if DN_GPU_VALIDATION_ENABLED
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL DnGpuContext_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT type, const VkDebugUtilsMessengerCallbackDataEXT* callbackData, void* userData) {
   DN_UNUSED(severity);
@@ -235,7 +235,7 @@ static bool DnGpuContext_SelectPhysicalDevice(DnGpuContext* context) {
     context->physicalDevice = physicalDevices[0];
   }
 
-#ifdef DN_LOG_ENABLED
+#if DN_LOG_ENABLED
   DN_LOG_INFO("Available Vulkan physical devices:");
   for (u32 i = 0; i < physicalDeviceCount; i++) {
     VkPhysicalDevice physicalDevice = physicalDevices[i];
@@ -294,7 +294,7 @@ static bool DnGpuContext_CreateDevice(DnGpuContext* context) {
   queueCreateInfo.queueCount = 1;
   queueCreateInfo.pQueuePriorities = queuePriorities;
 
-#ifdef DN_LOG_ENABLED
+#if DN_LOG_ENABLED
   DnGpuContext_PrintAvailableDeviceExtensions(context->physicalDevice);
 #endif
 
@@ -341,7 +341,7 @@ DnGpuContext* DnGpuContext_Create() {
     goto error;
   }
 
-#ifdef DN_GPU_VALIDATION_ENABLED
+#if DN_GPU_VALIDATION_ENABLED
   if (!DnGpuContext_CreateDebugMessenger(context)) {
     goto error;
   }

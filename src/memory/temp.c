@@ -20,7 +20,7 @@ void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size) {
 
   allocation = (void*)((u8*)allocation + headerSize);
 
-#ifdef DN_MEM_PATTERNS_ENABLED
+#if DN_MEM_PATTERNS_ENABLED
   memset(allocation, DnMem_PatternAllocated, size);
 #endif
 
@@ -32,7 +32,7 @@ void DnMemAllocatorTemp_Free(const DnMemAllocator* allocator, void* allocation) 
   DN_UNUSED(allocator);
   DN_UNUSED(allocation);
 
-#ifdef DN_MEM_PATTERNS_ENABLED
+#if DN_MEM_PATTERNS_ENABLED
   if (allocation) {
     DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
     memset(allocation, DnMem_PatternFreed, header->size);
@@ -71,7 +71,7 @@ void* DnMemAllocatorTemp_AllocAligned(const DnMemAllocator* allocator, u64 size,
   void* allocation = DnMemArena_Push(&g_dnMemArenaTemp, alignmentPadding + alignedHeaderSize + size);
   DN_ASSERT_ALWAYS(allocation);
 
-#ifdef DN_MEM_PATTERNS_ENABLED
+#if DN_MEM_PATTERNS_ENABLED
   memset(allocation, DnMem_PatternPadding, alignmentPadding + alignedHeaderSize);
   memset((u8*)allocation + size, DnMem_PatternPadding, alignmentPadding + alignedHeaderSize);
 #endif
@@ -81,7 +81,7 @@ void* DnMemAllocatorTemp_AllocAligned(const DnMemAllocator* allocator, u64 size,
   DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
   header->size = size;
 
-#ifdef DN_MEM_PATTERNS_ENABLED
+#if DN_MEM_PATTERNS_ENABLED
   memset(allocation, DnMem_PatternAllocated, size);
 #endif
 
@@ -93,7 +93,7 @@ void DnMemAllocatorTemp_FreeAligned(const DnMemAllocator* allocator, void* alloc
   DN_UNUSED(allocator);
   DN_UNUSED(allocation);
 
-#ifdef DN_MEM_PATTERNS_ENABLED
+#if DN_MEM_PATTERNS_ENABLED
   if (allocation) {
     DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
     memset(allocation, DnMem_PatternFreed, header->size);

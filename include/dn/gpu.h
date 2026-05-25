@@ -22,7 +22,6 @@ void DnGpuContext_Destroy(DnGpuContext* context);
 VkInstance DnGpuContext_GetInstance(DnGpuContext* context);
 VkDevice DnGpuContext_GetDevice(DnGpuContext* context);
 
-
 /*
  * GPU swap chain
  */

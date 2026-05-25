@@ -5,6 +5,14 @@
 typedef struct DnSysWindow DnSysWindow;
 
 /*
+ * GPU defines
+ */
+
+#ifdef DN_CONFIG_DEBUG
+  #define DN_GPU_VALIDATION
+#endif
+
+/*
  * GPU memory
  */
 

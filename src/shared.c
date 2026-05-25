@@ -1,6 +1,8 @@
 #include "dn/shared.h"
 #include <stdio.h>
 
+#ifdef DN_LOG_ENABLED
+
 void DnLog_Info(const char* format, ...) {
   va_list args;
   va_start(args, format);
@@ -17,3 +19,5 @@ void DnLog_Error(const char* format, ...) {
   fflush(stderr);
   va_end(args);
 }
+
+#endif

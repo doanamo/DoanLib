@@ -10,6 +10,8 @@ struct DnGpuContext {
   VkQueue graphicsQueue;
 };
 
+#ifdef DN_LOG_ENABLED
+
 static void DnGpuContext_PrintAvailableInstanceLayers() {
   DnMemTempScope tempScope = DnMemTemp_PushScope();
 
@@ -82,6 +84,8 @@ error:
   DnMemTemp_PopScope(&tempScope);
 }
 
+#endif
+
 static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
   DN_LOG_INFO("Creating Vulkan instance");
   bool success = false;
@@ -95,7 +99,10 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
     .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
   };
 
+#ifdef DN_LOG_ENABLED
   DnGpuContext_PrintAvailableInstanceLayers();
+  DnGpuContext_PrintAvailableInstanceExtensions();
+#endif
 
   const char* enabledInstanceLayers[] = {
 #ifdef DN_CONFIG_DEBUG
@@ -103,8 +110,6 @@ static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
     "VK_LAYER_KHRONOS_synchronization2",
 #endif
   };
-
-  DnGpuContext_PrintAvailableInstanceExtensions();
 
   const char* enabledInstanceExtensions[] = {
     VK_KHR_SURFACE_EXTENSION_NAME,
@@ -231,6 +236,7 @@ static bool DnGpuContext_SelectPhysicalDevice(DnGpuContext* context) {
     context->physicalDevice = physicalDevices[0];
   }
 
+#ifdef DN_LOG_ENABLED
   DN_LOG_INFO("Available Vulkan physical devices:");
   for (u32 i = 0; i < physicalDeviceCount; i++) {
     VkPhysicalDevice physicalDevice = physicalDevices[i];
@@ -240,6 +246,7 @@ static bool DnGpuContext_SelectPhysicalDevice(DnGpuContext* context) {
     const char* selectedText = (physicalDevice == context->physicalDevice) ? " (Selected)" : "";
     DN_LOG_INFO("  %s%s", physicalDeviceProperties.deviceName, selectedText);
   }
+#endif
 
   success = true;
 
@@ -288,7 +295,9 @@ static bool DnGpuContext_CreateDevice(DnGpuContext* context) {
   queueCreateInfo.queueCount = 1;
   queueCreateInfo.pQueuePriorities = queuePriorities;
 
+#ifdef DN_LOG_ENABLED
   DnGpuContext_PrintAvailableDeviceExtensions(context->physicalDevice);
+#endif
 
   const char* requiredDeviceExtensions[] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,

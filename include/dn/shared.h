@@ -42,10 +42,14 @@ typedef double f64;
  * Logging macros
  */
 
-void DnLog_Info(const char* format, ...);
-void DnLog_Error(const char* format, ...);
-
 #ifndef DN_CONFIG_RELEASE
+  #define DN_LOG_ENABLED
+#endif
+
+#ifdef DN_LOG_ENABLED
+  void DnLog_Info(const char* format, ...);
+  void DnLog_Error(const char* format, ...);
+
   #define DN_LOG_INFO(format, ...) DnLog_Info(format "\n" __VA_OPT__(,) __VA_ARGS__)
   #define DN_LOG_ERROR(format, ...) DnLog_Error(format "\n" __VA_OPT__(,) __VA_ARGS__)
 #else

@@ -1,9 +1,6 @@
 #include "dn/memory.h"
 #include "dn/system.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 struct DnSysWindow {
   HWND handle;
   u32 width;
@@ -170,7 +167,7 @@ void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback 
   window->closeCallback = callback;
 }
 
-void* DnSysWindow_GetPrivateHandle(DnSysWindow* window) {
+HWND DnSysWindow_GetHandle(DnSysWindow* window) {
   DN_ASSERT(window->handle);
-  return (void*)window->handle;
+  return window->handle;
 }

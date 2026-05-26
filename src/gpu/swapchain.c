@@ -2,9 +2,6 @@
 #include "dn/memory.h"
 #include "dn/system.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 struct DnGpuSwapChain {
   DnGpuContext* context;
   VkSurfaceKHR surface;
@@ -17,7 +14,7 @@ bool DnGpuSwapChain_CreateSurface(DnGpuContext* context, DnSysWindow* window, Dn
   VkWin32SurfaceCreateInfoKHR surfaceInfo = {
     .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
     .hinstance = GetModuleHandle(nullptr),
-    .hwnd = (HWND)DnSysWindow_GetPrivateHandle(window),
+    .hwnd = DnSysWindow_GetHandle(window),
   };
 
   if (vkCreateWin32SurfaceKHR(DnGpuContext_GetInstance(context), &surfaceInfo, g_dnGpuAllocatorVulkan, &swapChain->surface) != VK_SUCCESS) {

@@ -1,5 +1,8 @@
 #pragma once
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 #include "shared.h"
 #include "structs.h"
 
@@ -28,4 +31,4 @@ void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title);
 void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height);
 void DnSysWindow_SetVisibility(DnSysWindow* window, bool visible);
 void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback);
-void* DnSysWindow_GetPrivateHandle(DnSysWindow* window);
+HWND DnSysWindow_GetHandle(DnSysWindow* window);

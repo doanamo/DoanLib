@@ -2,8 +2,6 @@
 
 #include <Volk/volk.h>
 
-typedef struct DnSysWindow DnSysWindow;
-
 /*
  * GPU defines
  */
@@ -32,6 +30,7 @@ VkDevice DnGpuContext_GetDevice(DnGpuContext* context);
  * GPU swap chain
  */
 
+typedef struct DnSysWindow DnSysWindow;
 typedef struct DnGpuSwapChain DnGpuSwapChain;
 
 DnGpuSwapChain* DnGpuSwapChain_Create(DnGpuContext* context, DnSysWindow* window);

@@ -6,6 +6,42 @@ typedef struct DnMemAllocatorTempHeader {
   u64 size;
 } DnMemAllocatorTempHeader;
 
+bool DnMemTemp_Init(const DnMemConfig* config) {
+  u64 tempReservedSize = config->tempReservedSize ? config->tempReservedSize : DN_MEM_GB(1);
+  DN_LOG_INFO("Reserved temporary memory: %.2f GB", DN_MEM_TO_GB(tempReservedSize));
+
+  if (!DnMemArena_Init(&g_dnMemArenaTemp, tempReservedSize)) {
+    return false;
+  }
+
+  return true;
+}
+
+void DnMemTemp_Deinit() {
+  if (g_dnMemArenaTemp.usedSize != 0) {
+    DN_LOG_ERROR("Leaked temporary memory: %.2f GB", DN_MEM_TO_GB(g_dnMemArenaTemp.usedSize));
+  }
+
+  DnMemArena_Deinit(&g_dnMemArenaTemp);
+}
+
+DnMemTempScope DnMemTemp_PushScope() {
+  return (DnMemTempScope) {
+    .savedUsedSize = g_dnMemArenaTemp.usedSize,
+    .valid = true,
+  };
+}
+
+void DnMemTemp_PopScope(DnMemTempScope* scope) {
+  DN_ASSERT(scope);
+
+  if (scope->valid) {
+    DN_ASSERT(g_dnMemArenaTemp.usedSize >= scope->savedUsedSize);
+    g_dnMemArenaTemp.usedSize = scope->savedUsedSize;
+    scope->valid = false;
+  }
+}
+
 void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
@@ -120,42 +156,6 @@ void* DnMemAllocatorTemp_ReallocAligned(const DnMemAllocator* allocator, void* a
   }
 
   return reallocation;
-}
-
-bool DnMemTemp_Init(const DnMemConfig* config) {
-  u64 tempReservedSize = config->tempReservedSize ? config->tempReservedSize : DN_MEM_GB(1);
-  DN_LOG_INFO("Reserved temporary memory: %.2f GB", DN_MEM_TO_GB(tempReservedSize));
-
-  if (!DnMemArena_Init(&g_dnMemArenaTemp, tempReservedSize)) {
-    return false;
-  }
-
-  return true;
-}
-
-void DnMemTemp_Deinit() {
-  if (g_dnMemArenaTemp.usedSize != 0) {
-    DN_LOG_ERROR("Leaked temporary memory: %.2f GB", DN_MEM_TO_GB(g_dnMemArenaTemp.usedSize));
-  }
-
-  DnMemArena_Deinit(&g_dnMemArenaTemp);
-}
-
-DnMemTempScope DnMemTemp_PushScope() {
-  return (DnMemTempScope) {
-    .savedUsedSize = g_dnMemArenaTemp.usedSize,
-    .valid = true,
-  };
-}
-
-void DnMemTemp_PopScope(DnMemTempScope* scope) {
-  DN_ASSERT(scope);
-
-  if (scope->valid) {
-    DN_ASSERT(g_dnMemArenaTemp.usedSize >= scope->savedUsedSize);
-    g_dnMemArenaTemp.usedSize = scope->savedUsedSize;
-    scope->valid = false;
-  }
 }
 
 static DnMemAllocator g_dnMemAllocatorTempPrivate = {

@@ -1,5 +1,4 @@
 #include "dn/shared.h"
-#include <stdio.h>
 
 #if DN_LOG_ENABLED
 

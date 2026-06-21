@@ -6,19 +6,22 @@
 #include "shared.h"
 #include "structs.h"
 
-/*
- * System configuration
- */
+// ========================================================================== //
+//   System Initialization                                                     //
+// ========================================================================== //
 
+/*
+ * Configuration structure for system initialization.
+ */
 typedef struct DnSysConfig {
   DnStrView windowTitle;
   u32 windowWidth;
   u32 windowHeight;
 } DnSysConfig;
 
-/*
- * System window
- */
+// ========================================================================== //
+//   System Window                                                            //
+// ========================================================================== //
 
 typedef struct DnSysWindow DnSysWindow;
 typedef void (*DnSysWindowCloseCallback)();
@@ -32,3 +35,15 @@ void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height);
 void DnSysWindow_SetVisibility(DnSysWindow* window, bool visible);
 void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback);
 HWND DnSysWindow_GetHandle(DnSysWindow* window);
+
+// ========================================================================== //
+//   Windows Specific                                                         //
+// ========================================================================== //
+
+#if DN_PLATFORM_WINDOWS
+  /*
+   * Logs the last error from the Windows API if an error has occurred. Does not
+   * do anything if no error has occurred.
+   */
+  void DnSysWin32_LogLastError();
+#endif

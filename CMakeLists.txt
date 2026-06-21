@@ -1,14 +1,18 @@
 cmake_minimum_required(VERSION 4.1)
 
+# ============================================================================ #
+#   Project                                                                    #
+# ============================================================================ #
+
 project(DoanLib
   VERSION 0.1.0
   DESCRIPTION "Personal C library for building real-time applications and tools"
   LANGUAGES C
 )
 
-#
-# Configuration
-#
+# ============================================================================ #
+#   Configuration                                                              #
+# ============================================================================ #
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -26,6 +30,7 @@ function(dn_target_setup TARGET)
     DN_CONFIG_DEBUG=$<CONFIG:Debug>
     DN_CONFIG_DEVELOP=$<CONFIG:Develop>
     DN_CONFIG_RELEASE=$<CONFIG:Release>
+    DN_PLATFORM_WINDOWS=$<PLATFORM_ID:Windows>
     _CRT_SECURE_NO_WARNINGS
   )
 
@@ -70,9 +75,9 @@ function(dn_target_setup TARGET)
   endif()
 endfunction()
 
-#
-# Library
-#
+# ============================================================================ #
+#   Library                                                                    #
+# ============================================================================ #
 
 set(SOURCE_FILES
   "src/memory/memory.c"
@@ -82,6 +87,7 @@ set(SOURCE_FILES
   "src/memory/temp.c"
   "src/structs/string.c"
   "src/utility/file.c"
+  "src/system/system.c"
   "src/system/window.c"
   "src/gpu/memory.c"
   "src/gpu/context.c"
@@ -95,9 +101,9 @@ target_include_directories(Doan PRIVATE "src/")
 target_include_directories(Doan PUBLIC "include/")
 dn_target_setup(Doan)
 
-#
-# Dependencies
-#
+# ============================================================================ #
+#   Dependencies                                                               #
+# ============================================================================ #
 
 target_include_directories(Doan PUBLIC "$ENV{VULKAN_SDK}/Include")
 target_sources(Doan PRIVATE "$ENV{VULKAN_SDK}/Include/Volk/volk.c")
@@ -106,8 +112,8 @@ if(WIN32)
   target_compile_definitions(Doan PUBLIC VK_USE_PLATFORM_WIN32_KHR)
 endif()
 
-#
-# Example
-#
+# ============================================================================ #
+#   Example                                                                    #
+# ============================================================================ #
 
 add_subdirectory(Example)

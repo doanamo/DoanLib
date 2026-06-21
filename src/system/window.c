@@ -60,6 +60,7 @@ DnSysWindow* DnSysWindow_Create() {
   HINSTANCE instance = GetModuleHandle(nullptr);
   if (!instance) {
     DN_LOG_ERROR("Failed to retrieve Win32 instance");
+    DnSysWin32_LogLastError();
     goto error;
   }
 
@@ -77,6 +78,7 @@ DnSysWindow* DnSysWindow_Create() {
   if (RegisterClassEx(&windowClass) == 0) {
     if (GetLastError() != ERROR_CLASS_ALREADY_EXISTS) {
       DN_LOG_ERROR("Failed to register Win32 window class");
+      DnSysWin32_LogLastError();
       goto error;
     }
   }
@@ -91,6 +93,7 @@ DnSysWindow* DnSysWindow_Create() {
 
   if (!window->handle) {
     DN_LOG_ERROR("Failed to create Win32 window");
+    DnSysWin32_LogLastError();
     goto error;
   }
 

@@ -1,5 +1,6 @@
 #include "dn/memory.h"
 #include "dn/system.h"
+#include <winnt.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -46,17 +47,21 @@ void* DnMemVirtual_Reserve(u64 size) {
 
 // ========================================================================== //
 
-bool DnMemVirtual_Commit(void* page, u64 size) {
-  DN_ASSERT(page != nullptr);
+void* DnMemVirtual_Commit(void* page, u64 size) {
   DN_ASSERT(DN_MEM_IS_ALIGNED(size, DnMem_SystemPageSize));
 
-  if (DN_UNLIKELY(VirtualAlloc(page, size, MEM_COMMIT, PAGE_READWRITE) == nullptr)) {
-    DN_LOG_ERROR("Failed to commit virtual memory");
-    DnSysWin32_LogLastError();
-    return false;
+  DWORD flags = MEM_COMMIT;
+  if (page == nullptr) {
+    flags |= MEM_RESERVE;
   }
 
-  return true;
+  void* address = VirtualAlloc(page, size, flags, PAGE_READWRITE);
+  if (DN_UNLIKELY(address == nullptr)) {
+    DN_LOG_ERROR("Failed to commit virtual memory");
+    DnSysWin32_LogLastError();
+  }
+
+  return address;
 }
 
 // ========================================================================== //

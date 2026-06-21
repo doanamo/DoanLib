@@ -258,10 +258,11 @@ void* DnMemVirtual_Reserve(u64 size);
 /*
  * Commits physical memory to a previously reserved region, making the specified
  * range accessible for use. The page address and size are expected to align
- * with the system page size. Returns true on success, or false if the commit
- * failed.
+ * with the system page size. Null page address can be specified to
+ * automatically reserve address space in single system call, which may be
+ * faster than calling DnMemVirtual_Reserve() separately.
  */
-bool DnMemVirtual_Commit(void* page, u64 size);
+void* DnMemVirtual_Commit(void* page, u64 size);
 
 /*
  * Decommits physical memory from a previously committed region, releasing the
@@ -273,9 +274,8 @@ void DnMemVirtual_Decommit(void* page, u64 size);
 
 /*
  * Releases an entire region of virtual address space that was previously
- * reserved via DnMemVirtual_Reserve(), freeing both the reservation and any
- * committed physical memory. The page address must be the base address returned
- * by the original reservation.
+ * reserved, freeing both the reservation and any committed physical memory. The
+ * page address must be the base address returned by the original reservation.
  */
 void DnMemVirtual_Release(void* page);
 

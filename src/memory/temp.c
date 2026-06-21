@@ -42,62 +42,7 @@ void DnMemTemp_PopScope(DnMemTempScope* scope) {
   }
 }
 
-void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size) {
-  DN_ASSERT(allocator);
-  DN_UNUSED(allocator);
-  DN_ASSERT(size > 0);
-
-  u64 headerSize = sizeof(DnMemAllocatorTempHeader);
-  void* allocation = DnMemArena_Push(&g_dnMemArenaTemp, headerSize + size);
-  DN_ASSERT_ALWAYS(allocation);
-
-  DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)allocation;
-  header->size = size;
-
-  allocation = (void*)((u8*)allocation + headerSize);
-
-#if DN_MEM_PATTERNS_ENABLED
-  memset(allocation, DnMem_PatternAllocated, size);
-#endif
-
-  return allocation;
-}
-
-void DnMemAllocatorTemp_Free(const DnMemAllocator* allocator, void* allocation) {
-  DN_ASSERT(allocator);
-  DN_UNUSED(allocator);
-  DN_UNUSED(allocation);
-
-#if DN_MEM_PATTERNS_ENABLED
-  if (allocation) {
-    DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
-    memset(allocation, DnMem_PatternFreed, header->size);
-  }
-#endif
-}
-
-void* DnMemAllocatorTemp_Realloc(const DnMemAllocator* allocator, void* allocation, u64 size) {
-  DN_ASSERT(allocator);
-  DN_UNUSED(allocator);
-
-  if (size == 0) {
-    DnMemAllocatorTemp_Free(allocator, allocation);
-    return nullptr;
-  }
-
-  void* reallocation = DnMemAllocatorTemp_Alloc(allocator, size);
-  DN_ASSERT_ALWAYS(reallocation);
-
-  if (allocation) {
-    DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
-    memcpy(reallocation, allocation, header->size < size ? header->size : size);
-    DnMemAllocatorTemp_Free(allocator, allocation);
-  }
-
-  return reallocation;
-}
-
-void* DnMemAllocatorTemp_AllocAligned(const DnMemAllocator* allocator, u64 size, u64 alignment) {
+void* DnMemAllocatorTemp_Alloc(const DnMemAllocator* allocator, u64 size, u64 alignment) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
   DN_ASSERT(size > 0);
@@ -124,7 +69,7 @@ void* DnMemAllocatorTemp_AllocAligned(const DnMemAllocator* allocator, u64 size,
   return allocation;
 }
 
-void DnMemAllocatorTemp_FreeAligned(const DnMemAllocator* allocator, void* allocation) {
+void DnMemAllocatorTemp_Free(const DnMemAllocator* allocator, void* allocation) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
   DN_UNUSED(allocation);
@@ -137,22 +82,22 @@ void DnMemAllocatorTemp_FreeAligned(const DnMemAllocator* allocator, void* alloc
 #endif
 }
 
-void* DnMemAllocatorTemp_ReallocAligned(const DnMemAllocator* allocator, void* allocation, u64 size, u64 alignment) {
+void* DnMemAllocatorTemp_Realloc(const DnMemAllocator* allocator, void* allocation, u64 size, u64 alignment) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
 
   if (size == 0) {
-    DnMemAllocatorTemp_FreeAligned(allocator, allocation);
+    DnMemAllocatorTemp_Free(allocator, allocation);
     return nullptr;
   }
 
-  void* reallocation = DnMemAllocatorTemp_AllocAligned(allocator, size, alignment);
+  void* reallocation = DnMemAllocatorTemp_Alloc(allocator, size, alignment);
   DN_ASSERT_ALWAYS(reallocation);
 
   if (allocation) {
     DnMemAllocatorTempHeader* header = (DnMemAllocatorTempHeader*)((u8*)allocation - sizeof(DnMemAllocatorTempHeader));
     memcpy(reallocation, allocation, header->size < size ? header->size : size);
-    DnMemAllocatorTemp_FreeAligned(allocator, allocation);
+    DnMemAllocatorTemp_Free(allocator, allocation);
   }
 
   return reallocation;
@@ -162,9 +107,6 @@ static DnMemAllocator g_dnMemAllocatorTempPrivate = {
   .alloc = DnMemAllocatorTemp_Alloc,
   .realloc = DnMemAllocatorTemp_Realloc,
   .free = DnMemAllocatorTemp_Free,
-  .allocAligned = DnMemAllocatorTemp_AllocAligned,
-  .reallocAligned = DnMemAllocatorTemp_ReallocAligned,
-  .freeAligned = DnMemAllocatorTemp_FreeAligned,
   .context = nullptr,
 };
 

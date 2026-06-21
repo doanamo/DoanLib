@@ -27,7 +27,7 @@ bool DnUtilFile_Read(const DnMemAllocator* allocator, DnStrView path, u8** outDa
     goto error;
   }
 
-  data = DN_MEM_ALLOC(allocator, (u64)size);
+  data = DN_MEM_ALLOC(allocator, (u64)size, DnMem_DefaultAlignment);
   u64 read = fread(data, 1, (u64)size, file);
 
   if (read != (u64)size) {

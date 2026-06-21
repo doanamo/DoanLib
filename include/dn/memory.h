@@ -3,9 +3,6 @@
 #include "shared.h"
 #include "math.h"
 
-// #todo: Add support for calloc() like allocations
-// #todo: Implement custom general purpose allocator
-
 // ========================================================================== //
 //   Memory Defines                                                           //
 // ========================================================================== //
@@ -140,7 +137,7 @@ void DnMem_Deinit();
   })
 
 // ========================================================================== //
-//   Memory Allocation Macros (Default Alignment)                             //
+//   Memory Allocation Macros                                                 //
 // ========================================================================== //
 
 /*
@@ -153,20 +150,20 @@ void DnMem_Deinit();
     _allocator->alloc(_allocator, size, alignment); \
   })
 
-/*
- * Shorthand macro for reallocating memory from an allocator with a given size
- * and alignment. Can accept null allocation pointer which results in a new
- * memory block being allocated. Returns pointer to a memory block that might
- * have either been shrunk or expanded in-place, or new memory block if the
- * existing block could not be resized, in which case its content is copied
- * before being freed. It should always be assumed that pointers to reallocated
- * memory are invalidated.
- */
-#define DN_MEM_REALLOC(allocator, allocation, size, alignment) \
-  ({ \
-    const DnMemAllocator* _allocator = allocator; \
-    _allocator->realloc(_allocator, allocation, size, alignment); \
-  })
+  /*
+   * Shorthand macro for reallocating memory from an allocator with a given size
+   * and alignment. Accepts a null allocation pointer, in which case a new memory
+   * block is allocated. Returns a pointer to a memory block that may have been
+   * shrunk or expanded in-place, or to a new memory block if the existing one
+   * could not be resized. In the latter case, the original block's contents are
+   * copied to the new block before the original is freed. You should always
+   * assume that pointers to the reallocated memory are invalidated.
+   */
+  #define DN_MEM_REALLOC(allocator, allocation, size, alignment) \
+    ({ \
+      const DnMemAllocator* _allocator = allocator; \
+      _allocator->realloc(_allocator, allocation, size, alignment); \
+    })
 
 /*
  * Shorthand macro for freeing memory from an allocator.
@@ -247,9 +244,37 @@ extern const DnMemAllocator* const g_dnMemAllocatorMalloc;
 //   Memory Virtual                                                           //
 // ========================================================================== //
 
+/*
+ * Reserves a region of virtual address space of the given size without
+ * committing any physical memory to it. The size is rounded up to a multiple of
+ * the system page size. Returns the base address of the reserved region, or
+ * null if the reservation failed. Reserved memory cannot be accessed until it
+ * is committed via DnMemVirtual_Commit().
+ */
 void* DnMemVirtual_Reserve(u64 size);
+
+/*
+ * Commits physical memory to a previously reserved region, making the specified
+ * range accessible for use. The page address and size are expected to align
+ * with the system page size. Returns true on success, or false if the commit
+ * failed.
+ */
 bool DnMemVirtual_Commit(void* page, u64 size);
+
+/*
+ * Decommits physical memory from a previously committed region, releasing the
+ * backing physical memory while keeping the address space reserved. The page
+ * address and size are expected to align with the system page size. The memory
+ * may be recommitted later via DnMemVirtual_Commit().
+ */
 void DnMemVirtual_Decommit(void* page, u64 size);
+
+/*
+ * Releases an entire region of virtual address space that was previously
+ * reserved via DnMemVirtual_Reserve(), freeing both the reservation and any
+ * committed physical memory. The page address must be the base address returned
+ * by the original reservation.
+ */
 void DnMemVirtual_Release(void* page);
 
 // ========================================================================== //

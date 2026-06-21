@@ -1,4 +1,5 @@
 #include "dn/memory.h"
+#include "dn/system.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -33,25 +34,50 @@ void* DnMemVirtual_Reserve(u64 size) {
   // and the call will automatically round up to the nearest page boundary.
   // This check is to ensure that the caller is aware of the above.
   DN_ASSERT(DN_MEM_IS_ALIGNED(size, DnMem_SystemPageSize));
-  return VirtualAlloc(nullptr, size, MEM_RESERVE, PAGE_NOACCESS);
+
+  void* address = VirtualAlloc(nullptr, size, MEM_RESERVE, PAGE_NOACCESS);
+  if (DN_UNLIKELY(address == nullptr)) {
+    DN_LOG_ERROR("Failed to reserve virtual memory");
+    DnSysWin32_LogLastError();
+  }
+
+  return address;
 }
 
 // ========================================================================== //
 
 bool DnMemVirtual_Commit(void* page, u64 size) {
+  DN_ASSERT(page != nullptr);
   DN_ASSERT(DN_MEM_IS_ALIGNED(size, DnMem_SystemPageSize));
-  return VirtualAlloc(page, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
+
+  if (DN_UNLIKELY(VirtualAlloc(page, size, MEM_COMMIT, PAGE_READWRITE) == nullptr)) {
+    DN_LOG_ERROR("Failed to commit virtual memory");
+    DnSysWin32_LogLastError();
+    return false;
+  }
+
+  return true;
 }
 
 // ========================================================================== //
 
 void DnMemVirtual_Decommit(void* page, u64 size) {
+  DN_ASSERT(page != nullptr);
   DN_ASSERT(DN_MEM_IS_ALIGNED(size, DnMem_SystemPageSize));
-  DN_ASSERT_EVALUATE(VirtualFree(page, size, MEM_DECOMMIT) != 0);
+
+  if (DN_UNLIKELY(VirtualFree(page, size, MEM_DECOMMIT) == 0)) {
+    DN_LOG_ERROR("Failed to decommit virtual memory");
+    DnSysWin32_LogLastError();
+  }
 }
 
 // ========================================================================== //
 
 void DnMemVirtual_Release(void* page) {
-  DN_ASSERT_EVALUATE(VirtualFree(page, 0, MEM_RELEASE) != 0);
+  DN_ASSERT(page != nullptr);
+
+  if (DN_UNLIKELY(VirtualFree(page, 0, MEM_RELEASE) == 0)) {
+    DN_LOG_ERROR("Failed to release virtual memory");
+    DnSysWin32_LogLastError();
+  }
 }

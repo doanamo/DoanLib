@@ -91,6 +91,8 @@ void* DnMemAllocatorTemp_Realloc(const DnMemAllocator* allocator, void* allocati
     return nullptr;
   }
 
+  // #todo: Optimize for resizing last allocation without creating a new block on top.
+
   void* reallocation = DnMemAllocatorTemp_Alloc(allocator, size, alignment);
   DN_ASSERT_ALWAYS(reallocation);
 

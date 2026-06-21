@@ -166,10 +166,10 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DnGpuContext_DebugCallback(VkDebugUtilsMes
   }
 
   if (severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-    DN_LOG_ERROR("Vulkan: %s: %s", typeText, callbackData->pMessage);
+    DN_LOG_ERROR("Vulkan %s Error: %s", typeText, callbackData->pMessage);
   }
   else {
-    DN_LOG_INFO("Vulkan: %s: %s", typeText, callbackData->pMessage);
+    DN_LOG_INFO("Vulkan %s: %s", typeText, callbackData->pMessage);
   }
 
   return VK_FALSE;

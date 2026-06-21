@@ -152,12 +152,14 @@ void DnMem_Deinit();
 
   /*
    * Shorthand macro for reallocating memory from an allocator with a given size
-   * and alignment. Accepts a null allocation pointer, in which case a new memory
-   * block is allocated. Returns a pointer to a memory block that may have been
-   * shrunk or expanded in-place, or to a new memory block if the existing one
-   * could not be resized. In the latter case, the original block's contents are
-   * copied to the new block before the original is freed. You should always
-   * assume that pointers to the reallocated memory are invalidated.
+   * and alignment. Accepts a null allocation pointer, in which case a new
+   * memory block is allocated. Similarly, passing a zero size will result in
+   * deallocation routine being called instead. Returns a pointer to a memory
+   * block that may have been shrunk or expanded in-place, or to a new memory
+   * block if the existing one could not be resized. In the latter case, the
+   * original block's contents are copied to the new block before the original
+   * is freed. You should always assume that pointers to the reallocated memory
+   * are invalidated.
    */
   #define DN_MEM_REALLOC(allocator, allocation, size, alignment) \
     ({ \

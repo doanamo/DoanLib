@@ -1,9 +1,6 @@
 #include "dn/system.h"
-#include "dn/memory.h"
 #include <winerror.h>
 #include <winnt.h>
-
-// ========================================================================= //
 
 #if DN_PLATFORM_WINDOWS
 
@@ -13,39 +10,27 @@ void DnSysWin32_LogLastError() {
     return;
   }
 
-  DnMemTempScope tempScope = DnMemTemp_PushScope();
+  // Note: Temporary allocator is not used here instead, because it may not be
+  // initialized yet or it may have already been destroyed.
 
-  u64 capacity = 256;
-  char* buffer = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, char, capacity);
-  DWORD length;
+  LPSTR buffer = nullptr;
+  DWORD length = FormatMessage(
+    FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+    nullptr, error, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), (LPTSTR)&buffer, 0, nullptr);
 
-  while (true) {
-    length = FormatMessage(
-      FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-      nullptr, error, MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
-      buffer, (DWORD)capacity, nullptr);
-
-    if (length != 0) {
-      // Remove trailing newline character.
-      char* lastCharacter = &buffer[length - 1];
-      if (*lastCharacter == '\n') {
-        *lastCharacter = '\0';
-      }
-
-      break;
+  if (length != 0) {
+    // Remove trailing newline character.
+    char* lastCharacter = &buffer[length - 1];
+    if (*lastCharacter == '\n') {
+      *lastCharacter = '\0';
     }
 
-    if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
-      snprintf(buffer, capacity, "No description available");
-      break;
-    }
-
-    capacity *= 2;
-    buffer = DN_MEM_REALLOC_TYPES(g_dnMemAllocatorTemp, buffer, char, capacity);
+    DN_LOG_ERROR("Win32 Error: 0x%08lX - %s", error, buffer);
+    LocalFree(buffer);
   }
-
-  DN_LOG_ERROR("Win32 Error: 0x%08lX - %s", error, buffer);
-  DnMemTemp_PopScope(&tempScope);
+  else {
+    DN_LOG_ERROR("Win32 Error: 0x%08lX - Unknown.", error);
+  }
 }
 
 #endif // DN_PLATFORM_WINDOWS

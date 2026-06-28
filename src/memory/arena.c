@@ -64,10 +64,14 @@ static DnMemArenaChunk* DnMemArena_GetInitialChunk(DnMemArena* arena) {
   return (DnMemArenaChunk*)((u8*)arena + sizeof(DnMemArena));
 }
 
+static u8* DnMemArena_GetUsableChunkSpace(DnMemArenaChunk* chunk) {
+  return (u8*)chunk + sizeof(DnMemArenaChunk);
+}
+
 static void DnMemArena_InitChunk(DnMemArenaChunk* chunk, u64 chunkSize) {
   *chunk = (DnMemArenaChunk) {
     .next = nullptr,
-    .free = (u8*)chunk + sizeof(DnMemArenaChunk),
+    .free = DnMemArena_GetUsableChunkSpace(chunk),
     .end = (u8*)chunk + chunkSize,
   };
 }
@@ -278,6 +282,14 @@ void DnMemArena_PopScope(DnMemArenaScope* scope) {
   DnMemArena* arena = opaque->arena;
   DN_ASSERT(arena);
 
+  // Rollback current chunk to the state when scope was created.
   arena->chunks = opaque->chunk;
   arena->chunks->free = opaque->free;
+
+  // Empty subsequent chunks that were allocated from after scope was created.
+  DnMemArenaChunk* chunk = arena->chunks->next;
+  while (chunk) {
+    chunk->free = DnMemArena_GetUsableChunkSpace(chunk);
+    chunk = chunk->next;
+  }
 }

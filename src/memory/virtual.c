@@ -11,6 +11,12 @@ bool DnMemVirtual_Init() {
   SYSTEM_INFO systemInfo = {};
   GetSystemInfo(&systemInfo);
 
+  if (DnMem_ReservationGranularity != systemInfo.dwAllocationGranularity) {
+    DN_LOG_ERROR("Unexpected virtual memory reservation granularity: expected %llu, got %lu",
+      DnMem_ReservationGranularity, systemInfo.dwAllocationGranularity);
+    return false;
+  }
+
   if (DnMem_SystemPageSize != systemInfo.dwPageSize) {
     DN_LOG_ERROR("Unexpected system memory page size: expected %llu, got %lu",
       DnMem_SystemPageSize, systemInfo.dwPageSize);
@@ -19,8 +25,6 @@ bool DnMemVirtual_Init() {
 
   return true;
 }
-
-// ========================================================================== //
 
 void DnMemVirtual_Deinit() {
   // #todo: Implement debug checks for virtual memory page integrity (e.g.
@@ -45,8 +49,6 @@ void* DnMemVirtual_Reserve(u64 size) {
   return address;
 }
 
-// ========================================================================== //
-
 void* DnMemVirtual_Commit(void* page, u64 size) {
   DN_ASSERT(DN_MEM_IS_ALIGNED(size, DnMem_SystemPageSize));
 
@@ -64,8 +66,6 @@ void* DnMemVirtual_Commit(void* page, u64 size) {
   return address;
 }
 
-// ========================================================================== //
-
 void DnMemVirtual_Decommit(void* page, u64 size) {
   DN_ASSERT(page != nullptr);
   DN_ASSERT(DN_MEM_IS_ALIGNED(size, DnMem_SystemPageSize));
@@ -75,8 +75,6 @@ void DnMemVirtual_Decommit(void* page, u64 size) {
     DnSysWin32_LogLastError();
   }
 }
-
-// ========================================================================== //
 
 void DnMemVirtual_Release(void* page) {
   DN_ASSERT(page != nullptr);

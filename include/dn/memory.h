@@ -16,63 +16,6 @@
 #define DN_MEM_PATTERNS_ENABLED !DN_CONFIG_RELEASE
 
 // ========================================================================== //
-//   Memory Constants                                                         //
-// ========================================================================== //
-
-/*
- * Default memory alignment in bytes for memory allocations, imposed by C
- * standard library, which corresponds to the alignment of the largest primitive
- * scalar type available on the platform.
- */
-constexpr u64 DnMem_DefaultAlignment = alignof(max_align_t);
-
-/*
- * Expected system memory page size in bytes that is used to align virtual
- * memory address reservations and commits to the physical memory. Determines
- * the effective granularity of memory allocations and deallocations.
- */
-constexpr u64 DnMem_SystemPageSize = 4096;
-
-/*
- * Debugging memory fill patterns.
- */
-#if DN_MEM_PATTERNS_ENABLED
-  // Pattern used to fill new memory after allocation.
-  constexpr u8 DnMem_PatternAllocated = 0xCD;
-
-  // Pattern used to fill existing memory after deallocation.
-  constexpr u8 DnMem_PatternFreed = 0xDD;
-
-  // Pattern used to fill padding in memory that is not meant to be used.
-  constexpr u8 DnMem_PatternPadding = 0xFD;
-#endif
-
-// ========================================================================== //
-//   Memory Initialization                                                    //
-// ========================================================================== //
-
-/*
- * Configuration struct for memory initialization.
- */
-typedef struct DnMemConfig {
-  u64 tempReservedSize;
-} DnMemConfig;
-
-/*
- * Initializes the memory system with the given configuration. Should be called
- * only once at the very beginning of the program, before any memory operations.
- */
-bool DnMem_Init(const DnMemConfig* config);
-
-/*
- * Deinitializes the memory system. Should be called only once at the very end
- * of the program, after all memory operations. With debugging enabled, may
- * perform additional checks to validate memory integrity (e.g. checking for
- * memory leaks).
- */
-void DnMem_Deinit();
-
-// ========================================================================== //
 //   Memory Common Macros                                                     //
 // ========================================================================== //
 
@@ -135,6 +78,68 @@ void DnMem_Deinit();
     DN_ASSERT(DN_IS_POW2(_alignment)); \
     ((_size) + (_alignment - 1)) & ~(_alignment - 1); \
   })
+
+// ========================================================================== //
+//   Memory Constants                                                         //
+// ========================================================================== //
+
+/*
+ * Default memory alignment in bytes for memory allocations, imposed by C
+ * standard library, which corresponds to the alignment of the largest primitive
+ * scalar type available on the platform.
+ */
+constexpr u64 DnMem_DefaultAlignment = alignof(max_align_t);
+
+/*
+ * Granularity of memory reservations in bytes.
+ */
+constexpr u64 DnMem_ReservationGranularity = DN_MEM_KB(64);
+
+/*
+ * Expected system memory page size in bytes that is used to align virtual
+ * memory address reservations and commits to the physical memory. Determines
+ * the effective granularity of memory allocations and deallocations.
+ */
+constexpr u64 DnMem_SystemPageSize = DN_MEM_KB(4);
+
+/*
+ * Debugging memory fill patterns.
+ */
+#if DN_MEM_PATTERNS_ENABLED
+  // Pattern used to fill new memory after allocation.
+  constexpr u8 DnMem_PatternAllocated = 0xCD;
+
+  // Pattern used to fill existing memory after deallocation.
+  constexpr u8 DnMem_PatternFreed = 0xDD;
+
+  // Pattern used to fill padding in memory that is not meant to be used.
+  constexpr u8 DnMem_PatternPadding = 0xFD;
+#endif
+
+// ========================================================================== //
+//   Memory Initialization                                                    //
+// ========================================================================== //
+
+/*
+ * Configuration struct for memory initialization.
+ */
+typedef struct DnMemConfig {
+  u64 tempChunkSize;
+} DnMemConfig;
+
+/*
+ * Initializes the memory system with the given configuration. Should be called
+ * only once at the very beginning of the program, before any memory operations.
+ */
+bool DnMem_Init(const DnMemConfig* config);
+
+/*
+ * Deinitializes the memory system. Should be called only once at the very end
+ * of the program, after all memory operations. With debugging enabled, may
+ * perform additional checks to validate memory integrity (e.g. checking for
+ * memory leaks).
+ */
+void DnMem_Deinit();
 
 // ========================================================================== //
 //   Memory Allocation Macros                                                 //
@@ -233,14 +238,23 @@ typedef struct DnMemAllocator {
 } DnMemAllocator;
 
 /*
- * Default general purpose memory allocator.
+ * Default general purpose memory allocator. Used for common allocation cases
+ * when there are no specialized allocators available for given purpose.
  */
-extern const DnMemAllocator* const g_dnMemAllocatorDefault;
+extern const DnMemAllocator* g_dnMemAllocatorDefault;
 
 /*
- * Standard C library malloc memory allocator.
+ * Standard C library malloc memory allocator. Should be avoided when possible
+ * in favor of custom solutions provided by this library.
  */
-extern const DnMemAllocator* const g_dnMemAllocatorMalloc;
+extern const DnMemAllocator* g_dnMemAllocatorMalloc;
+
+/*
+ * Temporary memory allocator that uses an arena for efficient allocation of
+ * short-lived memory. Very efficient when used in combination with
+ * DnMemTemp_PushScope()/PopScope() for scoped allocations.
+ */
+extern const DnMemAllocator* g_dnMemAllocatorTemp;
 
 // ========================================================================== //
 //   Memory Virtual                                                           //
@@ -283,29 +297,80 @@ void DnMemVirtual_Release(void* page);
 //   Memory Arena                                                             //
 // ========================================================================== //
 
-typedef struct DnMemArena {
-  void* address;
-  u64 reservedSize;
-  u64 committedSize;
-  u64 usedSize;
-} DnMemArena;
+/*
+ * Memory arena allocator that represents a set of memory regions of given chunk
+ * size. The arena behaves like a simple bump allocator, allowing for fast
+ * allocation and deallocation of all regions at once, at a cost of potentially
+ * worse memory space utilization when allocations are intended to be freed.
+ * Freeing allocations is a no-op due to performance reasons. However, scoping
+ * functionality is provided to allow reverting to a previous state after
+ * performing a series of temporary allocations. Struct is an opaque type that
+ * resides on the first page of reserved memory region and provides allocator
+ * interface.
+ */
+typedef struct DnMemArena DnMemArena;
 
-bool DnMemArena_Init(DnMemArena* arena, u64 reserveSize);
-void* DnMemArena_Push(DnMemArena* arena, u64 allocationSize);
-void DnMemArena_Pop(DnMemArena* arena, u64 allocationSize);
-void DnMemArena_Reset(DnMemArena* arena, bool decommit);
-void DnMemArena_Deinit(DnMemArena* arena);
+/*
+ * Allocates a new memory arena with the given chunk size. The arena will
+ * allocate memory in chunks of the specified size (which may be rounded up to
+ * next system page size). The size should be a balance between too high value
+ * resulting in pressure on address space and too low value resulting in
+ * frequent chunk allocations. Exceeding this size of allocations will results
+ * in separate chunks being allocated for each allocation, which may be
+ * inefficient in large quantities that defeat the purpose of using an arena.
+ */
+DnMemArena* DnMemArena_Create(u64 chunkSize);
+
+/*
+ * Destroys an arena instance, freeing all allocations associated with it.
+ */
+void DnMemArena_Destroy(DnMemArena* arena);
+
+/*
+ * Retrieves allocator interface for the arena.
+ */
+const DnMemAllocator* DnMemArena_GetAllocator(const DnMemArena* arena);
+
+/*
+ * Represents a scope within an arena, used to record the state of the arena
+ * so it can be reverted to later, so allocations done within it can be then
+ * freed all at once when the scope is popped.
+ */
+typedef struct DnMemArenaScope {
+  alignas(DnMem_DefaultAlignment)
+  char opaque[24];
+} DnMemArenaScope;
+
+/*
+ * Records the current state of the arena so it can be reverted to later, so
+ * allocations done within it can be then freed all at once when the scope is
+ * popped.
+ */
+DnMemArenaScope DnMemArena_PushScope(DnMemArena* arena);
+
+/*
+ * Restores the previously recorded state of an arena, unwinding allocations
+ * that were made since the scope was pushed.
+ */
+void DnMemArena_PopScope(DnMemArenaScope* scope);
 
 // ========================================================================== //
 //   Memory Temporary                                                         //
 // ========================================================================== //
 
-typedef struct DnMemTempScope {
-  u64 savedUsedSize;
-  bool valid;
-} DnMemTempScope;
+/*
+ * Alias for DnMemArena scope which temporary allocator is backed by.
+ */
+typedef struct DnMemArenaScope DnMemTempScope;
 
+/*
+ * Shorthand for calling DnMemArena_PushScope() on the temporary allocator
+ * backed by an arena.
+ */
 DnMemTempScope DnMemTemp_PushScope();
-void DnMemTemp_PopScope(DnMemTempScope* scope);
 
-extern const DnMemAllocator* const g_dnMemAllocatorTemp;
+/*
+ * Shorthand for calling DnMemArena_PopScope() on the temporary allocator
+ * backed by an arena.
+ */
+void DnMemTemp_PopScope(DnMemTempScope* scope);

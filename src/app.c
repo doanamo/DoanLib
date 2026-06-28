@@ -1,4 +1,5 @@
 #include "dn/app.h"
+#include "dn/memory.h"
 #include "dn/shared.h"
 #include "dn/structs.h"
 #include "dn/system.h"
@@ -96,10 +97,14 @@ int DnApp_Run(const DnAppConfig* config) {
   DnSysWindow_SetVisibility(g_sysWindow, true);
 
   while (!g_exit) {
+    DnMemTempScope tempScope = DnMemTemp_PushScope();
+
     DnSysWindow_ProcessMessages(g_sysWindow);
     DnApp_Update(0.0f);
     DnApp_Render(1.0f);
     DnGpuSwapChain_Present(g_gpuSwapChain);
+
+    DnMemTemp_PopScope(&tempScope);
   }
 
   g_exitCode = 0;

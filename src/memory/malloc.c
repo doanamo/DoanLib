@@ -36,5 +36,5 @@ static DnMemAllocator g_dnMemAllocatorMallocPrivate = {
 };
 
 // #todo: Implement custom general purpose allocator instead of using malloc().
-const DnMemAllocator* const g_dnMemAllocatorDefault = &g_dnMemAllocatorMallocPrivate;
-const DnMemAllocator* const g_dnMemAllocatorMalloc = &g_dnMemAllocatorMallocPrivate;
+const DnMemAllocator* g_dnMemAllocatorDefault = &g_dnMemAllocatorMallocPrivate;
+const DnMemAllocator* g_dnMemAllocatorMalloc = &g_dnMemAllocatorMallocPrivate;

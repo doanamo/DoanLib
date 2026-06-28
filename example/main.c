@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
 
   DnAppConfig config = {
     .memory = {
-      .tempReservedSize = DN_MEM_GB(1),
+      .tempChunkSize = DN_MEM_MB(64),
     },
     .system = {
       .windowTitle = DN_STR_VIEW_LITERAL("DoanLib Example"),

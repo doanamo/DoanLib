@@ -11,17 +11,21 @@ bool DnMemVirtual_Init() {
   SYSTEM_INFO systemInfo = {};
   GetSystemInfo(&systemInfo);
 
-  if (DnMem_ReservationGranularity != systemInfo.dwAllocationGranularity) {
-    DN_LOG_ERROR("Unexpected virtual memory reservation granularity: expected %llu, got %lu",
-      DnMem_ReservationGranularity, systemInfo.dwAllocationGranularity);
-    return false;
-  }
-
   if (DnMem_SystemPageSize != systemInfo.dwPageSize) {
     DN_LOG_ERROR("Unexpected system memory page size: expected %llu, got %lu",
       DnMem_SystemPageSize, systemInfo.dwPageSize);
     return false;
   }
+
+  DN_LOG_INFO("System memory page size: %llu bytes", DnMem_SystemPageSize);
+
+  if (DnMem_ReservationGranularity != systemInfo.dwAllocationGranularity) {
+    DN_LOG_ERROR("Unexpected system memory reservation granularity: expected %llu, got %lu",
+      DnMem_ReservationGranularity, systemInfo.dwAllocationGranularity);
+    return false;
+  }
+
+  DN_LOG_INFO("System memory reservation granularity: %llu bytes", DnMem_ReservationGranularity);
 
   return true;
 }

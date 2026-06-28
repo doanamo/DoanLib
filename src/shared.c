@@ -1,4 +1,5 @@
 #include "dn/shared.h"
+#include <stdio.h>
 
 static_assert(sizeof(i8) == 1);
 static_assert(sizeof(i16) == 2);

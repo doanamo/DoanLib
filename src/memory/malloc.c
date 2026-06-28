@@ -1,5 +1,5 @@
 #include "dn/memory.h"
-#include <stdlib.h>
+#include <malloc.h>
 
 void* DnMemAllocatorMalloc_Alloc(const DnMemAllocator* allocator, u64 size, u64 alignment) {
   DN_ASSERT(allocator);

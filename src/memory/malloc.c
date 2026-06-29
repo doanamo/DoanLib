@@ -1,7 +1,9 @@
 #include "dn/memory.h"
 #include <malloc.h>
 
-void* DnMemAllocatorMalloc_Alloc(const DnMemAllocator* allocator, u64 size, u64 alignment) {
+// == MALLOC ALLOCATOR ====================================================== //
+
+static void* DnMemAllocatorMalloc_Alloc(const DnMemAllocator* allocator, u64 size, u64 alignment) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
 
@@ -11,7 +13,7 @@ void* DnMemAllocatorMalloc_Alloc(const DnMemAllocator* allocator, u64 size, u64 
   return allocated;
 }
 
-void* DnMemAllocatorMalloc_Realloc(const DnMemAllocator* allocator, void* allocation, u64 size, u64 alignment) {
+static void* DnMemAllocatorMalloc_Realloc(const DnMemAllocator* allocator, void* allocation, u64 size, u64 alignment) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
 
@@ -21,7 +23,7 @@ void* DnMemAllocatorMalloc_Realloc(const DnMemAllocator* allocator, void* alloca
   return reallocation;
 }
 
-void DnMemAllocatorMalloc_Free(const DnMemAllocator* allocator, void* allocation) {
+static void DnMemAllocatorMalloc_Free(const DnMemAllocator* allocator, void* allocation) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
 
@@ -35,6 +37,5 @@ static DnMemAllocator g_dnMemAllocatorMallocPrivate = {
   .context = nullptr,
 };
 
-// #todo: Implement custom general purpose allocator instead of using malloc().
 const DnMemAllocator* g_dnMemAllocatorDefault = &g_dnMemAllocatorMallocPrivate;
 const DnMemAllocator* g_dnMemAllocatorMalloc = &g_dnMemAllocatorMallocPrivate;

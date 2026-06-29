@@ -1,18 +1,9 @@
 #include "dn/memory.h"
 
-// ========================================================================== //
+// == TEMPORARY INITIALIZATION ============================================== //
 
-/*
- * Backing arena for temporary memory allocator.
- */
 static DnMemArena* g_dnMemArenaTemp;
-
-/*
- * Allocator interface for temporary memory allocations.
- */
 const DnMemAllocator* g_dnMemAllocatorTemp;
-
-// ========================================================================== //
 
 bool DnMemTemp_Init(const DnMemConfig* config) {
   u64 tempChunkSize = config->tempChunkSize ? config->tempChunkSize : DN_MEM_MB(64);
@@ -30,11 +21,13 @@ bool DnMemTemp_Init(const DnMemConfig* config) {
 }
 
 void DnMemTemp_Deinit() {
-  DnMemArena_Destroy(g_dnMemArenaTemp);
-  g_dnMemArenaTemp = nullptr;
+  if (g_dnMemArenaTemp) {
+    DnMemArena_Destroy(g_dnMemArenaTemp);
+    g_dnMemArenaTemp = nullptr;
+  }
 }
 
-// ========================================================================== //
+// == TEMPORARY SCOPE ======================================================= //
 
 DnMemTempScope DnMemTemp_PushScope() {
   DN_ASSERT(g_dnMemArenaTemp);

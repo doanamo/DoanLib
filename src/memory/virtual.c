@@ -5,7 +5,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-// ========================================================================== //
+// == VIRTUAL INITIALIZATION ================================================ //
 
 bool DnMemVirtual_Init() {
   SYSTEM_INFO systemInfo = {};
@@ -35,7 +35,7 @@ void DnMemVirtual_Deinit() {
   // whether all virtual pages have been decommitted and released).
 }
 
-// ========================================================================== //
+// == VIRTUAL ALLOCATION ==================================================== //
 
 void* DnMemVirtual_Reserve(u64 size) {
   // On Windows, virtual memory adress space always operates on pages, so not

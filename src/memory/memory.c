@@ -1,5 +1,7 @@
 #include "dn/memory.h"
 
+// == MEMORY INITIALIZATION ================================================= //
+
 bool DnMemVirtual_Init();
 void DnMemVirtual_Deinit();
 

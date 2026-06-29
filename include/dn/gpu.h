@@ -30,7 +30,7 @@ VkInstance DnGpuContext_GetInstance(DnGpuContext* context);
 // Returns Vulkan device associated with GPU context.
 VkDevice DnGpuContext_GetDevice(DnGpuContext* context);
 
-// == GPU SWAP CHAIN ======================================================== //
+// == GPU SWAPCHAIN ========================================================= //
 
 typedef struct DnSysWindow DnSysWindow;
 

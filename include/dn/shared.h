@@ -1,8 +1,6 @@
 #pragma once
 
-/*
- * Standard includes
- */
+// == STANDARD INCLUDES ===================================================== //
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -11,9 +9,7 @@
 #include <memory.h>
 #include <string.h>
 
-/*
- * Predefined types
- */
+// == PREDEFINED TYPES ====================================================== //
 
 typedef int8_t i8;
 typedef int16_t i16;
@@ -26,16 +22,12 @@ typedef uint64_t u64;
 typedef float f32;
 typedef double f64;
 
-/*
- * Shared defines
- */
+// == GLOBAL DEFINES ======================================================== //
 
 #define DN_LOG_ENABLED !DN_CONFIG_RELEASE
 #define DN_ASSERT_ENABLED !DN_CONFIG_RELEASE
 
-/*
- * Compiler macros
- */
+// == COMPILER MACROS ======================================================= //
 
 #define DN_UNUSED(x) (void)(x)
 #define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
@@ -46,9 +38,7 @@ typedef double f64;
 #define DN_LIKELY(expression) __builtin_expect(!!(expression), 1)
 #define DN_UNLIKELY(expression) __builtin_expect(!!(expression), 0)
 
-/*
- * Logging macros
- */
+// == LOGGING MACROS ======================================================== //
 
 #if DN_LOG_ENABLED
   void DnLog_Info(const char* format, ...);
@@ -61,9 +51,7 @@ typedef double f64;
   #define DN_LOG_ERROR(format, ...)
 #endif
 
-/*
- * Assertion macros
- */
+// == ASSERTION MACROS ====================================================== //
 
 #define DN_ASSERT_IMPLEMENTATION(expression, expressionString) \
   do { \

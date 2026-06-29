@@ -1,6 +1,6 @@
 #include "dn/memory.h"
 
-// == ARENA STRUCTS ========================================================= //
+// == MEMORY ARENA STRUCTS ================================================== //
 
 typedef struct DnMemArenaChunk {
   struct DnMemArenaChunk* next;
@@ -14,7 +14,7 @@ typedef struct DnMemArena {
   u64 chunkSize;
 } DnMemArena;
 
-// == ARENA CHUNK =========================================================== //
+// == MEMORY ARENA CHUNK ==================================================== //
 
 static DnMemArenaChunk* DnMemArena_GetInitialChunk(DnMemArena* arena) {
   return (DnMemArenaChunk*)((u8*)arena + sizeof(DnMemArena));
@@ -32,58 +32,7 @@ static void DnMemArena_InitChunk(DnMemArenaChunk* chunk, u64 chunkSize) {
   };
 }
 
-// == ARENA CREATION ======================================================== //
-
-static void* DnMemArena_Alloc(const DnMemAllocator* allocator, u64 size, u64 alignment);
-static void* DnMemArena_Realloc(const DnMemAllocator* allocator, void* ptr, u64 size, u64 alignment);
-static void DnMemArena_Free(const DnMemAllocator* allocator, void* ptr);
-
-DnMemArena* DnMemArena_Create(u64 chunkSize) {
-  DN_ASSERT(chunkSize > 0);
-  u64 initialArenaSize = chunkSize;
-  initialArenaSize += sizeof(DnMemArena);
-  initialArenaSize += sizeof(DnMemArenaChunk);
-  initialArenaSize = DN_MEM_ALIGN_UP(initialArenaSize, DnMem_SystemPageSize);
-  chunkSize = initialArenaSize - sizeof(DnMemArena);
-
-  u8* memory = (u8*)DnMemVirtual_Commit(nullptr, initialArenaSize);
-  DN_ASSERT_ALWAYS(memory);
-
-  DnMemArena* arena = (DnMemArena*)memory;
-  *arena = (DnMemArena) {
-    .allocator = (DnMemAllocator) {
-      .alloc = DnMemArena_Alloc,
-      .realloc = DnMemArena_Realloc,
-      .free = DnMemArena_Free,
-      .context = arena,
-    },
-    .chunkSize = chunkSize,
-    .chunks = DnMemArena_GetInitialChunk(arena),
-  };
-
-  DnMemArena_InitChunk(arena->chunks, chunkSize);
-
-  return arena;
-}
-
-void DnMemArena_Destroy(DnMemArena* arena) {
-  DN_ASSERT(arena);
-
-  // Initial chunk is tied to the arena itself, so we skip it when freeing.
-  DnMemArenaChunk* chunk = DnMemArena_GetInitialChunk(arena);
-  DN_ASSERT(chunk);
-
-  chunk = chunk->next;
-  while (chunk) {
-    DnMemArenaChunk* next = chunk->next;
-    DnMemVirtual_Release(chunk);
-    chunk = next;
-  }
-
-  DnMemVirtual_Release(arena);
-}
-
-// == ARENA ALLOCATOR ======================================================= //
+// == MEMROY ARENA ALLOCATOR ================================================ //
 
 typedef struct DnMemArenaAllocation {
   u64 size;
@@ -209,7 +158,54 @@ const DnMemAllocator* DnMemArena_GetAllocator(const DnMemArena* arena) {
   return &arena->allocator;
 }
 
-// == ARENA SCOPE =========================================================== //
+// == MEMORY ARENA ========================================================== //
+
+DnMemArena* DnMemArena_Create(u64 chunkSize) {
+  DN_ASSERT(chunkSize > 0);
+  u64 initialArenaSize = chunkSize;
+  initialArenaSize += sizeof(DnMemArena);
+  initialArenaSize += sizeof(DnMemArenaChunk);
+  initialArenaSize = DN_MEM_ALIGN_UP(initialArenaSize, DnMem_SystemPageSize);
+  chunkSize = initialArenaSize - sizeof(DnMemArena);
+
+  u8* memory = (u8*)DnMemVirtual_Commit(nullptr, initialArenaSize);
+  DN_ASSERT_ALWAYS(memory);
+
+  DnMemArena* arena = (DnMemArena*)memory;
+  *arena = (DnMemArena) {
+    .allocator = (DnMemAllocator) {
+      .alloc = DnMemArena_Alloc,
+      .realloc = DnMemArena_Realloc,
+      .free = DnMemArena_Free,
+      .context = arena,
+    },
+    .chunkSize = chunkSize,
+    .chunks = DnMemArena_GetInitialChunk(arena),
+  };
+
+  DnMemArena_InitChunk(arena->chunks, chunkSize);
+
+  return arena;
+}
+
+void DnMemArena_Destroy(DnMemArena* arena) {
+  DN_ASSERT(arena);
+
+  // Initial chunk is tied to the arena itself, so we skip it when freeing.
+  DnMemArenaChunk* chunk = DnMemArena_GetInitialChunk(arena);
+  DN_ASSERT(chunk);
+
+  chunk = chunk->next;
+  while (chunk) {
+    DnMemArenaChunk* next = chunk->next;
+    DnMemVirtual_Release(chunk);
+    chunk = next;
+  }
+
+  DnMemVirtual_Release(arena);
+}
+
+// == MEMORY ARENA SCOPE ==================================================== //
 
 typedef struct DnMemArenaScopeOpaque {
   DnMemArena* arena;

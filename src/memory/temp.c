@@ -1,6 +1,6 @@
 #include "dn/memory.h"
 
-// == TEMPORARY INITIALIZATION ============================================== //
+// == TEMPORARY MEMORY INITIALIZATION ======================================= //
 
 static DnMemArena* g_dnMemArenaTemp;
 const DnMemAllocator* g_dnMemAllocatorTemp;
@@ -27,7 +27,7 @@ void DnMemTemp_Deinit() {
   }
 }
 
-// == TEMPORARY SCOPE ======================================================= //
+// == TEMPORARY MEMORY SCOPE ================================================ //
 
 DnMemTempScope DnMemTemp_PushScope() {
   DN_ASSERT(g_dnMemArenaTemp);

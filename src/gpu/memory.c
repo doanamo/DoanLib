@@ -1,6 +1,8 @@
 #include "dn/gpu.h"
 #include "dn/memory.h"
 
+// == VULKAN MEMORY ALLOCATOR =============================================== //
+
 static void* VKAPI_PTR DnGpuMemoryVulkan_Alloc(void* userData, u64 size, u64 alignment, VkSystemAllocationScope scope) {
   DN_UNUSED(userData);
   DN_UNUSED(scope);

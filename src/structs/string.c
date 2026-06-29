@@ -3,6 +3,8 @@
 
 // #todo: Implement string object
 
+// == STRING VIEW FUNCTIONS ================================================= //
+
 const char* DnStrView_AsCStr(const DnMemAllocator* allocator, DnStrView view) {
   DN_ASSERT(allocator);
 

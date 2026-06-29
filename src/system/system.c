@@ -2,6 +2,8 @@
 #include <winerror.h>
 #include <winnt.h>
 
+// == WINDOWS SPECIFIC FUNCTIONS ============================================ //
+
 #if DN_PLATFORM_WINDOWS
 
 void DnSysWin32_LogLastError() {

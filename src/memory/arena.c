@@ -158,7 +158,7 @@ const DnMemAllocator* DnMemArena_GetAllocator(const DnMemArena* arena) {
   return &arena->allocator;
 }
 
-// == MEMORY ARENA ========================================================== //
+// == MEMORY ARENA INITIALIZATION =========================================== //
 
 DnMemArena* DnMemArena_Create(u64 chunkSize) {
   DN_ASSERT(chunkSize > 0);

@@ -1,6 +1,8 @@
 #include "dn/shared.h"
 #include <stdio.h>
 
+// == STATIC ASSERTIONS ===================================================== //
+
 static_assert(sizeof(i8) == 1);
 static_assert(sizeof(i16) == 2);
 static_assert(sizeof(i32) == 4);
@@ -11,6 +13,8 @@ static_assert(sizeof(u32) == 4);
 static_assert(sizeof(u64) == 8);
 static_assert(sizeof(f32) == 4);
 static_assert(sizeof(f64) == 8);
+
+// == LOGGING =============================================================== //
 
 #if DN_LOG_ENABLED
 
@@ -31,4 +35,4 @@ void DnLog_Error(const char* format, ...) {
   va_end(args);
 }
 
-#endif
+#endif // DN_LOG_ENABLED

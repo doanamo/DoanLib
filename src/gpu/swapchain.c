@@ -2,10 +2,14 @@
 #include "dn/memory.h"
 #include "dn/system.h"
 
+// == GPU SWAPCHAIN STRUCT ================================================== //
+
 struct DnGpuSwapChain {
   DnGpuContext* context;
   VkSurfaceKHR surface;
 };
+
+// == GPU SWAPCHAIN CREATION ================================================ //
 
 bool DnGpuSwapChain_CreateSurface(DnGpuContext* context, DnSysWindow* window, DnGpuSwapChain* swapChain) {
   DN_LOG_INFO("Creating gpu surface");
@@ -55,11 +59,6 @@ error:
   return swapChain;
 }
 
-void DnGpuSwapChain_Present(DnGpuSwapChain* swapChain) {
-  DN_ASSERT(swapChain);
-  DN_UNUSED(swapChain);
-}
-
 void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain) {
   DN_ASSERT(swapChain);
 
@@ -68,4 +67,11 @@ void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain) {
   }
 
   DN_MEM_FREE(g_dnMemAllocatorDefault, swapChain);
+}
+
+// == GPU SWAPCHAIN PRESENTATION ============================================ //
+
+void DnGpuSwapChain_Present(DnGpuSwapChain* swapChain) {
+  DN_ASSERT(swapChain);
+  DN_UNUSED(swapChain);
 }

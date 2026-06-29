@@ -1,6 +1,8 @@
 #include "dn/gpu.h"
 #include "dn/memory.h"
 
+// == GPU CONTEXT STRUCT ==================================================== //
+
 struct DnGpuContext {
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
@@ -8,6 +10,8 @@ struct DnGpuContext {
   VkDevice device;
   VkQueue graphicsQueue;
 };
+
+// == GPU CONTEXT LOGGING =================================================== //
 
 #if DN_LOG_ENABLED
 
@@ -83,62 +87,9 @@ error:
   DnMemTemp_PopScope(&tempScope);
 }
 
-#endif
+#endif // DN_LOG_ENABLED
 
-static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
-  DN_LOG_INFO("Creating Vulkan instance");
-  bool success = false;
-
-  VkApplicationInfo appInfo = {
-    .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-    .apiVersion = VK_API_VERSION_1_4,
-    .pEngineName = "DoanLib",
-    .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-    .pApplicationName = nullptr,
-    .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-  };
-
-#if DN_LOG_ENABLED
-  DnGpuContext_PrintAvailableInstanceLayers();
-  DnGpuContext_PrintAvailableInstanceExtensions();
-#endif
-
-  const char* enabledInstanceLayers[] = {
-#if DN_GPU_VALIDATION_ENABLED
-    "VK_LAYER_KHRONOS_validation",
-    "VK_LAYER_KHRONOS_synchronization2",
-#endif
-  };
-
-  const char* enabledInstanceExtensions[] = {
-    VK_KHR_SURFACE_EXTENSION_NAME,
-    VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
-#if DN_GPU_VALIDATION_ENABLED
-    VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
-#endif
-  };
-
-  VkInstanceCreateInfo instanceCreateInfo = {
-    .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-    .pApplicationInfo = &appInfo,
-    .enabledLayerCount = DN_ARRAY_LENGTH(enabledInstanceLayers),
-    .ppEnabledLayerNames = enabledInstanceLayers,
-    .enabledExtensionCount = DN_ARRAY_LENGTH(enabledInstanceExtensions),
-    .ppEnabledExtensionNames = enabledInstanceExtensions,
-  };
-
-  if (vkCreateInstance(&instanceCreateInfo, g_dnGpuAllocatorVulkan, &context->instance) != VK_SUCCESS) {
-    DN_LOG_ERROR("Failed to create Vulkan instance");
-    goto error;
-  }
-
-  volkLoadInstance(context->instance);
-
-  success = true;
-
-error:
-  return success;
-}
+// == GPU CONTEXT VALIDATION ================================================ //
 
 #if DN_GPU_VALIDATION_ENABLED
 
@@ -196,7 +147,64 @@ error:
   return success;
 }
 
+#endif // DN_GPU_VALIDATION_ENABLED
+
+// == GPU CONTEXT CREATION ================================================== //
+
+static bool DnGpuContext_CreateInstance(DnGpuContext* context) {
+  DN_LOG_INFO("Creating Vulkan instance");
+  bool success = false;
+
+  VkApplicationInfo appInfo = {
+    .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+    .apiVersion = VK_API_VERSION_1_4,
+    .pEngineName = "DoanLib",
+    .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+    .pApplicationName = nullptr,
+    .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+  };
+
+#if DN_LOG_ENABLED
+  DnGpuContext_PrintAvailableInstanceLayers();
+  DnGpuContext_PrintAvailableInstanceExtensions();
 #endif
+
+  const char* enabledInstanceLayers[] = {
+#if DN_GPU_VALIDATION_ENABLED
+    "VK_LAYER_KHRONOS_validation",
+    "VK_LAYER_KHRONOS_synchronization2",
+#endif
+  };
+
+  const char* enabledInstanceExtensions[] = {
+    VK_KHR_SURFACE_EXTENSION_NAME,
+    VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+#if DN_GPU_VALIDATION_ENABLED
+    VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+#endif
+  };
+
+  VkInstanceCreateInfo instanceCreateInfo = {
+    .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+    .pApplicationInfo = &appInfo,
+    .enabledLayerCount = DN_ARRAY_LENGTH(enabledInstanceLayers),
+    .ppEnabledLayerNames = enabledInstanceLayers,
+    .enabledExtensionCount = DN_ARRAY_LENGTH(enabledInstanceExtensions),
+    .ppEnabledExtensionNames = enabledInstanceExtensions,
+  };
+
+  if (vkCreateInstance(&instanceCreateInfo, g_dnGpuAllocatorVulkan, &context->instance) != VK_SUCCESS) {
+    DN_LOG_ERROR("Failed to create Vulkan instance");
+    goto error;
+  }
+
+  volkLoadInstance(context->instance);
+
+  success = true;
+
+error:
+  return success;
+}
 
 static bool DnGpuContext_SelectPhysicalDevice(DnGpuContext* context) {
   bool success = false;
@@ -383,6 +391,8 @@ void DnGpuContext_Destroy(DnGpuContext* context) {
 
   DN_MEM_FREE(g_dnMemAllocatorDefault, context);
 }
+
+// == GPU CONTEXT GETTERS =================================================== //
 
 VkInstance DnGpuContext_GetInstance(DnGpuContext* context) {
   return context->instance;

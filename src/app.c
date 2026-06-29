@@ -5,12 +5,16 @@
 #include "dn/system.h"
 #include "dn/gpu.h"
 
-DnSysWindow* g_sysWindow = nullptr;
-DnGpuContext* g_gpuContext = nullptr;
-DnGpuSwapChain* g_gpuSwapChain = nullptr;
+// == APPLICATION GLOBALS =================================================== //
 
-bool g_exit = false;
-int g_exitCode = 1;
+static DnSysWindow* g_sysWindow = nullptr;
+static DnGpuContext* g_gpuContext = nullptr;
+static DnGpuSwapChain* g_gpuSwapChain = nullptr;
+
+static bool g_exit = false;
+static int g_exitCode = 1;
+
+// == APPLICATION METHODS =================================================== //
 
 void DnApp_CloseCallback() {
   g_exit = true;
@@ -86,6 +90,8 @@ void DnApp_Deinit() {
 
   DnMem_Deinit();
 }
+
+// == APPLICATION LOOP ====================================================== //
 
 int DnApp_Run(const DnAppConfig* config) {
   DN_ASSERT(config);

@@ -1,6 +1,8 @@
 #include "dn/memory.h"
 #include "dn/system.h"
 
+// == WINDOW STRUCT ========================================================= //
+
 struct DnSysWindow {
   HWND handle;
   u32 width;
@@ -8,6 +10,8 @@ struct DnSysWindow {
 
   DnSysWindowCloseCallback closeCallback;
 };
+
+// == WINDOW PROCEDURE ====================================================== //
 
 LRESULT CALLBACK DnSysWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   DnSysWindow* window = (DnSysWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -46,6 +50,18 @@ LRESULT CALLBACK DnSysWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
   return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+
+void DnSysWindow_ProcessMessages(DnSysWindow* window) {
+  DN_ASSERT(window->handle);
+
+  MSG message;
+  while (PeekMessage(&message, window->handle, 0, 0, PM_REMOVE)) {
+    TranslateMessage(&message);
+    DispatchMessage(&message);
+  }
+}
+
+// == WINDOW CREATION ======================================================= //
 
 DnSysWindow* DnSysWindow_Create() {
   DN_LOG_INFO("Creating system window");
@@ -112,16 +128,6 @@ error:
   return window;
 }
 
-void DnSysWindow_ProcessMessages(DnSysWindow* window) {
-  DN_ASSERT(window->handle);
-
-  MSG message;
-  while (PeekMessage(&message, window->handle, 0, 0, PM_REMOVE)) {
-    TranslateMessage(&message);
-    DispatchMessage(&message);
-  }
-}
-
 void DnSysWindow_Destroy(DnSysWindow* window) {
   DN_ASSERT(window);
 
@@ -131,6 +137,8 @@ void DnSysWindow_Destroy(DnSysWindow* window) {
 
   DN_MEM_FREE(g_dnMemAllocatorDefault, window);
 }
+
+// == WINDOW SETTERS ======================================================== //
 
 void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title) {
   DN_ASSERT(window->handle);
@@ -169,6 +177,8 @@ void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback 
   DN_ASSERT(window->handle);
   window->closeCallback = callback;
 }
+
+// == WINDOW GETTERS ======================================================== //
 
 HWND DnSysWindow_GetHandle(DnSysWindow* window) {
   DN_ASSERT(window->handle);

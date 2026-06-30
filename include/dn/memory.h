@@ -64,7 +64,9 @@
 // scalar type available on the platform.
 constexpr u64 DnMem_DefaultAlignment = alignof(max_align_t);
 
-// Granularity of system virtual memory address reservations in bytes.
+// Granularity of system virtual memory address reservations in bytes. If you
+// reserve and manage ranges of memory, there is no reason not to use this
+// granurality as the minimum range size.
 constexpr u64 DnMem_ReservationGranularity = DN_MEM_KB(64);
 
 // Expected system memory page size in bytes that is used to align virtual
@@ -184,13 +186,13 @@ typedef struct DnMemAllocator {
 // when there are no specialized allocators available for given purpose.
 const DnMemAllocator* DnMemAllocator_GetDefault();
 
-// Standard C library malloc memory allocator. Should be avoided when possible
-// in favor of custom solutions provided by this library.
-const DnMemAllocator* DnMemMalloc_GetAllocator();
+// == MEMORY MALLOC ========================================================= //
 
-// Large allocator that puts individual allocations into separate dedicated
-// system memory pages for simplicity and lower memory fragmentation.
-const DnMemAllocator* DnMemLarge_GetAllocator();
+// Standard C library malloc memory allocator. Should be avoided when possible
+// in favor of custom solutions provided by this library. May have uses as
+// debugging allocator for analyzing memory usage or finding bugs using third
+// party tools.
+const DnMemAllocator* DnMemMalloc_GetAllocator();
 
 // == MEMORY VIRTUAL ======================================================== //
 
@@ -219,6 +221,15 @@ void DnMemVirtual_Decommit(void* page, u64 size);
 // page address must be the base address returned by the original reservation.
 void DnMemVirtual_Release(void* page);
 
+// == MEMORY LARGE ========================================================== //
+
+// Threshold size for large allocations.
+constexpr u64 DnMemLarge_SizeThreshold = DN_MEM_KB(128);
+
+// Large allocator that puts individual allocations into separate dedicated
+// system memory pages for simplicity and lower memory fragmentation.
+const DnMemAllocator* DnMemLarge_GetAllocator();
+
 // == MEMORY ARENA ========================================================== //
 
 // Memory arena allocator that represents a set of memory regions of given chunk
@@ -233,12 +244,11 @@ void DnMemVirtual_Release(void* page);
 typedef struct DnMemArena DnMemArena;
 
 // Allocates a new memory arena with the given chunk size. The arena will
-// allocate memory in chunks of the specified size (which may be rounded up to
-// next system page size). The size should be a balance between too high value
-// resulting in pressure on address space and too low value resulting in
-// frequent chunk allocations. Exceeding this size of allocations will results
-// in separate chunks being allocated for each allocation, which may be
-// inefficient in large quantities that defeat the purpose of using an arena.
+// allocate memory in chunks of the specified size (which will be rounded up to
+// next system page size). This size indicates address space usage for each
+// chunk and will not reflect actual physical memory usage. The size should be a
+// balance between too high value resulting in pressure on address space and too
+// low value resulting in frequent chunk allocations.
 DnMemArena* DnMemArena_Create(u64 chunkSize);
 
 // Destroys an arena instance, freeing all allocations associated with it.

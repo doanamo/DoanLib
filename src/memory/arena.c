@@ -20,14 +20,14 @@ static DnMemArenaChunk* DnMemArena_GetInitialChunk(DnMemArena* arena) {
   return (DnMemArenaChunk*)((u8*)arena + sizeof(DnMemArena));
 }
 
-static u8* DnMemArena_GetInitialUsableChunkSpace(DnMemArenaChunk* chunk) {
+static u8* DnMemArena_GetChunkBeginPointer(DnMemArenaChunk* chunk) {
   return (u8*)chunk + sizeof(DnMemArenaChunk);
 }
 
 static void DnMemArena_InitChunk(DnMemArenaChunk* chunk, u64 chunkSize) {
   *chunk = (DnMemArenaChunk) {
     .next = nullptr,
-    .free = DnMemArena_GetInitialUsableChunkSpace(chunk),
+    .free = DnMemArena_GetChunkBeginPointer(chunk),
     .end = (u8*)chunk + chunkSize,
   };
 }
@@ -162,13 +162,9 @@ const DnMemAllocator* DnMemArena_GetAllocator(const DnMemArena* arena) {
 
 DnMemArena* DnMemArena_Create(u64 chunkSize) {
   DN_ASSERT(chunkSize > 0);
-  u64 initialArenaSize = chunkSize;
-  initialArenaSize += sizeof(DnMemArena);
-  initialArenaSize += sizeof(DnMemArenaChunk);
-  initialArenaSize = DN_MEM_ALIGN_UP(initialArenaSize, DnMem_SystemPageSize);
-  chunkSize = initialArenaSize - sizeof(DnMemArena);
 
-  u8* memory = (u8*)DnMemVirtual_Commit(nullptr, initialArenaSize);
+  chunkSize = DN_MEM_ALIGN_UP(chunkSize, DnMem_ReservationGranularity);
+  u8* memory = (u8*)DnMemVirtual_Commit(nullptr, chunkSize);
   DN_ASSERT_ALWAYS(memory);
 
   DnMemArena* arena = (DnMemArena*)memory;
@@ -183,7 +179,9 @@ DnMemArena* DnMemArena_Create(u64 chunkSize) {
     .chunks = DnMemArena_GetInitialChunk(arena),
   };
 
-  DnMemArena_InitChunk(arena->chunks, chunkSize);
+  // Initial chunk will be slightly smaller due to the arena header overhead.
+  u64 initialChunkSize = chunkSize - sizeof(DnMemArena);
+  DnMemArena_InitChunk(arena->chunks, initialChunkSize);
 
   return arena;
 }
@@ -240,7 +238,7 @@ void DnMemArena_PopScope(DnMemArenaScope* scope) {
   // Empty subsequent chunks that were allocated from after scope was created.
   DnMemArenaChunk* chunk = arena->chunks->next;
   while (chunk) {
-    chunk->free = DnMemArena_GetInitialUsableChunkSpace(chunk);
+    chunk->free = DnMemArena_GetChunkBeginPointer(chunk);
     chunk = chunk->next;
   }
 }

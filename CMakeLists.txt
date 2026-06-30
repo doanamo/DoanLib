@@ -83,6 +83,7 @@ set(SOURCE_FILES
   "src/memory/memory.c"
   "src/memory/malloc.c"
   "src/memory/virtual.c"
+  "src/memory/large.c"
   "src/memory/arena.c"
   "src/memory/temp.c"
   "src/structs/string.c"

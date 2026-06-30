@@ -28,3 +28,7 @@ void DnMem_Deinit() {
   DnMemTemp_Deinit();
   DnMemVirtual_Deinit();
 }
+
+const DnMemAllocator* DnMemAllocator_GetDefault() {
+  return DnMemMalloc_GetAllocator();
+}

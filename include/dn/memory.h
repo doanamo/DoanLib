@@ -182,16 +182,15 @@ typedef struct DnMemAllocator {
 
 // Default general purpose memory allocator. Used for common allocation cases
 // when there are no specialized allocators available for given purpose.
-extern const DnMemAllocator* g_dnMemAllocatorDefault;
+const DnMemAllocator* DnMemAllocator_GetDefault();
 
 // Standard C library malloc memory allocator. Should be avoided when possible
 // in favor of custom solutions provided by this library.
-extern const DnMemAllocator* g_dnMemAllocatorMalloc;
+const DnMemAllocator* DnMemMalloc_GetAllocator();
 
-// Temporary memory allocator that uses an arena for efficient allocation of
-// short-lived memory. Very efficient when used in combination with
-// DnMemTemp_PushScope()/PopScope() for scoped allocations.
-extern const DnMemAllocator* g_dnMemAllocatorTemp;
+// Large allocator that puts individual allocations into separate dedicated
+// system memory pages for simplicity and lower memory fragmentation.
+const DnMemAllocator* DnMemLarge_GetAllocator();
 
 // == MEMORY VIRTUAL ======================================================== //
 
@@ -229,7 +228,7 @@ void DnMemVirtual_Release(void* page);
 // Freeing allocations is a no-op due to performance reasons. However, scoping
 // functionality is provided to allow reverting to a previous state after
 // performing a series of temporary allocations. Struct is an opaque type that
-// resides on the first page of reserved memory region and provides allocator
+// resides on the first page of reserved memory region and inherits allocator
 // interface.
 typedef struct DnMemArena DnMemArena;
 
@@ -266,6 +265,11 @@ DnMemArenaScope DnMemArena_PushScope(DnMemArena* arena);
 void DnMemArena_PopScope(DnMemArenaScope* scope);
 
 // == MEMORY TEMPORARY ====================================================== //
+
+// Temporary memory allocator that uses an arena for efficient allocation of
+// short-lived memory. Very efficient when used in combination with
+// DnMemTemp_PushScope()/PopScope() for scoped allocations.
+const DnMemAllocator* DnMemTemp_GetAllocator();
 
 // Alias for DnMemArena scope which temporary allocator is backed by.
 typedef struct DnMemArenaScope DnMemTempScope;

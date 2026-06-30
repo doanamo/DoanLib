@@ -1,9 +1,8 @@
 #include "dn/memory.h"
 
-// == TEMPORARY MEMORY INITIALIZATION ======================================= //
+// == TEMPORARY MEMORY ====================================================== //
 
 static DnMemArena* g_dnMemArenaTemp;
-const DnMemAllocator* g_dnMemAllocatorTemp;
 
 bool DnMemTemp_Init(const DnMemConfig* config) {
   u64 tempChunkSize = config->tempChunkSize ? config->tempChunkSize : DN_MEM_MB(64);
@@ -15,8 +14,6 @@ bool DnMemTemp_Init(const DnMemConfig* config) {
     return false;
   }
 
-  g_dnMemAllocatorTemp = DnMemArena_GetAllocator(g_dnMemArenaTemp);
-
   return true;
 }
 
@@ -25,6 +22,10 @@ void DnMemTemp_Deinit() {
     DnMemArena_Destroy(g_dnMemArenaTemp);
     g_dnMemArenaTemp = nullptr;
   }
+}
+
+const DnMemAllocator* DnMemTemp_GetAllocator() {
+  return DnMemArena_GetAllocator(g_dnMemArenaTemp);
 }
 
 // == TEMPORARY MEMORY SCOPE ================================================ //

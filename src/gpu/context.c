@@ -24,7 +24,7 @@ static void DnGpuContext_PrintAvailableInstanceLayers() {
     goto error;
   }
 
-  VkLayerProperties* availableLayers = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkLayerProperties, availableLayerCount);
+  VkLayerProperties* availableLayers = DN_MEM_ALLOC_TYPES(DnMemTemp_GetAllocator(), VkLayerProperties, availableLayerCount);
   if (vkEnumerateInstanceLayerProperties(&availableLayerCount, availableLayers) != VK_SUCCESS) {
     DN_LOG_ERROR("Failed to enumerate Vulkan instance layers");
     goto error;
@@ -48,7 +48,7 @@ static void DnGpuContext_PrintAvailableInstanceExtensions() {
     goto error;
   }
 
-  VkExtensionProperties* availableExtensions = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkExtensionProperties, availableExtensionCount);
+  VkExtensionProperties* availableExtensions = DN_MEM_ALLOC_TYPES(DnMemTemp_GetAllocator(), VkExtensionProperties, availableExtensionCount);
   if (vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionCount, availableExtensions) != VK_SUCCESS) {
     DN_LOG_ERROR("Failed to enumerate Vulkan instance extensions");
     goto error;
@@ -72,7 +72,7 @@ static void DnGpuContext_PrintAvailableDeviceExtensions(VkPhysicalDevice physica
     goto error;
   }
 
-  VkExtensionProperties* availableExtensions = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkExtensionProperties, availableExtensionCount);
+  VkExtensionProperties* availableExtensions = DN_MEM_ALLOC_TYPES(DnMemTemp_GetAllocator(), VkExtensionProperties, availableExtensionCount);
   if (vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &availableExtensionCount, availableExtensions) != VK_SUCCESS) {
     DN_LOG_ERROR("Failed to enumerate Vulkan device extensions");
     goto error;
@@ -222,7 +222,7 @@ static bool DnGpuContext_SelectPhysicalDevice(DnGpuContext* context) {
     goto error;
   }
 
-  VkPhysicalDevice* physicalDevices = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkPhysicalDevice, physicalDeviceCount);
+  VkPhysicalDevice* physicalDevices = DN_MEM_ALLOC_TYPES(DnMemTemp_GetAllocator(), VkPhysicalDevice, physicalDeviceCount);
   if (vkEnumeratePhysicalDevices(context->instance, &physicalDeviceCount, physicalDevices) != VK_SUCCESS) {
     DN_LOG_ERROR("Failed to enumerate Vulkan physical devices");
     goto error;
@@ -277,7 +277,7 @@ static bool DnGpuContext_CreateDevice(DnGpuContext* context) {
     goto error;
   }
 
-  VkQueueFamilyProperties* queueFamilyProperties = DN_MEM_ALLOC_TYPES(g_dnMemAllocatorTemp, VkQueueFamilyProperties, queueFamilyCount);
+  VkQueueFamilyProperties* queueFamilyProperties = DN_MEM_ALLOC_TYPES(DnMemTemp_GetAllocator(), VkQueueFamilyProperties, queueFamilyCount);
   vkGetPhysicalDeviceQueueFamilyProperties(context->physicalDevice, &queueFamilyCount, queueFamilyProperties);
 
   u32 queueFamilyIndex;
@@ -337,7 +337,7 @@ DnGpuContext* DnGpuContext_Create() {
   DN_LOG_INFO("Creating gpu context");
   bool success = false;
 
-  DnGpuContext* context = DN_MEM_ALLOC_TYPE(g_dnMemAllocatorDefault, DnGpuContext);
+  DnGpuContext* context = DN_MEM_ALLOC_TYPE(DnMemAllocator_GetDefault(), DnGpuContext);
   *context = (DnGpuContext) {};
 
   if (volkInitialize() != VK_SUCCESS) {
@@ -389,7 +389,7 @@ void DnGpuContext_Destroy(DnGpuContext* context) {
     vkDestroyInstance(context->instance, g_dnGpuAllocatorVulkan);
   }
 
-  DN_MEM_FREE(g_dnMemAllocatorDefault, context);
+  DN_MEM_FREE(DnMemAllocator_GetDefault(), context);
 }
 
 // == GPU CONTEXT GETTERS =================================================== //

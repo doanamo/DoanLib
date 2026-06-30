@@ -7,20 +7,20 @@ static void* VKAPI_PTR DnGpuMemoryVulkan_Alloc(void* userData, u64 size, u64 ali
   DN_UNUSED(userData);
   DN_UNUSED(scope);
 
-  return DN_MEM_ALLOC(g_dnMemAllocatorDefault, size, alignment);
+  return DN_MEM_ALLOC(DnMemAllocator_GetDefault(), size, alignment);
 }
 
 static void* VKAPI_PTR DnGpuMemoryVulkan_Realloc(void* userData, void* allocation, u64 size, u64 alignment, VkSystemAllocationScope scope) {
   DN_UNUSED(userData);
   DN_UNUSED(scope);
 
-  return DN_MEM_REALLOC(g_dnMemAllocatorDefault, allocation, size, alignment);
+  return DN_MEM_REALLOC(DnMemAllocator_GetDefault(), allocation, size, alignment);
 }
 
 static void VKAPI_PTR DnGpuMemoryVulkan_Free(void* userData, void* allocation) {
   DN_UNUSED(userData);
 
-  DN_MEM_FREE(g_dnMemAllocatorDefault, allocation);
+  DN_MEM_FREE(DnMemAllocator_GetDefault(), allocation);
 }
 
 static VkAllocationCallbacks g_dnGpuAllocatorVulkanPrivate = {

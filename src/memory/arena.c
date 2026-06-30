@@ -20,19 +20,19 @@ static DnMemArenaChunk* DnMemArena_GetInitialChunk(DnMemArena* arena) {
   return (DnMemArenaChunk*)((u8*)arena + sizeof(DnMemArena));
 }
 
-static u8* DnMemArena_GetUsableChunkSpace(DnMemArenaChunk* chunk) {
+static u8* DnMemArena_GetInitialUsableChunkSpace(DnMemArenaChunk* chunk) {
   return (u8*)chunk + sizeof(DnMemArenaChunk);
 }
 
 static void DnMemArena_InitChunk(DnMemArenaChunk* chunk, u64 chunkSize) {
   *chunk = (DnMemArenaChunk) {
     .next = nullptr,
-    .free = DnMemArena_GetUsableChunkSpace(chunk),
+    .free = DnMemArena_GetInitialUsableChunkSpace(chunk),
     .end = (u8*)chunk + chunkSize,
   };
 }
 
-// == MEMROY ARENA ALLOCATOR ================================================ //
+// == MEMORY ARENA ALLOCATOR ================================================ //
 
 typedef struct DnMemArenaAllocation {
   u64 size;
@@ -240,7 +240,7 @@ void DnMemArena_PopScope(DnMemArenaScope* scope) {
   // Empty subsequent chunks that were allocated from after scope was created.
   DnMemArenaChunk* chunk = arena->chunks->next;
   while (chunk) {
-    chunk->free = DnMemArena_GetUsableChunkSpace(chunk);
+    chunk->free = DnMemArena_GetInitialUsableChunkSpace(chunk);
     chunk = chunk->next;
   }
 }

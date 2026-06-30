@@ -30,12 +30,13 @@ static void DnMemAllocatorMalloc_Free(const DnMemAllocator* allocator, void* all
   _aligned_free(allocation);
 }
 
-static DnMemAllocator g_dnMemAllocatorMallocPrivate = {
+static DnMemAllocator g_dnMemAllocatorMalloc = {
   .alloc = &DnMemAllocatorMalloc_Alloc,
   .realloc = &DnMemAllocatorMalloc_Realloc,
   .free = &DnMemAllocatorMalloc_Free,
   .context = nullptr,
 };
 
-const DnMemAllocator* g_dnMemAllocatorDefault = &g_dnMemAllocatorMallocPrivate;
-const DnMemAllocator* g_dnMemAllocatorMalloc = &g_dnMemAllocatorMallocPrivate;
+const DnMemAllocator* DnMemMalloc_GetAllocator() {
+  return &g_dnMemAllocatorMalloc;
+}

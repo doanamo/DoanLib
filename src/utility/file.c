@@ -15,7 +15,7 @@ bool DnUtilFile_Read(const DnMemAllocator* allocator, DnStrView path, u8** outDa
 
   DnMemTempScope tempScope = DnMemTemp_PushScope();
 
-  const char* pathStr = DnStrView_AsCStr(g_dnMemAllocatorTemp, path);
+  const char* pathStr = DnStrView_AsCStr(DnMemTemp_GetAllocator(), path);
   file = fopen(pathStr, "rb");
   if (!file) {
     goto error;

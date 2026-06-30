@@ -67,7 +67,7 @@ DnSysWindow* DnSysWindow_Create() {
   DN_LOG_INFO("Creating system window");
   bool success = false;
 
-  DnSysWindow* window = DN_MEM_ALLOC_TYPE(g_dnMemAllocatorDefault, DnSysWindow);
+  DnSysWindow* window = DN_MEM_ALLOC_TYPE(DnMemAllocator_GetDefault(), DnSysWindow);
   *window = (DnSysWindow) {
     .width = 1024,
     .height = 576,
@@ -135,7 +135,7 @@ void DnSysWindow_Destroy(DnSysWindow* window) {
     DestroyWindow(window->handle);
   }
 
-  DN_MEM_FREE(g_dnMemAllocatorDefault, window);
+  DN_MEM_FREE(DnMemAllocator_GetDefault(), window);
 }
 
 // == WINDOW SETTERS ======================================================== //
@@ -144,7 +144,7 @@ void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title) {
   DN_ASSERT(window->handle);
 
   DnMemTempScope memTempScope = DnMemTemp_PushScope();
-  const char* titleStr = DnStrView_AsCStr(g_dnMemAllocatorTemp, title);
+  const char* titleStr = DnStrView_AsCStr(DnMemTemp_GetAllocator(), title);
   SetWindowText(window->handle, titleStr);
   DnMemTemp_PopScope(&memTempScope);
 }

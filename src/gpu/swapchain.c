@@ -39,7 +39,7 @@ DnGpuSwapChain* DnGpuSwapChain_Create(DnGpuContext* context, DnSysWindow* window
   DN_LOG_INFO("Creating gpu swapchain");
   bool success = false;
 
-  DnGpuSwapChain* swapChain = DN_MEM_ALLOC_TYPE(g_dnMemAllocatorDefault, DnGpuSwapChain);
+  DnGpuSwapChain* swapChain = DN_MEM_ALLOC_TYPE(DnMemAllocator_GetDefault(), DnGpuSwapChain);
   *swapChain = (DnGpuSwapChain) {
     .context = context,
   };
@@ -66,7 +66,7 @@ void DnGpuSwapChain_Destroy(DnGpuSwapChain* swapChain) {
     vkDestroySurfaceKHR(DnGpuContext_GetInstance(swapChain->context), swapChain->surface, g_dnGpuAllocatorVulkan);
   }
 
-  DN_MEM_FREE(g_dnMemAllocatorDefault, swapChain);
+  DN_MEM_FREE(DnMemAllocator_GetDefault(), swapChain);
 }
 
 // == GPU SWAPCHAIN PRESENTATION ============================================ //

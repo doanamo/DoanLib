@@ -30,7 +30,7 @@ typedef struct DnMemArena {
   // Linked list of oversized chunks (chonks) that points at the newest chonk.
   // Chonks are not reused and are sized to contain only single large allocation
   // that does not fit the default chunk size or exceeds large size boundary to
-  // not waste space in regular chunks that are suited for many smaller
+  // not waste space in regular chunks that are more suited for many smaller
   // allocations. Will be null if no oversized allocations have been made.
   DnMemArenaChunk* chonks;
 } DnMemArena;
@@ -291,6 +291,7 @@ void DnMemArena_PopScope(DnMemArenaScope* scope) {
   // We only need to reset subsequent chunks up to the current one.
   DnMemArenaChunk* chunk = opaque->chunk;
   while (chunk != arena->chunks) {
+    DN_ASSERT(chunk);
     DN_ASSERT(chunk->next);
     chunk = chunk->next;
     chunk->free = DnMemArena_GetChunkBeginPointer(chunk);

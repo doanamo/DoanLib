@@ -3,7 +3,7 @@
 
 // == MALLOC ALLOCATOR ====================================================== //
 
-static void* DnMemAllocatorMalloc_Alloc(const DnMemAllocator* allocator, u64 size, u64 alignment) {
+static void* DnMemMalloc_Alloc(const DnMemAllocator* allocator, u64 size, u64 alignment) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
 
@@ -13,7 +13,7 @@ static void* DnMemAllocatorMalloc_Alloc(const DnMemAllocator* allocator, u64 siz
   return allocated;
 }
 
-static void* DnMemAllocatorMalloc_Realloc(const DnMemAllocator* allocator, void* allocation, u64 size, u64 alignment) {
+static void* DnMemMalloc_Realloc(const DnMemAllocator* allocator, void* allocation, u64 size, u64 alignment) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
 
@@ -23,20 +23,20 @@ static void* DnMemAllocatorMalloc_Realloc(const DnMemAllocator* allocator, void*
   return reallocation;
 }
 
-static void DnMemAllocatorMalloc_Free(const DnMemAllocator* allocator, void* allocation) {
+static void DnMemMalloc_Free(const DnMemAllocator* allocator, void* allocation) {
   DN_ASSERT(allocator);
   DN_UNUSED(allocator);
 
   _aligned_free(allocation);
 }
 
-static DnMemAllocator g_dnMemAllocatorMalloc = {
-  .alloc = &DnMemAllocatorMalloc_Alloc,
-  .realloc = &DnMemAllocatorMalloc_Realloc,
-  .free = &DnMemAllocatorMalloc_Free,
+static DnMemAllocator g_dnMemMallocAllocator = {
+  .alloc = &DnMemMalloc_Alloc,
+  .realloc = &DnMemMalloc_Realloc,
+  .free = &DnMemMalloc_Free,
   .context = nullptr,
 };
 
 const DnMemAllocator* DnMemMalloc_GetAllocator() {
-  return &g_dnMemAllocatorMalloc;
+  return &g_dnMemMallocAllocator;
 }

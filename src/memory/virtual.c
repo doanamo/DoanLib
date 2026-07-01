@@ -53,21 +53,20 @@ void* DnMemVirtual_Reserve(u64 size) {
   return address;
 }
 
-void* DnMemVirtual_Commit(void* page, u64 size) {
-  DN_ASSERT(DN_MEM_IS_ALIGNED(size, DnMem_SystemPageSize));
+u64 DnMemVirtual_QuerySize(void* page) {
+  DN_ASSERT(page != nullptr);
 
-  DWORD flags = MEM_COMMIT;
-  if (page == nullptr) {
-    flags |= MEM_RESERVE;
-  }
-
-  void* address = VirtualAlloc(page, size, flags, PAGE_READWRITE);
-  if (DN_UNLIKELY(address == nullptr)) {
-    DN_LOG_ERROR("Failed to commit virtual memory");
+  // Note: this only works for memory regions sharing same attributes, that were
+  // created using same initial call to VirtualAlloc. If pages were e.g.
+  // commited incrementally, the returned size may not be accurate.
+  MEMORY_BASIC_INFORMATION info;
+  if (DN_UNLIKELY(VirtualQuery(page, &info, sizeof(info)) == 0)) {
+    DN_LOG_ERROR("Failed to query virtual memory");
     DnSysWin32_LogLastError();
+    return 0;
   }
 
-  return address;
+  return info.RegionSize;
 }
 
 void DnMemVirtual_Decommit(void* page, u64 size) {
@@ -87,4 +86,21 @@ void DnMemVirtual_Release(void* page) {
     DN_LOG_ERROR("Failed to release virtual memory");
     DnSysWin32_LogLastError();
   }
+}
+
+void* DnMemVirtual_Commit(void* page, u64 size) {
+  DN_ASSERT(DN_MEM_IS_ALIGNED(size, DnMem_SystemPageSize));
+
+  DWORD flags = MEM_COMMIT;
+  if (page == nullptr) {
+    flags |= MEM_RESERVE;
+  }
+
+  void* address = VirtualAlloc(page, size, flags, PAGE_READWRITE);
+  if (DN_UNLIKELY(address == nullptr)) {
+    DN_LOG_ERROR("Failed to commit virtual memory");
+    DnSysWin32_LogLastError();
+  }
+
+  return address;
 }

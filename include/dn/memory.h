@@ -221,6 +221,10 @@ void DnMemVirtual_Decommit(void* page, u64 size);
 // page address must be the base address returned by the original reservation.
 void DnMemVirtual_Release(void* page);
 
+// Returns the size of the virtual memory region starting at the given page
+// address, or 0 if the page address is invalid.
+u64 DnMemVirtual_QuerySize(void* page);
+
 // == MEMORY LARGE ========================================================== //
 
 // Threshold size for large allocations.

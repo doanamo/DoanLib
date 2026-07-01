@@ -1,6 +1,15 @@
 #include "dn/memory.h"
+#include "dn/shared.h"
+
+// == MEMORY ARENA CONSTANTS ================================================ //
+
+constexpr u64 DnMemArena_LargeSizeThreshold = DnMemLarge_SizeThreshold;
 
 // == MEMORY ARENA STRUCTS ================================================== //
+
+typedef struct DnMemArenaAllocation {
+  u64 size;
+} DnMemArenaAllocation;
 
 typedef struct DnMemArenaChunk {
   struct DnMemArenaChunk* next;
@@ -10,11 +19,27 @@ typedef struct DnMemArenaChunk {
 
 typedef struct DnMemArena {
   DnMemAllocator allocator;
-  DnMemArenaChunk* chunks;
   u64 chunkSize;
+
+  // Linked list of chunks starting from oldest and ending with the newest.
+  // Points at current free chunk. Will never be null, because oldest chunk is
+  // always the initial arena chunk. Can be reset to the initial chunk in the
+  // list via DnMemArena_GetInitialChunk().
+  DnMemArenaChunk* chunks;
+
+  // Linked list of oversized chunks (chonks) that points at the newest chonk.
+  // Chonks are not reused and are sized to contain only single large allocation
+  // that does not fit the default chunk size or exceeds large size boundary to
+  // not waste space in regular chunks that are suited for many smaller
+  // allocations. Will be null if no oversized allocations have been made.
+  DnMemArenaChunk* chonks;
 } DnMemArena;
 
 // == MEMORY ARENA CHUNK ==================================================== //
+
+static u64 DnMemArena_CalcMinChunkSize(u64 size, u64 alignment) {
+  return sizeof(DnMemArenaChunk) + sizeof(DnMemArenaAllocation) + alignment + size;
+}
 
 static DnMemArenaChunk* DnMemArena_GetInitialChunk(DnMemArena* arena) {
   return (DnMemArenaChunk*)((u8*)arena + sizeof(DnMemArena));
@@ -32,11 +57,16 @@ static void DnMemArena_InitChunk(DnMemArenaChunk* chunk, u64 chunkSize) {
   };
 }
 
-// == MEMORY ARENA ALLOCATOR ================================================ //
+static DnMemArenaChunk* DnMemArena_CreateChunk(u64 chunkSize) {
+  u8* chunkMemory = (u8*)DnMemVirtual_Commit(nullptr, chunkSize);
+  DN_ASSERT_ALWAYS(chunkMemory);
 
-typedef struct DnMemArenaAllocation {
-  u64 size;
-} DnMemArenaAllocation;
+  DnMemArenaChunk* chunk = (DnMemArenaChunk*)chunkMemory;
+  DnMemArena_InitChunk(chunk, chunkSize);
+  return chunk;
+}
+
+// == MEMORY ARENA ALLOCATOR ================================================ //
 
 static DnMemArenaAllocation* DnMemArena_GetAllocationHeader(void* allocation) {
   return (DnMemArenaAllocation*)((u8*)allocation - sizeof(DnMemArenaAllocation));
@@ -52,17 +82,26 @@ static void* DnMemArena_Alloc(const DnMemAllocator* allocator, u64 size, u64 ali
   DnMemArena* arena = (DnMemArena*)allocator->context;
   DN_ASSERT(arena);
 
+  // Initially points at the current chunk from free list, but may end up
+  // pointing at a different chunk or an oversized chonk outside the free list.
   DnMemArenaChunk* chunk = arena->chunks;
   DN_ASSERT(chunk);
+
+#if DN_ASSERT_ENABLED
+  bool chunkCreated = false;
+#endif
 
   u8* address;
   while (true) {
     // Align pointer and see if it fits within the current chunk.
-    // Account for the allocation header size before aligning.
+    // Account for the allocation header placed before aligned address.
     DN_ASSERT(DN_MEM_IS_ALIGNED((u64)chunk->free, DnMem_DefaultAlignment));
     address = (u8*)DN_MEM_ALIGN_UP((u64)chunk->free + sizeof(DnMemArenaAllocation), alignment);
     if (address + size <= chunk->end)
       break;
+
+    // Ensure new chunk guaranteed to be large enough for the allocation.
+    DN_ASSERT(!chunkCreated);
 
     // Try next chunk if there is one available.
     // #todo: There may still be some space left in the current chunk that
@@ -78,26 +117,33 @@ static void* DnMemArena_Alloc(const DnMemAllocator* allocator, u64 size, u64 ali
     }
 
     // Calculate minimum chunk size that we need for this allocation in case
-    // requested size overflows default chunk size.
-    u64 minimumChunkSize = sizeof(DnMemArenaChunk) + sizeof(DnMemArenaAllocation) + alignment + size;
-    minimumChunkSize = DN_MEM_ALIGN_UP(minimumChunkSize, DnMem_SystemPageSize);
+    // requested size overflows default chunk size. If it does, allocate chunk
+    // dedicated only for this allocation and put it in dedicated non-free list.
+    u64 minimumChunkSize = DnMemArena_CalcMinChunkSize(size, alignment);
+    bool oversizedChonk = minimumChunkSize > arena->chunkSize || size > DnMemArena_LargeSizeThreshold;
 
-    // Allocate new chunk if the current chunk has insufficient space.
-    // #todo: Large allocations could over-reserve address space to make
-    // reallocations faster. Could start with the lowest reservation alignment
-    // of 64KB and increase by power of two as needed. Could make a dedicated
-    // large size allocator to manage large allocations separately.
-    u64 chunkSize = DN_MAX(arena->chunkSize, minimumChunkSize);
-    u8* chunkMemory = (u8*)DnMemVirtual_Commit(nullptr, chunkSize);
-    DN_ASSERT_ALWAYS(chunkMemory);
+    // Allocate new chunk address space.
+    u64 chunkSize = oversizedChonk ? minimumChunkSize : arena->chunkSize;
+    chunk = DnMemArena_CreateChunk(chunkSize);
 
-    // Initialize the chunk and add it to the arena as current chunk.
-    chunk = (DnMemArenaChunk*)chunkMemory;
-    DnMemArena_InitChunk(chunk, chunkSize);
-    chunk->next = arena->chunks;
-    arena->chunks = chunk;
+  #if DN_ASSERT_ENABLED
+    chunkCreated = true;
+  #endif
+
+    if (!oversizedChonk) {
+      // Append new chunk to the end of the free list.
+      DN_ASSERT(!arena->chunks->next);
+      arena->chunks->next = chunk;
+      arena->chunks = chunk;
+    }
+    else {
+      // Prepend oversized chonk at the front of the non-free list.
+      chunk->next = arena->chonks;
+      arena->chonks = chunk;
+    }
   }
 
+  // Clear memory with debug pattern.
 #if DN_MEM_PATTERNS_ENABLED
   memset(chunk->free, DnMem_PatternPadding, (u64)(address - chunk->free));
   memset(address, DnMem_PatternAllocated, size);
@@ -177,6 +223,7 @@ DnMemArena* DnMemArena_Create(u64 chunkSize) {
     },
     .chunkSize = chunkSize,
     .chunks = DnMemArena_GetInitialChunk(arena),
+    .chonks = nullptr,
   };
 
   // Initial chunk will be slightly smaller due to the arena header overhead.
@@ -200,6 +247,13 @@ void DnMemArena_Destroy(DnMemArena* arena) {
     chunk = next;
   }
 
+  DnMemArenaChunk* chonk = arena->chonks;
+  while (chonk) {
+    DnMemArenaChunk* next = chonk->next;
+    DnMemVirtual_Release(chonk);
+    chonk = next;
+  }
+
   DnMemVirtual_Release(arena);
 }
 
@@ -208,7 +262,8 @@ void DnMemArena_Destroy(DnMemArena* arena) {
 typedef struct DnMemArenaScopeOpaque {
   DnMemArena* arena;
   DnMemArenaChunk* chunk;
-  u8* free;
+  DnMemArenaChunk* chonk;
+  u8* chunkFree;
 } DnMemArenaScopeOpaque;
 
 static_assert(sizeof(DnMemArenaScopeOpaque) == sizeof(DnMemArenaScope));
@@ -220,7 +275,8 @@ DnMemArenaScope DnMemArena_PushScope(DnMemArena* arena) {
   DnMemArenaScopeOpaque scope = {
     .arena = arena,
     .chunk = arena->chunks,
-    .free = arena->chunks->free,
+    .chonk = arena->chonks,
+    .chunkFree = arena->chunks->free,
   };
 
   return *(DnMemArenaScope*)&scope;
@@ -231,14 +287,27 @@ void DnMemArena_PopScope(DnMemArenaScope* scope) {
   DnMemArena* arena = opaque->arena;
   DN_ASSERT(arena);
 
-  // Rollback current chunk to the state when scope was created.
-  arena->chunks = opaque->chunk;
-  arena->chunks->free = opaque->free;
-
-  // Empty subsequent chunks that were allocated from after scope was created.
-  DnMemArenaChunk* chunk = arena->chunks->next;
-  while (chunk) {
-    chunk->free = DnMemArena_GetChunkBeginPointer(chunk);
+  // Empty subsequent chunks that were allocated past chunk saved in scope.
+  // We only need to reset subsequent chunks up to the current one.
+  DnMemArenaChunk* chunk = opaque->chunk;
+  while (chunk != arena->chunks) {
+    DN_ASSERT(chunk->next);
     chunk = chunk->next;
+    chunk->free = DnMemArena_GetChunkBeginPointer(chunk);
   }
+
+  // Make previous chunk current and restore its free pointer.
+  arena->chunks = opaque->chunk;
+  arena->chunks->free = opaque->chunkFree;
+
+  // Free chonks that were not previously present in this scope.
+  DnMemArenaChunk* chonk = arena->chonks;
+  while (chonk != opaque->chonk) {
+    DN_ASSERT(chonk);
+    DnMemArenaChunk* next = chonk->next;
+    DnMemVirtual_Release(chonk);
+    chonk = next;
+  }
+
+  arena->chonks = opaque->chonk;
 }

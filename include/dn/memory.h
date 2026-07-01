@@ -262,7 +262,7 @@ const DnMemAllocator* DnMemArena_GetAllocator(const DnMemArena* arena);
 // all at once when the scope is popped.
 typedef struct DnMemArenaScope {
   alignas(DnMem_DefaultAlignment)
-  char opaque[24];
+  char opaque[32];
 } DnMemArenaScope;
 
 // Records the current state of the arena so it can be reverted to later, so

@@ -88,14 +88,9 @@ constexpr u64 DnMem_SystemPageSize = DN_MEM_KB(4);
 
 // == MEMORY INITIALIZATION ================================================= //
 
-// Configuration struct for memory initialization.
-typedef struct DnMemConfig {
-  u64 tempChunkSize;
-} DnMemConfig;
-
 // Initializes the memory system with the given configuration. Should be called
 // only once at the very beginning of the program, before any memory operations.
-bool DnMem_Init(const DnMemConfig* config);
+bool DnMem_Init();
 
 // Deinitializes the memory system. Should be called only once at the very end
 // of the program, after all memory operations. With debugging enabled, may

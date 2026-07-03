@@ -24,22 +24,18 @@ bool DnApp_Init(const DnAppConfig* config) {
   DN_LOG_INFO("Initializing application");
   DN_ASSERT(config);
 
-  if (!DnMem_Init(&config->memory)) {
-    return false;
-  }
-
   g_sysWindow = DnSysWindow_Create();
   if (!g_sysWindow) {
     return false;
   }
 
-  DnStrView windowTitle = config->system.windowTitle;
+  DnStrView windowTitle = config->windowTitle;
   if (DnStrView_IsEmpty(windowTitle)) {
     windowTitle = DN_STR_VIEW_LITERAL("DoanLib Window");
   }
 
-  u32 windowWidth = config->system.windowWidth;
-  u32 windowHeight = config->system.windowHeight;
+  u32 windowWidth = config->windowWidth;
+  u32 windowHeight = config->windowHeight;
   if (!windowWidth || !windowHeight) {
     windowWidth = 1024;
     windowHeight = 576;
@@ -87,8 +83,6 @@ void DnApp_Deinit() {
     DnSysWindow_Destroy(g_sysWindow);
     g_sysWindow = nullptr;
   }
-
-  DnMem_Deinit();
 }
 
 // == APPLICATION LOOP ====================================================== //

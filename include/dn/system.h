@@ -6,15 +6,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-// == SYSTEM CONFIG ========================================================= //
-
-// Configuration structure for system initialization.
-typedef struct DnSysConfig {
-  DnStrView windowTitle;
-  u32 windowWidth;
-  u32 windowHeight;
-} DnSysConfig;
-
 // == SYSTEM WINDOW ========================================================= //
 
 // Opaque handle for system window.

@@ -94,6 +94,7 @@ set(SOURCE_FILES
   "src/gpu/context.c"
   "src/gpu/swapchain.c"
   "src/shared.c"
+  "src/main.c"
   "src/app.c"
 )
 

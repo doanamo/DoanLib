@@ -5,19 +5,17 @@
 bool DnMemVirtual_Init();
 void DnMemVirtual_Deinit();
 
-bool DnMemTemp_Init(const DnMemConfig* config);
+bool DnMemTemp_Init();
 void DnMemTemp_Deinit();
 
-bool DnMem_Init(const DnMemConfig* config) {
-  DN_ASSERT(config);
-
+bool DnMem_Init() {
   DN_LOG_INFO("Default memory alignment: %llu bytes", DnMem_DefaultAlignment);
 
   if (!DnMemVirtual_Init()) {
     return false;
   }
 
-  if (!DnMemTemp_Init(config)) {
+  if (!DnMemTemp_Init()) {
     return false;
   }
 

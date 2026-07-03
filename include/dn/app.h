@@ -1,14 +1,14 @@
 #pragma once
 
-#include "memory.h"
-#include "system.h"
+#include "dn/structs.h"
 
 // == APPLICATION =========================================================== //
 
 // Application configurations struct.
 typedef struct DnAppConfig {
-  DnMemConfig memory;
-  DnSysConfig system;
+  DnStrView windowTitle;
+  u32 windowWidth;
+  u32 windowHeight;
 } DnAppConfig;
 
 // Runs the application with the given configuration. Does not return until the

@@ -90,9 +90,6 @@ set(SOURCE_FILES
   "src/utility/file.c"
   "src/system/system.c"
   "src/system/window.c"
-  "src/gpu/memory.c"
-  "src/gpu/context.c"
-  "src/gpu/swapchain.c"
   "src/shared.c"
   "src/main.c"
   "src/app.c"
@@ -102,17 +99,6 @@ add_library(Doan STATIC ${SOURCE_FILES})
 target_include_directories(Doan PRIVATE "src/")
 target_include_directories(Doan PUBLIC "include/")
 dn_target_setup(Doan)
-
-# ============================================================================ #
-#   Dependencies                                                               #
-# ============================================================================ #
-
-target_include_directories(Doan PUBLIC "$ENV{VULKAN_SDK}/Include")
-target_sources(Doan PRIVATE "$ENV{VULKAN_SDK}/Include/Volk/volk.c")
-
-if(WIN32)
-  target_compile_definitions(Doan PUBLIC VK_USE_PLATFORM_WIN32_KHR)
-endif()
 
 # ============================================================================ #
 #   Example                                                                    #

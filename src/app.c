@@ -3,13 +3,10 @@
 #include "dn/shared.h"
 #include "dn/structs.h"
 #include "dn/system.h"
-#include "dn/gpu.h"
 
 // == APPLICATION GLOBALS =================================================== //
 
 static DnSysWindow* g_sysWindow = nullptr;
-static DnGpuContext* g_gpuContext = nullptr;
-static DnGpuSwapChain* g_gpuSwapChain = nullptr;
 
 static bool g_exit = false;
 static int g_exitCode = 1;
@@ -45,16 +42,6 @@ bool DnApp_Init(const DnAppConfig* config) {
   DnSysWindow_SetSize(g_sysWindow, windowWidth, windowHeight);
   DnSysWindow_SetCloseCallback(g_sysWindow, &DnApp_CloseCallback);
 
-  g_gpuContext = DnGpuContext_Create();
-  if (!g_gpuContext) {
-    return false;
-  }
-
-  g_gpuSwapChain = DnGpuSwapChain_Create(g_gpuContext, g_sysWindow);
-  if (!g_gpuSwapChain) {
-    return false;
-  }
-
   return true;
 }
 
@@ -68,16 +55,6 @@ void DnApp_Render(f32 alphaTime) {
 
 void DnApp_Deinit() {
   DN_LOG_INFO("Deinitializing application");
-
-  if (g_gpuSwapChain) {
-    DnGpuSwapChain_Destroy(g_gpuSwapChain);
-    g_gpuSwapChain = nullptr;
-  }
-
-  if (g_gpuContext) {
-    DnGpuContext_Destroy(g_gpuContext);
-    g_gpuContext = nullptr;
-  }
 
   if (g_sysWindow) {
     DnSysWindow_Destroy(g_sysWindow);
@@ -102,7 +79,6 @@ int DnApp_Run(const DnAppConfig* config) {
     DnSysWindow_ProcessMessages(g_sysWindow);
     DnApp_Update(0.0f);
     DnApp_Render(1.0f);
-    DnGpuSwapChain_Present(g_gpuSwapChain);
 
     DnMemTemp_PopScope(&tempScope);
   }

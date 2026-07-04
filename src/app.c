@@ -13,12 +13,14 @@ static int g_exitCode = 1;
 
 // == APPLICATION METHODS =================================================== //
 
-void DnApp_CloseCallback() {
+static void DnApp_CloseCallback() {
   g_exit = true;
 }
 
-bool DnApp_Init(const DnAppConfig* config) {
+static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
   DN_LOG_INFO("Initializing application");
+
+  DN_ASSERT(app);
   DN_ASSERT(config);
 
   g_sysWindow = DnSysWindow_Create();
@@ -42,19 +44,32 @@ bool DnApp_Init(const DnAppConfig* config) {
   DnSysWindow_SetSize(g_sysWindow, windowWidth, windowHeight);
   DnSysWindow_SetCloseCallback(g_sysWindow, &DnApp_CloseCallback);
 
+  if (!app->init(app, config)) {
+    return false;
+  }
+
   return true;
 }
 
-void DnApp_Update(f32 deltaTime) {
+static void DnApp_Update(DnApp* app, f32 deltaTime) {
+  DN_ASSERT(app);
   DN_UNUSED(deltaTime);
+
+  app->update(app, deltaTime);
 }
 
-void DnApp_Render(f32 alphaTime) {
+static void DnApp_Render(DnApp* app, f32 alphaTime) {
+  DN_ASSERT(app);
   DN_UNUSED(alphaTime);
+
+  app->render(app, alphaTime);
 }
 
-void DnApp_Deinit() {
+static void DnApp_Deinit(DnApp* app) {
   DN_LOG_INFO("Deinitializing application");
+
+  DN_ASSERT(app);
+  app->deinit(app);
 
   if (g_sysWindow) {
     DnSysWindow_Destroy(g_sysWindow);
@@ -64,9 +79,11 @@ void DnApp_Deinit() {
 
 // == APPLICATION LOOP ====================================================== //
 
-int DnApp_Run(const DnAppConfig* config) {
+int DnApp_Run(DnApp* app, const DnAppConfig* config) {
+  DN_ASSERT(app);
   DN_ASSERT(config);
-  if (!DnApp_Init(config)) {
+
+  if (!DnApp_Init(app, config)) {
     goto error;
   }
 
@@ -77,8 +94,8 @@ int DnApp_Run(const DnAppConfig* config) {
     DnMemTempScope tempScope = DnMemTemp_PushScope();
 
     DnSysWindow_ProcessMessages(g_sysWindow);
-    DnApp_Update(0.0f);
-    DnApp_Render(1.0f);
+    DnApp_Update(app, 0.0f);
+    DnApp_Render(app, 1.0f);
 
     DnMemTemp_PopScope(&tempScope);
   }
@@ -86,6 +103,6 @@ int DnApp_Run(const DnAppConfig* config) {
   g_exitCode = 0;
 
 error:
-  DnApp_Deinit();
+  DnApp_Deinit(app);
   return g_exitCode;
 }

@@ -8,7 +8,7 @@ bool DnMemTemp_Init() {
   // #todo: Create a config variable system when global variables can be
   // registered and serialized from/to configuration INI files.
   u64 tempChunkSize = DN_MEM_MB(64);
-  DN_LOG_INFO("Temporary arena chunk size: %.2f MB", DN_MEM_TO_MB(tempChunkSize));
+  DN_LOG_INFO("Temporary memory chunk size: %.2f MB", DN_MEM_TO_MB(tempChunkSize));
 
   DN_ASSERT(g_dnMemArenaTemp == nullptr);
   g_dnMemArenaTemp = DnMemArena_Create(tempChunkSize);

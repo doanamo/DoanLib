@@ -4,6 +4,8 @@
 
 // == APPLICATION =========================================================== //
 
+typedef struct DnSysWindow DnSysWindow;
+
 // Application configurations struct.
 typedef struct {
   DnStrView windowTitle;
@@ -17,7 +19,10 @@ typedef struct DnApp {
   void (*update)(struct DnApp* app, float deltaTime);
   void (*render)(struct DnApp* app, float alphaTime);
   void (*deinit)(struct DnApp* app);
-  void* userdata;
+
+  DnSysWindow* window;
+
+  bool exit;
 } DnApp;
 
 // Runs the application with the given configuration. Does not return until the

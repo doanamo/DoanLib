@@ -3,18 +3,14 @@
 #include "dn/shared.h"
 #include "dn/structs.h"
 #include "dn/system.h"
-
-// == APPLICATION GLOBALS =================================================== //
-
-static DnSysWindow* g_sysWindow = nullptr;
-
-static bool g_exit = false;
-static int g_exitCode = 1;
+#include "dn/main.h"
 
 // == APPLICATION METHODS =================================================== //
 
-static void DnApp_CloseCallback() {
-  g_exit = true;
+static void DnApp_CloseCallback(void* userdata) {
+  DnApp* app = (DnApp*)userdata;
+  DN_ASSERT(app);
+  app->exit = true;
 }
 
 static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
@@ -23,8 +19,11 @@ static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
   DN_ASSERT(app);
   DN_ASSERT(config);
 
-  g_sysWindow = DnSysWindow_Create();
-  if (!g_sysWindow) {
+  app->exit = false;
+
+  DN_ASSERT(!app->window);
+  app->window = DnSysWindow_Create();
+  if (!app->window) {
     return false;
   }
 
@@ -40,9 +39,9 @@ static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
     windowHeight = 576;
   }
 
-  DnSysWindow_SetTitle(g_sysWindow, windowTitle);
-  DnSysWindow_SetSize(g_sysWindow, windowWidth, windowHeight);
-  DnSysWindow_SetCloseCallback(g_sysWindow, &DnApp_CloseCallback);
+  DnSysWindow_SetTitle(app->window, windowTitle);
+  DnSysWindow_SetSize(app->window, windowWidth, windowHeight);
+  DnSysWindow_SetCloseCallback(app->window, &DnApp_CloseCallback, app);
 
   if (!app->init(app, config)) {
     return false;
@@ -71,9 +70,9 @@ static void DnApp_Deinit(DnApp* app) {
   DN_ASSERT(app);
   app->deinit(app);
 
-  if (g_sysWindow) {
-    DnSysWindow_Destroy(g_sysWindow);
-    g_sysWindow = nullptr;
+  if (app->window) {
+    DnSysWindow_Destroy(app->window);
+    app->window = nullptr;
   }
 }
 
@@ -90,12 +89,12 @@ int DnApp_Run(DnApp* app, const DnAppConfig* config) {
   }
 
   DN_LOG_INFO("Running application");
-  DnSysWindow_SetVisibility(g_sysWindow, true);
+  DnSysWindow_SetVisibility(app->window, true);
 
-  while (!g_exit) {
+  while (!app->exit) {
     DnMemTempScope tempScope = DnMemTemp_PushScope();
 
-    DnSysWindow_ProcessMessages(g_sysWindow);
+    DnSysWindow_ProcessMessages(app->window);
     DnApp_Update(app, 0.0f);
     DnApp_Render(app, 1.0f);
 
@@ -106,5 +105,5 @@ int DnApp_Run(DnApp* app, const DnAppConfig* config) {
 
 error:
   DnApp_Deinit(app);
-  return g_exitCode;
+  return exitCode;
 }

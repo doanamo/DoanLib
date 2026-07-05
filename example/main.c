@@ -5,18 +5,18 @@
 
 // == EXAMPLE APPLICATION =================================================== //
 
-typedef struct Example {
+typedef struct ExampleApp {
   DnApp app;
   u32 width;
   u32 height;
   u32* pixels;
-} Example;
+} ExampleApp;
 
-bool Example_Init(DnApp* app, const DnAppConfig* config) {
+bool ExampleApp_Init(DnApp* app, const DnAppConfig* config) {
   DN_UNUSED(app);
   DN_UNUSED(config);
 
-  Example* example = (Example*)app;
+  ExampleApp* example = (ExampleApp*)app;
   DN_ASSERT(example);
 
   DN_ASSERT(!example->pixels);
@@ -35,28 +35,28 @@ bool Example_Init(DnApp* app, const DnAppConfig* config) {
   return true;
 }
 
-void Example_Update(DnApp* app, float deltaTime) {
+void ExampleApp_Update(DnApp* app, float deltaTime) {
   DN_UNUSED(app);
   DN_UNUSED(deltaTime);
 
-  Example* example = (Example*)app;
+  ExampleApp* example = (ExampleApp*)app;
   DN_ASSERT(example);
 }
 
-void Example_Render(DnApp* app, float alphaTime) {
+void ExampleApp_Render(DnApp* app, float alphaTime) {
   DN_UNUSED(app);
   DN_UNUSED(alphaTime);
 
-  Example* example = (Example*)app;
+  ExampleApp* example = (ExampleApp*)app;
   DN_ASSERT(example);
 
   DnSysWindow_Present(app->window, example->pixels, example->width, example->height);
 }
 
-void Example_Deinit(DnApp* app) {
+void ExampleApp_Deinit(DnApp* app) {
   DN_UNUSED(app);
 
-  Example* example = (Example*)app;
+  ExampleApp* example = (ExampleApp*)app;
   DN_ASSERT(example);
 
   DN_MEM_FREE(DnMemLarge_GetAllocator(), example->pixels);
@@ -65,12 +65,12 @@ void Example_Deinit(DnApp* app) {
 // == MAIN ================================================================== //
 
 DN_DEFINE_MAIN_ENTRY() {
-  Example example = {
+  ExampleApp example = {
     .app = {
-      .init = Example_Init,
-      .update = Example_Update,
-      .render = Example_Render,
-      .deinit = Example_Deinit,
+      .init = ExampleApp_Init,
+      .update = ExampleApp_Update,
+      .render = ExampleApp_Render,
+      .deinit = ExampleApp_Deinit,
     },
     .width = 320,
     .height = 180,

@@ -10,6 +10,7 @@ struct DnSysWindow {
   bool resizing;
 
   DnSysWindowCloseCallback closeCallback;
+  void* closeUserdata;
 };
 
 // == WINDOW PROCEDURE ====================================================== //
@@ -46,7 +47,7 @@ LRESULT CALLBACK DnSysWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
   case WM_CLOSE:
     if (window->closeCallback) {
-      window->closeCallback();
+      window->closeCallback(window->closeUserdata);
       return 0;
     }
     break;
@@ -125,7 +126,10 @@ DnSysWindow* DnSysWindow_Create() {
   RECT clientSize = { 0, 0, (LONG)window->width, (LONG)window->height };
   AdjustWindowRectEx(&clientSize, windowStyle, false, windowStyleEx);
 
-  window->handle = CreateWindowEx(windowStyleEx, windowClass.lpszClassName, "DoanLib Window", windowStyle, CW_USEDEFAULT, CW_USEDEFAULT, clientSize.right - clientSize.left, clientSize.bottom - clientSize.top, nullptr, nullptr, instance, window);
+  window->handle = CreateWindowEx(windowStyleEx, windowClass.lpszClassName,
+    "DoanLib Window", windowStyle, CW_USEDEFAULT, CW_USEDEFAULT,
+    clientSize.right - clientSize.left, clientSize.bottom - clientSize.top,
+    nullptr, nullptr, instance, window);
 
   if (!window->handle) {
     DN_LOG_ERROR("Failed to create Win32 window");
@@ -193,9 +197,10 @@ void DnSysWindow_SetVisibility(DnSysWindow* window, bool visible) {
   ShowWindow(window->handle, visible ? SW_SHOW : SW_HIDE);
 }
 
-void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback) {
+void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback, void* userdata) {
   DN_ASSERT(window->handle);
   window->closeCallback = callback;
+  window->closeUserdata = userdata;
 }
 
 // == WINDOW GETTERS ======================================================== //

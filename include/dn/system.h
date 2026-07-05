@@ -23,6 +23,9 @@ void DnSysWindow_ProcessMessages(DnSysWindow* window);
 // Closes and destroys the window.
 void DnSysWindow_Destroy(DnSysWindow* window);
 
+// Presents pixels array on the window surface.
+void DnSysWindow_Present(DnSysWindow* window, const u32* pixels, u32 width, u32 height);
+
 // Sets the title of the window.
 void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title);
 

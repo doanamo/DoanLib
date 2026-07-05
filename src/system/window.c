@@ -162,6 +162,25 @@ void DnSysWindow_Destroy(DnSysWindow* window) {
   DN_MEM_FREE(DnMemAllocator_GetDefault(), window);
 }
 
+// == WINDOW PRESENT ======================================================== //
+
+void DnSysWindow_Present(DnSysWindow* window, const u32* pixels, u32 width, u32 height) {
+  DN_ASSERT(window->handle);
+  DN_ASSERT(pixels);
+
+  BITMAPINFO bitmapInfo = { 0 };
+  bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  bitmapInfo.bmiHeader.biWidth = (LONG)width;
+  bitmapInfo.bmiHeader.biHeight = -(LONG)height;
+  bitmapInfo.bmiHeader.biPlanes = 1;
+  bitmapInfo.bmiHeader.biBitCount = 32;
+  bitmapInfo.bmiHeader.biCompression = BI_RGB;
+
+  HDC deviceContext = GetDC(window->handle);
+  StretchDIBits(deviceContext, 0, 0, (int)window->width, (int)window->height, 0, 0, (int)width, (int)height, pixels, &bitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+  ReleaseDC(window->handle, deviceContext);
+}
+
 // == WINDOW SETTERS ======================================================== //
 
 void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title) {

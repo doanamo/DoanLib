@@ -17,7 +17,9 @@ DnExitCode DnMainWrapper(int argc, char* argv[]) {
      goto error;
   }
 
+  DnMemTempScope tempScope = DnMemTemp_PushScope();
   result = DnMain();
+  DnMemTemp_PopScope(&tempScope);
 
 error:
   DnLib_Deinit();

@@ -11,6 +11,9 @@
 // Opaque handle for system window.
 typedef struct DnSysWindow DnSysWindow;
 
+// Function declaration for windows resize callback.
+typedef void (*DnSysWindowResizeCallback)(u32 width, u32 height, void* userdata);
+
 // Function declaration for window close callback.
 typedef void (*DnSysWindowCloseCallback)(void* userdata);
 
@@ -35,6 +38,9 @@ void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height);
 
 // Sets the visibility of the window.
 void DnSysWindow_SetVisibility(DnSysWindow* window, bool visible);
+
+// Sets the resize callback for the window.
+void DnSysWindow_SetResizeCallback(DnSysWindow* window, DnSysWindowResizeCallback callback, void* userdata);
 
 // Sets the close callback for the window.
 void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback, void* userdata);

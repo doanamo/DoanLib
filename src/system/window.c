@@ -9,6 +9,9 @@ struct DnSysWindow {
   u32 height;
   bool resizing;
 
+  DnSysWindowResizeCallback resizeCallback;
+  void* resizeUserdata;
+
   DnSysWindowCloseCallback closeCallback;
   void* closeUserdata;
 };
@@ -32,6 +35,10 @@ static void DnSysWindow_UpdateSize(DnSysWindow* window) {
   DN_LOG_INFO("Window resized from %ux%u to %ux%u", window->width, window->height, width, height);
   window->width = width;
   window->height = height;
+
+  if (window->resizeCallback) {
+    window->resizeCallback(width, height, window->resizeUserdata);
+  }
 }
 
 LRESULT CALLBACK DnSysWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -214,6 +221,12 @@ void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height) {
 void DnSysWindow_SetVisibility(DnSysWindow* window, bool visible) {
   DN_ASSERT(window->handle);
   ShowWindow(window->handle, visible ? SW_SHOW : SW_HIDE);
+}
+
+void DnSysWindow_SetResizeCallback(DnSysWindow* window, DnSysWindowResizeCallback callback, void* userdata) {
+  DN_ASSERT(window->handle);
+  window->resizeCallback = callback;
+  window->resizeUserdata = userdata;
 }
 
 void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback, void* userdata) {

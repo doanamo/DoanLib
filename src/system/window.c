@@ -179,16 +179,22 @@ void DnSysWindow_Present(DnSysWindow* window, const u32* pixels, u32 width, u32 
   DN_ASSERT(window->handle);
   DN_ASSERT(pixels);
 
-  BITMAPINFO bitmapInfo = { 0 };
-  bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  bitmapInfo.bmiHeader.biWidth = (LONG)width;
-  bitmapInfo.bmiHeader.biHeight = -(LONG)height;
-  bitmapInfo.bmiHeader.biPlanes = 1;
-  bitmapInfo.bmiHeader.biBitCount = 32;
-  bitmapInfo.bmiHeader.biCompression = BI_RGB;
+  BITMAPV4HEADER bitmapHeader = {0};
+  bitmapHeader.bV4Size = sizeof(BITMAPV4HEADER);
+  bitmapHeader.bV4Width = (LONG)width;
+  bitmapHeader.bV4Height = -(LONG)height;
+  bitmapHeader.bV4Planes = 1;
+  bitmapHeader.bV4BitCount = 32;
+  bitmapHeader.bV4V4Compression = BI_BITFIELDS;
+  bitmapHeader.bV4RedMask = 0x000000FF;
+  bitmapHeader.bV4GreenMask = 0x0000FF00;
+  bitmapHeader.bV4BlueMask = 0x00FF0000;
+  bitmapHeader.bV4AlphaMask = 0xFF000000;
 
   HDC deviceContext = GetDC(window->handle);
-  StretchDIBits(deviceContext, 0, 0, (int)window->width, (int)window->height, 0, 0, (int)width, (int)height, pixels, &bitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+  StretchDIBits(deviceContext, 0, 0, (int)window->width, (int)window->height,
+    0, 0, (int)width, (int)height, pixels, (BITMAPINFO*)&bitmapHeader,
+    DIB_RGB_COLORS, SRCCOPY);
   ReleaseDC(window->handle, deviceContext);
 }
 

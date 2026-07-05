@@ -89,8 +89,6 @@ void DnMemVirtual_Release(void* page) {
 }
 
 void* DnMemVirtual_Commit(void* page, u64 size) {
-  DN_ASSERT(DN_MEM_IS_ALIGNED(size, DnMem_SystemPageSize));
-
   DWORD flags = MEM_COMMIT;
   if (page == nullptr) {
     flags |= MEM_RESERVE;

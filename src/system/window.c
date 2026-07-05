@@ -7,11 +7,31 @@ struct DnSysWindow {
   HWND handle;
   u32 width;
   u32 height;
+  bool resizing;
 
   DnSysWindowCloseCallback closeCallback;
 };
 
 // == WINDOW PROCEDURE ====================================================== //
+
+static void DnSysWindow_UpdateSize(DnSysWindow* window) {
+  DN_ASSERT(window);
+
+  RECT clientSize;
+  GetClientRect(window->handle, &clientSize);
+  u32 width = (u32)clientSize.right;
+  u32 height = (u32)clientSize.bottom;
+
+  if (width == 0 || height == 0)
+    return;
+
+  if (width == window->width && height == window->height)
+    return;
+
+  DN_LOG_INFO("Window resized from %ux%u to %ux%u", window->width, window->height, width, height);
+  window->width = width;
+  window->height = height;
+}
 
 LRESULT CALLBACK DnSysWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   DnSysWindow* window = (DnSysWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -31,20 +51,19 @@ LRESULT CALLBACK DnSysWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     }
     break;
 
-  case WM_EXITSIZEMOVE: {
-      DN_ASSERT(window);
-
-      RECT clientSize;
-      GetClientRect(window->handle, &clientSize);
-      u32 width = (u32)clientSize.right;
-      u32 height = (u32)clientSize.bottom;
-
-      if (width != window->width || height != window->height) {
-        DN_LOG_INFO("Window resized from %ux%u to %ux%u", window->width, window->height, width, height);
-        window->width = width;
-        window->height = height;
-      }
+  case WM_SIZE:
+    if (!window->resizing) {
+      DnSysWindow_UpdateSize(window);
     }
+    break;
+
+  case WM_ENTERSIZEMOVE:
+    window->resizing = true;
+    break;
+
+  case WM_EXITSIZEMOVE:
+    window->resizing = false;
+    DnSysWindow_UpdateSize(window);
     break;
   }
 
@@ -71,6 +90,7 @@ DnSysWindow* DnSysWindow_Create() {
   *window = (DnSysWindow) {
     .width = 1024,
     .height = 576,
+    .resizing = false,
   };
 
   HINSTANCE instance = GetModuleHandle(nullptr);

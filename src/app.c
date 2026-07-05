@@ -7,10 +7,10 @@
 
 // == APPLICATION METHODS =================================================== //
 
-static void DnApp_CloseCallback(void* userdata) {
+static void DnApp_CloseCallback(bool* closing, void* userdata) {
+  DN_UNUSED(closing);
   DnApp* app = (DnApp*)userdata;
   DN_ASSERT(app);
-  app->exit = true;
 }
 
 static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
@@ -18,8 +18,6 @@ static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
 
   DN_ASSERT(app);
   DN_ASSERT(config);
-
-  app->exit = false;
 
   DN_ASSERT(!app->window);
   app->window = DnSysWindow_Create();
@@ -91,7 +89,7 @@ int DnApp_Run(DnApp* app, const DnAppConfig* config) {
   DN_LOG_INFO("Running application");
   DnSysWindow_SetVisibility(app->window, true);
 
-  while (!app->exit) {
+  while (!DnSysWindow_IsClosing(app->window)) {
     DnMemTempScope tempScope = DnMemTemp_PushScope();
 
     DnSysWindow_ProcessMessages(app->window);

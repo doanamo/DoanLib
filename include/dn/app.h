@@ -21,8 +21,6 @@ typedef struct DnApp {
   void (*deinit)(struct DnApp* app);
 
   DnSysWindow* window;
-
-  bool exit;
 } DnApp;
 
 // Runs the application with the given configuration. Does not return until the

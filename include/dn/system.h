@@ -15,7 +15,7 @@ typedef struct DnSysWindow DnSysWindow;
 typedef void (*DnSysWindowResizeCallback)(u32 width, u32 height, void* userdata);
 
 // Function declaration for window close callback.
-typedef void (*DnSysWindowCloseCallback)(void* userdata);
+typedef void (*DnSysWindowCloseCallback)(bool* closing, void* userdata);
 
 // Creates an application window. Window is initially created as hidden.
 DnSysWindow* DnSysWindow_Create();
@@ -44,6 +44,9 @@ void DnSysWindow_SetResizeCallback(DnSysWindow* window, DnSysWindowResizeCallbac
 
 // Sets the close callback for the window.
 void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback callback, void* userdata);
+
+// Returns whether the window is currently closing.
+bool DnSysWindow_IsClosing(DnSysWindow* window);
 
 // Returns Win32 handle of the window.
 HWND DnSysWindow_GetHandle(DnSysWindow* window);

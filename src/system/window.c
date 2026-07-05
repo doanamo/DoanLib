@@ -7,7 +7,9 @@ struct DnSysWindow {
   HWND handle;
   u32 width;
   u32 height;
+
   bool resizing;
+  bool closing;
 
   DnSysWindowResizeCallback resizeCallback;
   void* resizeUserdata;
@@ -54,7 +56,8 @@ LRESULT CALLBACK DnSysWindow_Procedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
   case WM_CLOSE:
     if (window->closeCallback) {
-      window->closeCallback(window->closeUserdata);
+      window->closing = true;
+      window->closeCallback(&window->closing, window->closeUserdata);
       return 0;
     }
     break;
@@ -99,6 +102,7 @@ DnSysWindow* DnSysWindow_Create() {
     .width = 1024,
     .height = 576,
     .resizing = false,
+    .closing = false,
   };
 
   HINSTANCE instance = GetModuleHandle(nullptr);
@@ -236,6 +240,10 @@ void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback 
 }
 
 // == WINDOW GETTERS ======================================================== //
+
+bool DnSysWindow_IsClosing(DnSysWindow* window) {
+  return window->closing;
+}
 
 HWND DnSysWindow_GetHandle(DnSysWindow* window) {
   DN_ASSERT(window->handle);

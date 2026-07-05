@@ -83,7 +83,9 @@ int DnApp_Run(DnApp* app, const DnAppConfig* config) {
   DN_ASSERT(app);
   DN_ASSERT(config);
 
+  DnExitCode exitCode = DnExitCode_UnknownFailure;
   if (!DnApp_Init(app, config)) {
+    exitCode = DnExitCode_AppInitFailure;
     goto error;
   }
 
@@ -100,7 +102,7 @@ int DnApp_Run(DnApp* app, const DnAppConfig* config) {
     DnMemTemp_PopScope(&tempScope);
   }
 
-  g_exitCode = 0;
+  exitCode = DnExitCode_Success;
 
 error:
   DnApp_Deinit(app);

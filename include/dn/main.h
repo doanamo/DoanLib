@@ -1,24 +1,25 @@
 #pragma once
 
-// == ERROR CODES ========================================================== //
+// == EXIT CODES =========================================================== //
 
-// List of known error codes returned by the library.
-typedef enum DnErrorCode : int {
-  DnErrorCode_Success = 0,
-  DnErrorCode_UnknownFailure = 1,
-  DnErrorCode_LibInitFailure = 2,
-} DnErrorCode;
+// List of known exit codes returned by the library.
+typedef enum DnExitCode : int {
+  DnExitCode_Success = 0,
+  DnExitCode_UnknownFailure = 1,
+  DnExitCode_LibInitFailure = 2,
+  DnExitCode_AppInitFailure = 3,
+} DnExitCode;
 
 // == MAIN ENTRY =========================================================== //
 
 // Helps define the main entry point for the library. This is for convenience
 // and for aid in correctness of initialization and deinitialization.
 #define DN_DEFINE_MAIN_ENTRY() \
-  DnErrorCode DnMainWrapper(int argc, char* argv[]); \
+  DnExitCode DnMainWrapper(int argc, char* argv[]); \
   int main(int argc, char* argv[]) { \
     return DnMainWrapper(argc, argv); \
   } \
-  DnErrorCode DnMain()
+  DnExitCode DnMain()
 
 // == LIBRARY INITITIALIZATION ============================================= //
 

@@ -4,16 +4,16 @@
 // == MAIN ENTRY ============================================================ //
 
 // Declaration of user defined main entry function.
-DnErrorCode DnMain();
+DnExitCode DnMain();
 
-DnErrorCode DnMainWrapper(int argc, char* argv[]) {
+DnExitCode DnMainWrapper(int argc, char* argv[]) {
   // #todo: Parse commandline arguments.
   DN_UNUSED(argc);
   DN_UNUSED(argv);
 
-  DnErrorCode result = DnErrorCode_UnknownFailure;
+  DnExitCode result = DnExitCode_UnknownFailure;
   if (!DnLib_Init()) {
-     result = DnErrorCode_LibInitFailure;
+     result = DnExitCode_LibInitFailure;
      goto error;
   }
 

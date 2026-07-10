@@ -38,5 +38,20 @@ void DnRasterTexture_Set(DnRasterTexture* texture, u32 x, u32 y, DnColor color) 
   DN_ASSERT(texture->data);
   DN_ASSERT(x < texture->width);
   DN_ASSERT(y < texture->height);
-  texture->data[y * texture->width + x] = color;
+
+  if (x < texture->width && y < texture->height) {
+    texture->data[y * texture->width + x] = color;
+  }
+}
+
+void DnRaster_Point(DnRasterTexture* texture, DnVec2f position, DnColor color) {
+  DnRasterTexture_Set(texture, (u32)position.x, (u32)position.y, color);
+}
+
+void DnRaster_Line(DnRasterTexture* texture, DnVec2f start, DnVec2f end, DnColor color) {
+  for (float t = 0; t <= 1; t += 0.02f) {
+    float x = start.x + t * (end.x - start.x) + 0.5f;
+    float y = start.y + t * (end.y - start.y) + 0.5f;
+    DnRasterTexture_Set(texture, (u32)x, (u32)y, color);
+  }
 }

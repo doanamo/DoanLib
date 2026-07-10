@@ -26,4 +26,5 @@ void DnRasterTexture_Set(DnRasterTexture* texture, u32 x, u32 y, DnColor color);
 
 // == RASTERIZATION SHAPES ================================================== //
 
-void DnRaster_Line(DnVec2f start, DnVec2f end);
+void DnRaster_Point(DnRasterTexture* texture, DnVec2f position, DnColor color);
+void DnRaster_Line(DnRasterTexture* texture, DnVec2f start, DnVec2f end, DnColor color);

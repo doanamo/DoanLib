@@ -23,9 +23,14 @@ bool ExampleApp_Init(DnApp* app, const DnAppConfig* config) {
 
   DnRasterTexture* texture = &example->texture;
   DnRasterTexture_Clear(texture, DnColor_Win98);
-  DnRasterTexture_Set(texture, 7, 3, DnColor_Red);
-  DnRasterTexture_Set(texture, 12, 37, DnColor_Green);
-  DnRasterTexture_Set(texture, 62, 53, DnColor_Blue);
+
+  DnRaster_Line(texture, (DnVec2f){ .x = 7, .y = 3 }, (DnVec2f){ .x = 12, .y = 37 }, DnColor_Red);
+  DnRaster_Line(texture, (DnVec2f){ .x = 62, .y = 53 }, (DnVec2f){ .x = 7, .y = 3 }, DnColor_Green);
+  DnRaster_Line(texture, (DnVec2f){ .x = 12, .y = 37 }, (DnVec2f){ .x = 62, .y = 53 }, DnColor_Blue);
+
+  DnRaster_Point(texture, (DnVec2f){ .x = 7, .y = 3 }, DnColor_White);
+  DnRaster_Point(texture, (DnVec2f){ .x = 12, .y = 37 }, DnColor_White);
+  DnRaster_Point(texture, (DnVec2f){ .x = 62, .y = 53 }, DnColor_White);
 
   return true;
 }

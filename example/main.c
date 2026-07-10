@@ -21,10 +21,11 @@ bool ExampleApp_Init(DnApp* app, const DnAppConfig* config) {
     return false;
   }
 
-  DnRasterTexture_Clear(&example->texture, DnColor_Win98);
-  DnRasterTexture_Set(&example->texture, 7, 3, DnColor_Red);
-  DnRasterTexture_Set(&example->texture, 12, 37, DnColor_Green);
-  DnRasterTexture_Set(&example->texture, 62, 53, DnColor_Blue);
+  DnRasterTexture* texture = &example->texture;
+  DnRasterTexture_Clear(texture, DnColor_Win98);
+  DnRasterTexture_Set(texture, 7, 3, DnColor_Red);
+  DnRasterTexture_Set(texture, 12, 37, DnColor_Green);
+  DnRasterTexture_Set(texture, 62, 53, DnColor_Blue);
 
   return true;
 }
@@ -57,6 +58,17 @@ void ExampleApp_Deinit(DnApp* app) {
   DnRasterTexture_Deinit(&example->texture);
 }
 
+void ExampleApp_OnResize(DnApp* app, u32 width, u32 height) {
+  DN_UNUSED(app);
+  DN_UNUSED(width);
+  DN_UNUSED(height);
+}
+
+void ExampleApp_OnClose(DnApp* app, bool* close) {
+  DN_UNUSED(app);
+  DN_UNUSED(close);
+}
+
 // == MAIN ================================================================== //
 
 DN_DEFINE_MAIN_ENTRY() {
@@ -66,6 +78,8 @@ DN_DEFINE_MAIN_ENTRY() {
       .update = ExampleApp_Update,
       .render = ExampleApp_Render,
       .deinit = ExampleApp_Deinit,
+      .onResize = ExampleApp_OnResize,
+      .onClose = ExampleApp_OnClose,
     },
   };
 

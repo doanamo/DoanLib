@@ -7,10 +7,22 @@
 
 // == APPLICATION METHODS =================================================== //
 
-static void DnApp_CloseCallback(bool* closing, void* userdata) {
-  DN_UNUSED(closing);
+static void DnApp_ResizeCallback(u32 width, u32 height, void* userdata) {
   DnApp* app = (DnApp*)userdata;
   DN_ASSERT(app);
+
+  if (app->onResize) {
+    app->onResize(app, width, height);
+  }
+}
+
+static void DnApp_CloseCallback(bool* closing, void* userdata) {
+  DnApp* app = (DnApp*)userdata;
+  DN_ASSERT(app);
+
+  if (app->onClose) {
+    app->onClose(app, closing);
+  }
 }
 
 static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
@@ -39,6 +51,7 @@ static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
 
   DnSysWindow_SetTitle(app->window, windowTitle);
   DnSysWindow_SetSize(app->window, windowWidth, windowHeight);
+  DnSysWindow_SetResizeCallback(app->window, &DnApp_ResizeCallback, app);
   DnSysWindow_SetCloseCallback(app->window, &DnApp_CloseCallback, app);
 
   if (!app->init(app, config)) {

@@ -20,6 +20,9 @@ typedef struct DnApp {
   void (*render)(struct DnApp* app, float alphaTime);
   void (*deinit)(struct DnApp* app);
 
+  void (*onResize)(struct DnApp* app, u32 width, u32 height);
+  void (*onClose)(struct DnApp* app, bool* close);
+
   DnSysWindow* window;
 } DnApp;
 

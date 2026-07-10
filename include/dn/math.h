@@ -29,22 +29,6 @@
 
 // == MATH VECTORS ========================================================== //
 
-// Struct representing colors with four byte components.
-typedef struct DnColor {
-  union {
-
-    u8 c[4];
-
-    struct {
-      u8 r;
-      u8 g;
-      u8 b;
-      u8 a;
-    };
-
-  };
-} DnColor;
-
 // Struct representing two-dimensional vectors with float components.
 typedef struct DnVec2f {
   union {
@@ -83,3 +67,29 @@ typedef struct DnVec4f {
     float f[4];
   };
 } DnVec4f;
+
+// == MATHS COLORS ========================================================== //
+
+// Struct representing colors with four byte components.
+typedef struct DnColor {
+  union {
+
+    u8 c[4];
+
+    struct {
+      u8 r;
+      u8 g;
+      u8 b;
+      u8 a;
+    };
+
+  };
+} DnColor;
+
+// Predefined color constants.
+constexpr DnColor DnColor_White = { .r = 255, .g = 255, .b = 255, .a = 255 };
+constexpr DnColor DnColor_Black = { .r = 0, .g = 0, .b = 0, .a = 255 };
+constexpr DnColor DnColor_Red = { .r = 255, .g = 0, .b = 0, .a = 255 };
+constexpr DnColor DnColor_Green = { .r = 0, .g = 255, .b = 0, .a = 255 };
+constexpr DnColor DnColor_Blue = { .r = 0, .g = 0, .b = 255, .a = 255 };
+constexpr DnColor DnColor_Win98 = { .r = 0, .g = 128, .b = 128, .a = 255 };

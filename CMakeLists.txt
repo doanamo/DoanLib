@@ -90,6 +90,7 @@ set(SOURCE_FILES
   "src/utility/file.c"
   "src/system/system.c"
   "src/system/window.c"
+  "src/raster/raster.c"
   "src/shared.c"
   "src/main.c"
   "src/app.c"

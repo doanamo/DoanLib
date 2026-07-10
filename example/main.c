@@ -1,15 +1,13 @@
 #include "dn/main.h"
 #include "dn/app.h"
-#include "dn/memory.h"
 #include "dn/system.h"
+#include "dn/raster.h"
 
 // == EXAMPLE APPLICATION =================================================== //
 
 typedef struct ExampleApp {
   DnApp app;
-  u32 width;
-  u32 height;
-  DnColor* pixels;
+  DnRasterTexture texture;
 } ExampleApp;
 
 bool ExampleApp_Init(DnApp* app, const DnAppConfig* config) {
@@ -19,22 +17,14 @@ bool ExampleApp_Init(DnApp* app, const DnAppConfig* config) {
   ExampleApp* example = (ExampleApp*)app;
   DN_ASSERT(example);
 
-  DN_ASSERT(!example->pixels);
-  example->pixels = DN_MEM_ALLOC_TYPES(DnMemLarge_GetAllocator(),
-    DnColor, example->width * example->height);
-
-  for (u32 y = 0; y < example->height; ++y) {
-    for (u32 x = 0; x < example->width; ++x) {
-      DnColor pixel = {
-        .r = 0,
-        .g = 132,
-        .b = 137,
-        .a = 255
-      };
-
-      example->pixels[y * example->width + x] = pixel;
-    }
+  if (!DnRasterTexture_Init(&example->texture, 320, 180)) {
+    return false;
   }
+
+  DnRasterTexture_Clear(&example->texture, DnColor_Win98);
+  DnRasterTexture_Set(&example->texture, 7, 3, DnColor_Red);
+  DnRasterTexture_Set(&example->texture, 12, 37, DnColor_Green);
+  DnRasterTexture_Set(&example->texture, 62, 53, DnColor_Blue);
 
   return true;
 }
@@ -54,7 +44,8 @@ void ExampleApp_Render(DnApp* app, float alphaTime) {
   ExampleApp* example = (ExampleApp*)app;
   DN_ASSERT(example);
 
-  DnSysWindow_Present(app->window, (u32*)example->pixels, example->width, example->height);
+  DnRasterTexture* texture = &example->texture;
+  DnSysWindow_Present(app->window, (u32*)texture->data, texture->width, texture->height);
 }
 
 void ExampleApp_Deinit(DnApp* app) {
@@ -63,7 +54,7 @@ void ExampleApp_Deinit(DnApp* app) {
   ExampleApp* example = (ExampleApp*)app;
   DN_ASSERT(example);
 
-  DN_MEM_FREE(DnMemLarge_GetAllocator(), example->pixels);
+  DnRasterTexture_Deinit(&example->texture);
 }
 
 // == MAIN ================================================================== //
@@ -76,9 +67,6 @@ DN_DEFINE_MAIN_ENTRY() {
       .render = ExampleApp_Render,
       .deinit = ExampleApp_Deinit,
     },
-    .width = 320,
-    .height = 180,
-    .pixels = nullptr,
   };
 
   DnAppConfig config = {

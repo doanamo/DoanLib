@@ -39,8 +39,7 @@
 
 // Check whether given value is aligned to multiple of the specified size.
 // Assumes that the alignment is a power of 2. Can also be used with pointers.
-#define DN_MEM_IS_ALIGNED(size, alignment) \
-  ({ \
+#define DN_MEM_IS_ALIGNED(size, alignment) ({ \
     u64 _size = (size); \
     u64 _alignment = (alignment); \
     DN_ASSERT(DN_IS_POW2(_alignment)); \
@@ -49,8 +48,7 @@
 
 // Aligns the given size up to the nearest multiple of the specified alignment.
 // Assumes that the alignment is a power of 2. Can also be used with pointers.
-#define DN_MEM_ALIGN_UP(size, alignment) \
-  ({ \
+#define DN_MEM_ALIGN_UP(size, alignment) ({ \
     u64 _size = (size); \
     u64 _alignment = (alignment); \
     DN_ASSERT(DN_IS_POW2(_alignment)); \
@@ -102,8 +100,7 @@ void DnMem_Deinit();
 
 // Shorthand macro for allocating memory from an allocator with a given size and
 // alignment.
-#define DN_MEM_ALLOC(allocator, size, alignment) \
-  ({ \
+#define DN_MEM_ALLOC(allocator, size, alignment) ({ \
     const DnMemAllocator* _allocator = allocator; \
     _allocator->alloc(_allocator, size, alignment); \
   })
@@ -117,31 +114,27 @@ void DnMem_Deinit();
 // original block's contents are copied to the new block before the original is
 // freed. You should always assume that pointers to the reallocated memory are
 // invalidated.
-#define DN_MEM_REALLOC(allocator, allocation, size, alignment) \
-  ({ \
+#define DN_MEM_REALLOC(allocator, allocation, size, alignment) ({ \
     const DnMemAllocator* _allocator = allocator; \
     _allocator->realloc(_allocator, allocation, size, alignment); \
   })
 
 // Shorthand macro for freeing memory from an allocator.
-#define DN_MEM_FREE(allocator, allocation) \
-  ({ \
+#define DN_MEM_FREE(allocator, allocation) ({ \
     const DnMemAllocator* _allocator = allocator; \
     _allocator->free(_allocator, allocation); \
   })
 
 // Shorthand macro for allocating memory from an allocator for a single instance
 // of a given type.
-#define DN_MEM_ALLOC_TYPE(allocator, type) \
-  ({ \
+#define DN_MEM_ALLOC_TYPE(allocator, type) ({ \
     const DnMemAllocator* _allocator = allocator; \
     (type*)_allocator->alloc(_allocator, sizeof(type), alignof(type)); \
   })
 
 // Shorthand macro for allocating memory from an allocator for an array of a
 // given type and element count.
-#define DN_MEM_ALLOC_TYPES(allocator, type, count) \
-  ({ \
+#define DN_MEM_ALLOC_TYPES(allocator, type, count) ({ \
     const DnMemAllocator* _allocator = allocator; \
     (type*)_allocator->alloc(_allocator, sizeof(type) * (count), alignof(type)); \
   })
@@ -149,8 +142,7 @@ void DnMem_Deinit();
 // Shorthand macro for reallocating memory from an allocator for an array of a
 // given type and element count. See DN_MEM_REALLOC() for additional remarks on
 // reallocation.
-#define DN_MEM_REALLOC_TYPES(allocator, allocation, type, count) \
-  ({ \
+#define DN_MEM_REALLOC_TYPES(allocator, allocation, type, count) ({ \
     const DnMemAllocator* _allocator = allocator; \
     (type*)_allocator->realloc(_allocator, allocation, sizeof(type) * (count), alignof(type)); \
   })

@@ -32,9 +32,6 @@ typedef double f64;
 
 // == COMPILER MACROS ======================================================= //
 
-// Returns the length of a statically allocated array.
-#define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
-
 // Marks variable as intentionally unused to suppress compiler warnings.
 #define DN_UNUSED(x) (void)(x)
 
@@ -49,6 +46,18 @@ typedef double f64;
 
 // Aborts the process.
 #define DN_ABORT() __builtin_trap()
+
+// == COMMON MACROS ========================================================= //
+
+// Returns the length of a statically allocated array.
+#define DN_ARRAY_LENGTH(array) (sizeof(array) / sizeof((array)[0]))
+
+// Swaps the values of two variables of the same type.
+#define DN_SWAP(a, b) ({ \
+    typeof(a) _temp = a; \
+    a = b; \
+    b = _temp; \
+  })
 
 // == LOGGING MACROS ======================================================== //
 

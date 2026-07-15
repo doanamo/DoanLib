@@ -68,6 +68,84 @@ typedef struct DnVec4f {
   };
 } DnVec4f;
 
+// Struct representing two-dimensional vectors with integer components.
+typedef struct DnVec2i {
+  union {
+    struct {
+      i32 x;
+      i32 y;
+    };
+
+    i32 i[2];
+  };
+} DnVec2i;
+
+// Struct representing three-dimensional vectors with integer components.
+typedef struct DnVec3i {
+  union {
+    struct {
+      i32 x;
+      i32 y;
+      i32 z;
+    };
+
+    i32 i[3];
+  };
+} DnVec3i;
+
+// Struct representing four-dimensional vectors with integer components.
+typedef struct DnVec4i {
+  union {
+    struct {
+      i32 x;
+      i32 y;
+      i32 z;
+      i32 w;
+    };
+
+    i32 i[4];
+  };
+} DnVec4i;
+
+// Struct representing two-dimensional vectors with unsigned integer components.
+typedef struct DnVec2u {
+  union {
+    struct {
+      u32 x;
+      u32 y;
+    };
+
+    u32 u[2];
+  };
+} DnVec2u;
+
+// Struct representing three-dimensional vectors with unsigned integer components.
+typedef struct DnVec3u {
+  union {
+    struct {
+      u32 x;
+      u32 y;
+      u32 z;
+    };
+
+    u32 u[3];
+  };
+} DnVec3u;
+
+// Struct representing four-dimensional vectors with unsigned integer components.
+typedef struct DnVec4u {
+  union {
+    struct {
+      u32 x;
+      u32 y;
+      u32 z;
+      u32 w;
+    };
+
+    u32 u[4];
+  };
+} DnVec4u;
+
 // == MATHS COLORS ========================================================== //
 
 // Struct representing colors with four byte components.

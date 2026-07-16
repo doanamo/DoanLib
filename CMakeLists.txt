@@ -14,68 +14,7 @@ project(DoanLib
 #   Configuration                                                              #
 # ============================================================================ #
 
-function(dn_global_setup)
-  set(CMAKE_C_STANDARD 23 PARENT_SCOPE)
-  set(CMAKE_C_STANDARD_REQUIRED OFF PARENT_SCOPE)
-  set(CMAKE_EXPORT_COMPILE_COMMANDS OFF PARENT_SCOPE)
-
-  set(CMAKE_CONFIGURATION_TYPES "Debug;Develop;Release")
-  set(CMAKE_C_FLAGS_DEVELOP "${CMAKE_C_FLAGS_RELWITHDEBINFO_INIT}" CACHE INTERNAL "")
-  set(CMAKE_STATIC_LINKER_FLAGS_DEVELOP "${CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO_INIT}" CACHE INTERNAL "")
-  set(CMAKE_SHARED_LINKER_FLAGS_DEVELOP "${CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO_INIT}" CACHE INTERNAL "")
-  set(CMAKE_EXE_LINKER_FLAGS_DEVELOP "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO_INIT}" CACHE INTERNAL "")
-  set(CMAKE_RC_FLAGS_DEVELOP "${CMAKE_RC_FLAGS_RELWITHDEBINFO_INIT}" CACHE INTERNAL "")
-endfunction()
-
-function(dn_target_setup TARGET)
-  target_compile_definitions(${TARGET} PRIVATE
-    DN_CONFIG_DEBUG=$<CONFIG:Debug>
-    DN_CONFIG_DEVELOP=$<CONFIG:Develop>
-    DN_CONFIG_RELEASE=$<CONFIG:Release>
-    DN_PLATFORM_WINDOWS=$<PLATFORM_ID:Windows>
-    _CRT_SECURE_NO_WARNINGS
-  )
-
-  target_compile_options(${TARGET} PRIVATE
-    # Additional warnings.
-    -Wall
-    -Wextra
-    -Wconversion
-    -Werror
-
-    # Always produce debug symbols.
-    -g
-
-    # Additional optimizations.
-    $<$<CONFIG:Development>:-flto=thin>
-    $<$<CONFIG:Release>:-flto=full>
-    -ffast-math
-  )
-
-  target_link_options(${TARGET} PRIVATE
-    # Always produce debug symbols.
-    -g
-
-    # Additional optimizations.
-    $<$<CONFIG:Development>:-flto=thin>
-    $<$<CONFIG:Release>:-flto=full>
-
-    # Keep standard main entry.
-    LINKER:/ENTRY:mainCRTStartup
-  )
-
-  if(WIN32)
-    # Hide console window in Release configuration.
-    set_target_properties(${TARGET} PROPERTIES
-      WIN32_EXECUTABLE $<CONFIG:Release>
-    )
-
-    # Enable debug CRT runtime in Debug configuration only.
-    set_property(TARGET ${TARGET} PROPERTY
-      MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
-    )
-  endif()
-endfunction()
+include(CMakeShared.txt)
 
 if (PROJECT_IS_TOP_LEVEL)
   dn_global_setup()

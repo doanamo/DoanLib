@@ -96,10 +96,10 @@ set(SOURCE_FILES
   "src/app.c"
 )
 
-add_library(Doan STATIC ${SOURCE_FILES})
-target_include_directories(Doan PRIVATE "src/")
-target_include_directories(Doan PUBLIC "include/")
-dn_target_setup(Doan)
+add_library(DoanLib STATIC ${SOURCE_FILES})
+target_include_directories(DoanLib PRIVATE "src/")
+target_include_directories(DoanLib PUBLIC "include/")
+dn_target_setup(DoanLib)
 
 # ============================================================================ #
 #   Example                                                                    #

@@ -15,10 +15,7 @@ project(DoanLib
 # ============================================================================ #
 
 include(CMakeShared.txt)
-
-if (PROJECT_IS_TOP_LEVEL)
-  dn_global_setup()
-endif()
+dn_global_setup()
 
 # ============================================================================ #
 #   Library                                                                    #

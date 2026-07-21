@@ -7,13 +7,13 @@
 
 // Struct representing 2D texture onto which rasterization can be performed.
 typedef struct DnRasterTexture {
-  u32 width;
-  u32 height;
+  i32 width;
+  i32 height;
   DnColor* data;
 } DnRasterTexture;
 
 // Initializes raster texture.
-bool DnRasterTexture_Init(DnRasterTexture* texture, u32 width, u32 height);
+bool DnRasterTexture_Init(DnRasterTexture* texture, i32 width, i32 height);
 
 // Deinitializes raster texture.
 void DnRasterTexture_Deinit(DnRasterTexture* texture);
@@ -22,9 +22,9 @@ void DnRasterTexture_Deinit(DnRasterTexture* texture);
 void DnRasterTexture_Clear(DnRasterTexture* texture, DnColor color);
 
 // Sets pixel on raster texture.
-void DnRasterTexture_Set(DnRasterTexture* texture, u32 x, u32 y, DnColor color);
+void DnRasterTexture_Set(DnRasterTexture* texture, i32 x, i32 y, DnColor color);
 
 // == RASTERIZATION SHAPES ================================================== //
 
-void DnRaster_Point(DnRasterTexture* texture, DnVec2f position, DnColor color);
-void DnRaster_Line(DnRasterTexture* texture, DnVec2f start, DnVec2f end, DnColor color);
+void DnRaster_Point(DnRasterTexture* texture, DnVec2i position, DnColor color);
+void DnRaster_Line(DnRasterTexture* texture, DnVec2i start, DnVec2i end, DnColor color);

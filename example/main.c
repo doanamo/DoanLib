@@ -41,6 +41,7 @@ void ExampleApp_Update(DnApp* app, float deltaTime) {
 
   ExampleApp* example = (ExampleApp*)app;
   DN_ASSERT(example);
+  DN_UNUSED(example);
 }
 
 void ExampleApp_Render(DnApp* app, float alphaTime) {

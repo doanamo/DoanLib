@@ -1,4 +1,11 @@
 // Documentation: https://zed.dev/docs/configuring-zed#settings-files
 {
-  "tab_size": 2
+  "tab_size": 2,
+  "lsp": {
+    "clangd": {
+      "binary": {
+        "arguments": ["--compile-commands-dir=build/debug/"]
+      }
+    }
+  }
 }

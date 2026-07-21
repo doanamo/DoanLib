@@ -7,7 +7,7 @@
 
 // == APPLICATION METHODS =================================================== //
 
-static void DnApp_ResizeCallback(u32 width, u32 height, void* userdata) {
+static void DnApp_ResizeCallback(i32 width, i32 height, void* userdata) {
   DnApp* app = (DnApp*)userdata;
   DN_ASSERT(app);
 
@@ -42,8 +42,8 @@ static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
     windowTitle = DN_STR_VIEW_LITERAL("DoanLib Window");
   }
 
-  u32 windowWidth = config->windowWidth;
-  u32 windowHeight = config->windowHeight;
+  i32 windowWidth = config->windowWidth;
+  i32 windowHeight = config->windowHeight;
   if (!windowWidth || !windowHeight) {
     windowWidth = 1024;
     windowHeight = 576;

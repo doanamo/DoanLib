@@ -24,13 +24,13 @@ bool ExampleApp_Init(DnApp* app, const DnAppConfig* config) {
   DnRasterTexture* texture = &example->texture;
   DnRasterTexture_Clear(texture, DnColor_Win98);
 
-  DnRaster_Line(texture, (DnVec2f){ .x = 7, .y = 3 }, (DnVec2f){ .x = 12, .y = 37 }, DnColor_Red);
-  DnRaster_Line(texture, (DnVec2f){ .x = 62, .y = 53 }, (DnVec2f){ .x = 7, .y = 3 }, DnColor_Green);
-  DnRaster_Line(texture, (DnVec2f){ .x = 12, .y = 37 }, (DnVec2f){ .x = 62, .y = 53 }, DnColor_Blue);
+  DnRaster_Line(texture, (DnVec2i){ .x = 7, .y = 3 }, (DnVec2i){ .x = 12, .y = 37 }, DnColor_Red);
+  DnRaster_Line(texture, (DnVec2i){ .x = 62, .y = 53 }, (DnVec2i){ .x = 7, .y = 3 }, DnColor_Green);
+  DnRaster_Line(texture, (DnVec2i){ .x = 12, .y = 37 }, (DnVec2i){ .x = 62, .y = 53 }, DnColor_Blue);
 
-  DnRaster_Point(texture, (DnVec2f){ .x = 7, .y = 3 }, DnColor_White);
-  DnRaster_Point(texture, (DnVec2f){ .x = 12, .y = 37 }, DnColor_White);
-  DnRaster_Point(texture, (DnVec2f){ .x = 62, .y = 53 }, DnColor_White);
+  DnRaster_Point(texture, (DnVec2i){ .x = 7, .y = 3 }, DnColor_White);
+  DnRaster_Point(texture, (DnVec2i){ .x = 12, .y = 37 }, DnColor_White);
+  DnRaster_Point(texture, (DnVec2i){ .x = 62, .y = 53 }, DnColor_White);
 
   return true;
 }
@@ -64,7 +64,7 @@ void ExampleApp_Deinit(DnApp* app) {
   DnRasterTexture_Deinit(&example->texture);
 }
 
-void ExampleApp_OnResize(DnApp* app, u32 width, u32 height) {
+void ExampleApp_OnResize(DnApp* app, i32 width, i32 height) {
   DN_UNUSED(app);
   DN_UNUSED(width);
   DN_UNUSED(height);

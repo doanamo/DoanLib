@@ -12,7 +12,7 @@
 typedef struct DnSysWindow DnSysWindow;
 
 // Function declaration for windows resize callback.
-typedef void (*DnSysWindowResizeCallback)(u32 width, u32 height, void* userdata);
+typedef void (*DnSysWindowResizeCallback)(i32 width, i32 height, void* userdata);
 
 // Function declaration for window close callback.
 typedef void (*DnSysWindowCloseCallback)(bool* closing, void* userdata);
@@ -27,14 +27,14 @@ void DnSysWindow_ProcessMessages(DnSysWindow* window);
 void DnSysWindow_Destroy(DnSysWindow* window);
 
 // Presents pixels array on the window surface.
-void DnSysWindow_Present(DnSysWindow* window, const u32* pixels, u32 width, u32 height);
+void DnSysWindow_Present(DnSysWindow* window, const u32* pixels, i32 width, i32 height);
 
 // Sets the title of the window.
 void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title);
 
 // Sets the size of the window's client area, which might be smaller than the
 // window's actual size.
-void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height);
+void DnSysWindow_SetSize(DnSysWindow* window, i32 width, i32 height);
 
 // Sets the visibility of the window.
 void DnSysWindow_SetVisibility(DnSysWindow* window, bool visible);

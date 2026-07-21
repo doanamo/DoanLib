@@ -9,18 +9,18 @@ typedef struct DnSysWindow DnSysWindow;
 // Application configurations struct.
 typedef struct {
   DnStrView windowTitle;
-  u32 windowWidth;
-  u32 windowHeight;
+  i32 windowWidth;
+  i32 windowHeight;
 } DnAppConfig;
 
 // Application interface for caller to implement.
 typedef struct DnApp {
   bool (*init)(struct DnApp* app, const DnAppConfig* config);
-  void (*update)(struct DnApp* app, float deltaTime);
-  void (*render)(struct DnApp* app, float alphaTime);
+  void (*update)(struct DnApp* app, f32 deltaTime);
+  void (*render)(struct DnApp* app, f32 alphaTime);
   void (*deinit)(struct DnApp* app);
 
-  void (*onResize)(struct DnApp* app, u32 width, u32 height);
+  void (*onResize)(struct DnApp* app, i32 width, i32 height);
   void (*onClose)(struct DnApp* app, bool* close);
 
   DnSysWindow* window;

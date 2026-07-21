@@ -5,8 +5,8 @@
 
 struct DnSysWindow {
   HWND handle;
-  u32 width;
-  u32 height;
+  i32 width;
+  i32 height;
 
   bool resizing;
   bool closing;
@@ -25,8 +25,8 @@ static void DnSysWindow_UpdateSize(DnSysWindow* window) {
 
   RECT clientSize;
   GetClientRect(window->handle, &clientSize);
-  u32 width = (u32)clientSize.right;
-  u32 height = (u32)clientSize.bottom;
+  i32 width = clientSize.right;
+  i32 height = clientSize.bottom;
 
   if (width == 0 || height == 0)
     return;
@@ -34,7 +34,7 @@ static void DnSysWindow_UpdateSize(DnSysWindow* window) {
   if (width == window->width && height == window->height)
     return;
 
-  DN_LOG_INFO("Window resized from %ux%u to %ux%u", window->width, window->height, width, height);
+  DN_LOG_INFO("Window resized from %ix%i to %ix%i", window->width, window->height, width, height);
   window->width = width;
   window->height = height;
 
@@ -149,8 +149,8 @@ DnSysWindow* DnSysWindow_Create() {
   }
 
   GetClientRect(window->handle, &clientSize);
-  window->width = (u32)clientSize.right;
-  window->height = (u32)clientSize.bottom;
+  window->width = clientSize.right;
+  window->height = clientSize.bottom;
 
   success = true;
 
@@ -175,9 +175,11 @@ void DnSysWindow_Destroy(DnSysWindow* window) {
 
 // == WINDOW PRESENT ======================================================== //
 
-void DnSysWindow_Present(DnSysWindow* window, const u32* pixels, u32 width, u32 height) {
+void DnSysWindow_Present(DnSysWindow* window, const u32* pixels, i32 width, i32 height) {
   DN_ASSERT(window->handle);
   DN_ASSERT(pixels);
+  DN_ASSERT(width > 0);
+  DN_ASSERT(height > 0);
 
   BITMAPV4HEADER bitmapHeader = {0};
   bitmapHeader.bV4Size = sizeof(BITMAPV4HEADER);
@@ -193,7 +195,7 @@ void DnSysWindow_Present(DnSysWindow* window, const u32* pixels, u32 width, u32 
 
   HDC deviceContext = GetDC(window->handle);
   StretchDIBits(deviceContext, 0, 0, (int)window->width, (int)window->height,
-    0, 0, (int)width, (int)height, pixels, (BITMAPINFO*)&bitmapHeader,
+    0, 0, width, height, pixels, (BITMAPINFO*)&bitmapHeader,
     DIB_RGB_COLORS, SRCCOPY);
   ReleaseDC(window->handle, deviceContext);
 }
@@ -209,8 +211,10 @@ void DnSysWindow_SetTitle(DnSysWindow* window, DnStrView title) {
   DnMemTemp_PopScope(&memTempScope);
 }
 
-void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height) {
+void DnSysWindow_SetSize(DnSysWindow* window, i32 width, i32 height) {
   DN_ASSERT(window->handle);
+  DN_ASSERT(width > 0);
+  DN_ASSERT(height > 0);
 
   if (width == window->width && height == window->height)
     return;
@@ -223,7 +227,7 @@ void DnSysWindow_SetSize(DnSysWindow* window, u32 width, u32 height) {
 
   SetWindowPos(window->handle, nullptr, 0, 0, clientSize.right - clientSize.left, clientSize.bottom - clientSize.top, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 
-  DN_LOG_INFO("Window resized from %ux%u to %ux%u", window->width, window->height, width, height);
+  DN_LOG_INFO("Window resized from %ix%i to %ix%i", window->width, window->height, width, height);
   window->width = width;
   window->height = height;
 }

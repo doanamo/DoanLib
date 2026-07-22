@@ -5,13 +5,13 @@
 
 // == APPLICATION =========================================================== //
 
-typedef struct DnExampleApp {
+typedef struct DnAppExample {
   DnApp app;
   DnRasterTexture texture;
-} DnExampleApp;
+} DnAppExample;
 
-bool ExampleApp_Init(DnApp* app) {
-  DnExampleApp* exampleApp = (DnExampleApp*)app;
+bool DnAppExample_Init(DnApp* app) {
+  DnAppExample* exampleApp = (DnAppExample*)app;
   DN_ASSERT(exampleApp);
 
   if (!DnRasterTexture_Init(&exampleApp->texture, 320, 180)) {
@@ -32,38 +32,38 @@ bool ExampleApp_Init(DnApp* app) {
   return true;
 }
 
-void ExampleApp_Update(DnApp* app, f32 deltaTime) {
+void DnAppExample_Update(DnApp* app, f32 deltaTime) {
   DN_UNUSED(deltaTime);
 
-  DnExampleApp* exampleApp = (DnExampleApp*)app;
+  DnAppExample* exampleApp = (DnAppExample*)app;
   DN_ASSERT(exampleApp);
   DN_UNUSED(exampleApp);
 }
 
-void ExampleApp_Render(DnApp* app, f32 alphaTime) {
+void DnAppExample_Render(DnApp* app, f32 alphaTime) {
   DN_UNUSED(alphaTime);
 
-  DnExampleApp* exampleApp = (DnExampleApp*)app;
+  DnAppExample* exampleApp = (DnAppExample*)app;
   DN_ASSERT(exampleApp);
 
   DnRasterTexture* texture = &exampleApp->texture;
   DnSysWindow_Present(app->window, (u32*)texture->data, texture->width, texture->height);
 }
 
-void ExampleApp_Deinit(DnApp* app) {
-  DnExampleApp* exampleApp = (DnExampleApp*)app;
+void DnAppExample_Deinit(DnApp* app) {
+  DnAppExample* exampleApp = (DnAppExample*)app;
   DN_ASSERT(exampleApp);
 
   DnRasterTexture_Deinit(&exampleApp->texture);
 }
 
-void ExampleApp_OnResize(DnApp* app, i32 width, i32 height) {
+void DnAppExample_OnResize(DnApp* app, i32 width, i32 height) {
   DN_UNUSED(app);
   DN_UNUSED(width);
   DN_UNUSED(height);
 }
 
-void ExampleApp_OnClose(DnApp* app, bool* close) {
+void DnAppExample_OnClose(DnApp* app, bool* close) {
   DN_UNUSED(app);
   DN_UNUSED(close);
 }
@@ -71,14 +71,14 @@ void ExampleApp_OnClose(DnApp* app, bool* close) {
 // == MAIN ================================================================== //
 
 DN_DEFINE_MAIN_ENTRY() {
-  DnExampleApp exampleApp = {
+  DnAppExample exampleApp = {
     .app = {
-      .init = ExampleApp_Init,
-      .update = ExampleApp_Update,
-      .render = ExampleApp_Render,
-      .deinit = ExampleApp_Deinit,
-      .onResize = ExampleApp_OnResize,
-      .onClose = ExampleApp_OnClose,
+      .init = DnAppExample_Init,
+      .update = DnAppExample_Update,
+      .render = DnAppExample_Render,
+      .deinit = DnAppExample_Deinit,
+      .onResize = DnAppExample_OnResize,
+      .onClose = DnAppExample_OnClose,
     },
   };
 

@@ -48,6 +48,12 @@ void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback 
 // Returns whether the window is currently closing.
 bool DnSysWindow_IsClosing(DnSysWindow* window);
 
+// Returns the width of the window's client area.
+i32 DnSysWindow_GetWidth(DnSysWindow* window);
+
+// Returns the height of the window's client area.
+i32 DnSysWindow_GetHeight(DnSysWindow* window);
+
 // Returns Win32 handle of the window.
 HWND DnSysWindow_GetHandle(DnSysWindow* window);
 

@@ -3,7 +3,7 @@
 
 // == WINDOW STRUCT ========================================================= //
 
-struct DnSysWindow {
+typedef struct DnSysWindow {
   HWND handle;
   i32 width;
   i32 height;
@@ -16,7 +16,7 @@ struct DnSysWindow {
 
   DnSysWindowCloseCallback closeCallback;
   void* closeUserdata;
-};
+} DnSysWindow;
 
 // == WINDOW PROCEDURE ====================================================== //
 
@@ -253,6 +253,14 @@ void DnSysWindow_SetCloseCallback(DnSysWindow* window, DnSysWindowCloseCallback 
 
 bool DnSysWindow_IsClosing(DnSysWindow* window) {
   return window->closing;
+}
+
+i32 DnSysWindow_GetWidth(DnSysWindow* window) {
+  return window->width;
+}
+
+i32 DnSysWindow_GetHeight(DnSysWindow* window) {
+  return window->height;
 }
 
 HWND DnSysWindow_GetHandle(DnSysWindow* window) {

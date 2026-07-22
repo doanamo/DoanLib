@@ -21,7 +21,10 @@ bool DnRasterTexture_Init(DnRasterTexture* texture, i32 width, i32 height) {
 
 void DnRasterTexture_Deinit(DnRasterTexture* texture) {
   DN_ASSERT(texture);
-  DN_MEM_FREE(DnMemLarge_GetAllocator(), texture->data);
+
+  if (texture->data) {
+    DN_MEM_FREE(DnMemLarge_GetAllocator(), texture->data);
+  }
 }
 
 void DnRasterTexture_Clear(DnRasterTexture* texture, DnColor color) {

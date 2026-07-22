@@ -54,7 +54,7 @@ static bool DnApp_Init(DnApp* app, const DnAppConfig* config) {
   DnSysWindow_SetResizeCallback(app->window, &DnApp_ResizeCallback, app);
   DnSysWindow_SetCloseCallback(app->window, &DnApp_CloseCallback, app);
 
-  if (!app->init(app, config)) {
+  if (!app->init(app)) {
     return false;
   }
 

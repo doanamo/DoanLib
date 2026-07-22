@@ -15,7 +15,7 @@ typedef struct {
 
 // Application interface for caller to implement.
 typedef struct DnApp {
-  bool (*init)(struct DnApp* app, const DnAppConfig* config);
+  bool (*init)(struct DnApp* app);
   void (*update)(struct DnApp* app, f32 deltaTime);
   void (*render)(struct DnApp* app, f32 alphaTime);
   void (*deinit)(struct DnApp* app);

@@ -1,5 +1,0 @@
-If:
-  PathMatch: include/dn/shared\.h
-Diagnostics:
-  Includes:
-    IgnoreHeader: string\.h
